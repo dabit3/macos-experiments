@@ -1,0 +1,375 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03395B28F34F6E71D7A40C3F /* GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E33F2C5EE2C7CBABF1B3FEEC /* GameStore.swift */; };
+		11A8A9C670CE04D7CF0F8549 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6BDFCF1F2601D6A3E60615B /* Geometry.swift */; };
+		1951D8DFD25BC1F328159030 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3CC2D64AAF9AFB0C3C5B2C8 /* GameView.swift */; };
+		4CB4F950FAE57EE7C001AF77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BE86AB3B37DEE0C85D8128C /* Assets.xcassets */; };
+		5007A8C1D710F43332A45E4A /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1358073E8C4AFEB115D29F /* Board.swift */; };
+		50F37DC8ACF660314615BC14 /* LevelGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC3CC19E3259ECF63C94C62 /* LevelGenerator.swift */; };
+		55E981B66495050928B87821 /* Progress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009E445A8B0F41A053ED52D2 /* Progress.swift */; };
+		7CD2CAFFBD5F157AC38E5E4E /* CableChaosApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE6A37E0FFEA91A12BF48C7 /* CableChaosApp.swift */; };
+		7DE95B11F1C4314F804A8CF0 /* TileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F64AD31CAF89AD24504D821 /* TileView.swift */; };
+		A10CD8FE4EDCBD0397D13476 /* Synth.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2662EAAE24BF9C51ECA7578 /* Synth.swift */; };
+		B27CA595CE90917A64067A29 /* LevelCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE31B0BEF15A601F00FF888 /* LevelCatalog.swift */; };
+		BD453D75059E4261D07FB675 /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEF4BA7D72E8D9B8302C8E1 /* Solver.swift */; };
+		D92D02586B554C3CC4EFF62D /* LevelSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7DB674DE1E00355D168D91 /* LevelSelectView.swift */; };
+		E904A27BA310CB19505FF7B8 /* TitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28DFFA119AD6B25D6615DF12 /* TitleView.swift */; };
+		F2E5D15FC72320ED6ACAAD27 /* Tile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2E271C642528F076563B9DD /* Tile.swift */; };
+		F4A429AD316B946ED351E0F3 /* PCBBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86688BCA491380C0B16D8B8 /* PCBBackground.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		009E445A8B0F41A053ED52D2 /* Progress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Progress.swift; sourceTree = "<group>"; };
+		28DFFA119AD6B25D6615DF12 /* TitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleView.swift; sourceTree = "<group>"; };
+		3AC3CC19E3259ECF63C94C62 /* LevelGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelGenerator.swift; sourceTree = "<group>"; };
+		3F64AD31CAF89AD24504D821 /* TileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TileView.swift; sourceTree = "<group>"; };
+		4EEF4BA7D72E8D9B8302C8E1 /* Solver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Solver.swift; sourceTree = "<group>"; };
+		8BE86AB3B37DEE0C85D8128C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8C1358073E8C4AFEB115D29F /* Board.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
+		8D7DB674DE1E00355D168D91 /* LevelSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelSelectView.swift; sourceTree = "<group>"; };
+		C2662EAAE24BF9C51ECA7578 /* Synth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Synth.swift; sourceTree = "<group>"; };
+		C2E271C642528F076563B9DD /* Tile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tile.swift; sourceTree = "<group>"; };
+		E33F2C5EE2C7CBABF1B3FEEC /* GameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStore.swift; sourceTree = "<group>"; };
+		E3CC2D64AAF9AFB0C3C5B2C8 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		E86688BCA491380C0B16D8B8 /* PCBBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCBBackground.swift; sourceTree = "<group>"; };
+		EBE31B0BEF15A601F00FF888 /* LevelCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelCatalog.swift; sourceTree = "<group>"; };
+		EFE6A37E0FFEA91A12BF48C7 /* CableChaosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CableChaosApp.swift; sourceTree = "<group>"; };
+		F3C324CAB5AB736E23FA0437 /* CableChaos.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CableChaos.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6BDFCF1F2601D6A3E60615B /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0051C4B6CFB9E0F71BD4054F /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				8C1358073E8C4AFEB115D29F /* Board.swift */,
+				F6BDFCF1F2601D6A3E60615B /* Geometry.swift */,
+				EBE31B0BEF15A601F00FF888 /* LevelCatalog.swift */,
+				3AC3CC19E3259ECF63C94C62 /* LevelGenerator.swift */,
+				009E445A8B0F41A053ED52D2 /* Progress.swift */,
+				4EEF4BA7D72E8D9B8302C8E1 /* Solver.swift */,
+				C2E271C642528F076563B9DD /* Tile.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		4DE8F403810DB8FEA1838992 = {
+			isa = PBXGroup;
+			children = (
+				EF1611F6B0C5712E5A78884D /* App */,
+				0051C4B6CFB9E0F71BD4054F /* Core */,
+				8C6536BD0712FBC2C72F3F37 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8C6536BD0712FBC2C72F3F37 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F3C324CAB5AB736E23FA0437 /* CableChaos.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EF1611F6B0C5712E5A78884D /* App */ = {
+			isa = PBXGroup;
+			children = (
+				8BE86AB3B37DEE0C85D8128C /* Assets.xcassets */,
+				EFE6A37E0FFEA91A12BF48C7 /* CableChaosApp.swift */,
+				E33F2C5EE2C7CBABF1B3FEEC /* GameStore.swift */,
+				E3CC2D64AAF9AFB0C3C5B2C8 /* GameView.swift */,
+				8D7DB674DE1E00355D168D91 /* LevelSelectView.swift */,
+				E86688BCA491380C0B16D8B8 /* PCBBackground.swift */,
+				C2662EAAE24BF9C51ECA7578 /* Synth.swift */,
+				3F64AD31CAF89AD24504D821 /* TileView.swift */,
+				28DFFA119AD6B25D6615DF12 /* TitleView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5373C30B6533F716410A67DD /* CableChaos */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 27C5BB44F733075DD87B6220 /* Build configuration list for PBXNativeTarget "CableChaos" */;
+			buildPhases = (
+				C075D9E4C174AE1B9246115B /* Sources */,
+				292C1D6BDB5CB60C57621B51 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CableChaos;
+			packageProductDependencies = (
+			);
+			productName = CableChaos;
+			productReference = F3C324CAB5AB736E23FA0437 /* CableChaos.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C32044E8C5AF6A61C82AE5F3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 89EB2C4D0CBD3ED2B45C45B1 /* Build configuration list for PBXProject "CableChaos" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 4DE8F403810DB8FEA1838992;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8C6536BD0712FBC2C72F3F37 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5373C30B6533F716410A67DD /* CableChaos */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		292C1D6BDB5CB60C57621B51 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4CB4F950FAE57EE7C001AF77 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C075D9E4C174AE1B9246115B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5007A8C1D710F43332A45E4A /* Board.swift in Sources */,
+				7CD2CAFFBD5F157AC38E5E4E /* CableChaosApp.swift in Sources */,
+				03395B28F34F6E71D7A40C3F /* GameStore.swift in Sources */,
+				1951D8DFD25BC1F328159030 /* GameView.swift in Sources */,
+				11A8A9C670CE04D7CF0F8549 /* Geometry.swift in Sources */,
+				B27CA595CE90917A64067A29 /* LevelCatalog.swift in Sources */,
+				50F37DC8ACF660314615BC14 /* LevelGenerator.swift in Sources */,
+				D92D02586B554C3CC4EFF62D /* LevelSelectView.swift in Sources */,
+				F4A429AD316B946ED351E0F3 /* PCBBackground.swift in Sources */,
+				55E981B66495050928B87821 /* Progress.swift in Sources */,
+				BD453D75059E4261D07FB675 /* Solver.swift in Sources */,
+				A10CD8FE4EDCBD0397D13476 /* Synth.swift in Sources */,
+				F2E5D15FC72320ED6ACAAD27 /* Tile.swift in Sources */,
+				7DE95B11F1C4314F804A8CF0 /* TileView.swift in Sources */,
+				E904A27BA310CB19505FF7B8 /* TitleView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		00EB34D6E29AC10C0976625E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		4A6B54B6C38B1C9AF9519468 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B834171CC659D8B8C69D1B95 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Cable Chaos";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = studio.cablechaos.game;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C0511BD79F9F4FF5265869BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Cable Chaos";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = studio.cablechaos.game;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		27C5BB44F733075DD87B6220 /* Build configuration list for PBXNativeTarget "CableChaos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B834171CC659D8B8C69D1B95 /* Debug */,
+				C0511BD79F9F4FF5265869BA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		89EB2C4D0CBD3ED2B45C45B1 /* Build configuration list for PBXProject "CableChaos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4A6B54B6C38B1C9AF9519468 /* Debug */,
+				00EB34D6E29AC10C0976625E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C32044E8C5AF6A61C82AE5F3 /* Project object */;
+}
