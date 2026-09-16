@@ -416,6 +416,12 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
                 pipes.remove(at: i)
             }
 
+            // Ceiling clamp
+            if otter.position.y > size.height - 30 {
+                otter.position.y = size.height - 30
+                otter.physicsBody?.velocity.dy = min(otter.physicsBody?.velocity.dy ?? 0, 0)
+            }
+
             // Tilt otter with velocity
             if let vy = otter.physicsBody?.velocity.dy {
                 let target: CGFloat = vy > 0 ? 0.35 : max(-1.4, vy / 600)
