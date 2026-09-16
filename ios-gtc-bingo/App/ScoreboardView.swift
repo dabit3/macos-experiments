@@ -19,35 +19,52 @@ struct ScoreboardView: View {
             .foregroundStyle(Theme.muted)
           VStack(spacing: 8) {
             ForEach(Array(store.state.leaderboard.enumerated()), id: \.element.id) { rank, player in
-              Button {
-                store.selectPlayer(player.id)
-              } label: {
-                HStack {
-                  Text(String(format: "%02d", rank + 1)).font(.monoStat(13)).foregroundStyle(
-                    Theme.green)
-                  VStack(alignment: .leading) {
-                    Text(player.name.uppercased()).font(.system(size: 15, weight: .black))
-                    Text(player.id == store.currentPlayer.id ? "CURRENT PLAYER" : "READY")
-                      .font(.system(size: 9, weight: .bold, design: .monospaced))
+              HStack(spacing: 10) {
+                Button {
+                  store.selectPlayer(player.id)
+                } label: {
+                  HStack {
+                    Text(String(format: "%02d", rank + 1)).font(.monoStat(13)).foregroundStyle(
+                      Theme.green)
+                    VStack(alignment: .leading) {
+                      Text(player.name.uppercased()).font(.system(size: 15, weight: .black))
+                      Text(player.id == store.currentPlayer.id ? "CURRENT PLAYER" : "READY")
+                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                        .foregroundStyle(Theme.muted)
+                    }
+                    Spacer()
+                    Text("\(player.wins)").font(
+                      .system(size: 25, weight: .black, design: .monospaced)
+                    ).foregroundStyle(Theme.green)
+                    Text("WINS").font(.system(size: 9, weight: .bold, design: .monospaced))
                       .foregroundStyle(Theme.muted)
                   }
-                  Spacer()
-                  Text("\(player.wins)").font(
-                    .system(size: 25, weight: .black, design: .monospaced)
-                  ).foregroundStyle(Theme.green)
-                  Text("WINS").font(.system(size: 9, weight: .bold, design: .monospaced))
-                    .foregroundStyle(Theme.muted)
+                  .contentShape(Rectangle())
                 }
-                .padding(14)
-                .background(
-                  player.id == store.currentPlayer.id ? Theme.green.opacity(0.14) : Theme.panel
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 9))
+                .buttonStyle(.plain)
+                if store.state.players.count > 1 {
+                  Button(role: .destructive) {
+                    store.removePlayer(id: player.id)
+                  } label: {
+                    Image(systemName: "xmark.circle.fill")
+                      .foregroundStyle(Theme.muted)
+                  }
+                  .buttonStyle(.plain)
+                  .accessibilityLabel("Remove \(player.name)")
+                }
               }
-              .buttonStyle(.plain)
-            }
-            .onDelete { offsets in
-              offsets.map { store.state.leaderboard[$0].id }.forEach(store.removePlayer)
+              .padding(14)
+              .background(
+                player.id == store.currentPlayer.id ? Theme.green.opacity(0.14) : Theme.panel
+              )
+              .clipShape(RoundedRectangle(cornerRadius: 9))
+              .contextMenu {
+                if store.state.players.count > 1 {
+                  Button("Remove", role: .destructive) {
+                    store.removePlayer(id: player.id)
+                  }
+                }
+              }
             }
           }
           HStack {

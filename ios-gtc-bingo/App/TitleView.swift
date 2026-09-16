@@ -52,13 +52,21 @@ struct TitleView: View {
                 "SOUND",
                 systemImage: store.soundEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
               Spacer()
-              Toggle("", isOn: $store.soundEnabled).labelsHidden().tint(Theme.green)
+              Toggle("", isOn: $store.soundEnabled)
+                .labelsHidden()
+                .allowsHitTesting(false)
             }
+            .contentShape(Rectangle())
+            .onTapGesture { store.soundEnabled.toggle() }
             HStack {
               Label("HAPTICS", systemImage: "waveform")
               Spacer()
-              Toggle("", isOn: $store.hapticsEnabled).labelsHidden().tint(Theme.green)
+              Toggle("", isOn: $store.hapticsEnabled)
+                .labelsHidden()
+                .allowsHitTesting(false)
             }
+            .contentShape(Rectangle())
+            .onTapGesture { store.hapticsEnabled.toggle() }
             .font(.system(size: 13, weight: .bold, design: .monospaced))
             .foregroundStyle(Theme.muted)
             .padding(.horizontal, 4)

@@ -38,13 +38,14 @@ final class GameStore: ObservableObject {
     let before = state.current.card
     let oneAway = before.wouldCompleteLine(byMarking: index)
     state.current.card.toggle(index)
-    let bingo = !before.hasBingo && state.current.card.hasBingo
+    let bingo =
+      !before.hasBingo && state.current.card.hasBingo && !state.current.card.bingoAwarded
     if bingo { state.markBingo(for: state.current.id) }
     save()
     if soundEnabled {
       if bingo {
         SoundEngine.shared.playFanfare()
-      } else if oneAway {
+      } else if oneAway && !before.bingoAwarded {
         SoundEngine.shared.playOneAway()
       } else {
         SoundEngine.shared.playTick(marked: state.current.card.marked.contains(index))

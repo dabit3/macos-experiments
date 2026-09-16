@@ -3,6 +3,7 @@ import UIKit
 
 struct BoardView: View {
   @EnvironmentObject private var store: GameStore
+  @Environment(\.dismiss) private var dismiss
   @State private var showBingo = false
   @State private var flipAngle: Double = 0
   @State private var tileBounce: Set<Int> = []
@@ -33,6 +34,17 @@ struct BoardView: View {
 
   private var header: some View {
     HStack(spacing: 8) {
+      Button {
+        dismiss()
+      } label: {
+        Image(systemName: "chevron.left")
+          .font(.system(size: 14, weight: .black))
+          .foregroundStyle(Theme.green)
+          .frame(width: 32, height: 32)
+          .background(Theme.charcoal)
+          .clipShape(Circle())
+      }
+      .buttonStyle(.plain)
       VStack(alignment: .leading, spacing: 2) {
         Text(store.currentPlayer.name.uppercased())
           .font(.system(size: 14, weight: .black))
@@ -183,7 +195,10 @@ struct BoardView: View {
       else { return }
       let presenter = topViewController(from: root)
       presenter.present(
-        UIActivityViewController(activityItems: [image], applicationActivities: nil),
+        UIActivityViewController(
+          activityItems: [ShareCardItem(image: image, playerName: store.currentPlayer.name)],
+          applicationActivities: nil
+        ),
         animated: true
       )
     }

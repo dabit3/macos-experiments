@@ -71,6 +71,53 @@ final class GTCBingoTests: XCTestCase {
     XCTAssertEqual(state.current.name, "Player 1")
   }
 
+  func testRemovingCurrentPlayerClampsIndexAndPreservesLastPlayer() {
+    var state = GameState()
+    _ = state.addPlayer(name: "Player 2")
+    _ = state.addPlayer(name: "Player 3")
+    state.currentIndex = 2
+    let currentID = state.current.id
+    state.removePlayer(id: currentID)
+    XCTAssertEqual(state.players.count, 2)
+    XCTAssertEqual(state.currentIndex, 1)
+    XCTAssertEqual(state.current.name, "Player 2")
+
+    let remainingID = state.players[1].id
+    state.removePlayer(id: remainingID)
+    XCTAssertEqual(state.players.count, 1)
+    XCTAssertEqual(state.currentIndex, 0)
+    let onlyPlayerID = state.current.id
+    state.removePlayer(id: onlyPlayerID)
+    XCTAssertEqual(state.players.count, 1)
+    XCTAssertEqual(state.current.id, onlyPlayerID)
+  }
+
+  func testRecompletedBingoDoesNotAwardAgain() {
+    var state = GameState()
+    let line = BingoCard.lines[0]
+    for index in line.dropLast() where index != 12 {
+      state.current.card.toggle(index)
+    }
+    let finalIndex = line.last!
+    let before = state.current.card
+    state.current.card.toggle(finalIndex)
+    let firstBingo =
+      !before.hasBingo && state.current.card.hasBingo && !state.current.card.bingoAwarded
+    if firstBingo { state.markBingo(for: state.current.id) }
+    XCTAssertTrue(firstBingo)
+    XCTAssertEqual(state.current.wins, 1)
+    XCTAssertTrue(state.current.card.bingoAwarded)
+
+    state.current.card.toggle(finalIndex)
+    let beforeRepeat = state.current.card
+    state.current.card.toggle(finalIndex)
+    let repeatBingo =
+      !beforeRepeat.hasBingo && state.current.card.hasBingo && !state.current.card.bingoAwarded
+    if repeatBingo { state.markBingo(for: state.current.id) }
+    XCTAssertFalse(repeatBingo)
+    XCTAssertEqual(state.current.wins, 1)
+  }
+
   func testNewRoundFreshCardsAndRoundIncrement() {
     var state = GameState()
     _ = state.addPlayer(name: "Player 2")
