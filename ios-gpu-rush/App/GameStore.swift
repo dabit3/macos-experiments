@@ -149,7 +149,7 @@ final class GameStore: ObservableObject {
       record, score: score, distance: distance, on: Date(), calendar: .current)
     newBest = score > previous.bestScore
     UserDefaults.standard.set(try? JSONEncoder().encode(record), forKey: "gpurush.record")
-    Task { [weak self] in
+    Task { @MainActor [weak self] in
       try? await Task.sleep(nanoseconds: 1_200_000_000)
       guard !Task.isCancelled else { return }
       self?.screen = .gameOver
@@ -159,7 +159,7 @@ final class GameStore: ObservableObject {
   private func showBanner(_ text: String) {
     banner = text
     bannerTask?.cancel()
-    bannerTask = Task { [weak self] in
+    bannerTask = Task { @MainActor [weak self] in
       try? await Task.sleep(nanoseconds: 2_200_000_000)
       guard !Task.isCancelled else { return }
       self?.banner = nil

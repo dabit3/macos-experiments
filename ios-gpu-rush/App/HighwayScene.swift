@@ -480,20 +480,35 @@ final class HighwayScene: SKScene {
     touchStart = touches.first?.location(in: self)
   }
 
+  override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+    guard let start = touchStart, let current = touches.first?.location(in: self)
+    else { return }
+    let dx = current.x - start.x
+    let dy = current.y - start.y
+    if abs(dx) > 34, abs(dx) > abs(dy) {
+      store?.input(dx > 0 ? .right : .left)
+      touchStart = nil
+    } else if abs(dy) > 34, abs(dy) >= abs(dx) {
+      store?.input(dy > 0 ? .jump : .slide)
+      touchStart = nil
+    }
+  }
+
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    guard let start = touchStart, let end = touches.first?.location(in: self) else { return }
+    guard let start = touchStart, let end = touches.first?.location(in: self) else {
+      touchStart = nil
+      return
+    }
     touchStart = nil
     let dx = end.x - start.x
     let dy = end.y - start.y
-    if abs(dx) > 34, abs(dx) > abs(dy) {
-      store?.input(dx > 0 ? .right : .left)
-    } else if dy > 34 {
-      store?.input(.jump)
-    } else if dy < -34 {
-      store?.input(.slide)
-    } else if abs(dx) < 16, abs(dy) < 16 {
+    if abs(dx) < 16, abs(dy) < 16 {
       store?.input(.jump)
     }
+  }
+
+  override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+    touchStart = nil
   }
 
   // MARK: - Procedural textures
