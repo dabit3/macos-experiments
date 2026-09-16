@@ -10,10 +10,17 @@ services, third-party dependencies, bundled audio, or bundled artwork.
 ## Play
 
 Tap the glowing die to ship GPUs and earn cash. Buy fabs to automate production,
-then invest in upgrades, researchers, and process nodes. Ship one million GPUs
-to trigger **THE AI WAVE**, which multiplies demand by ten. The Market tab tracks
-FABT and offers **New Architecture** prestige runs: reset your floor for lasting
-architecture points and a stronger production multiplier.
+then invest in upgrades, researchers, and process nodes. Batch-buy production
+with x10 or MAX while geometric fab costs climb. The HUD ticker shows FABT's
+live price, movement, sparkline, and market cap while your fabs run.
+
+Research smaller process nodes from 28nm to Even Smaller™, then ship one million
+GPUs to trigger **THE AI WAVE**, which multiplies demand by ten. The Market tab
+tracks FABT and offers **New Architecture** prestige runs: reset your floor for
+lasting architecture points and a stronger production multiplier. Leave the app
+for at least ten seconds and offline earnings return at 50% efficiency, capped
+at eight hours. Awards celebrate taps, shipments, buildings, research, market
+cap, the AI wave, and prestige.
 
 ## Build and run
 
@@ -41,9 +48,10 @@ swift test
 xcrun swift-format lint --strict --recursive App Core Tests Scripts Package.swift
 ```
 
-The core tests cover formatting, compounding costs, tapping, production,
-research nodes, the AI wave, prestige resets, offline earnings, achievements,
-stock history bounds, deterministic market noise, and Codable saves.
+The core tests cover formatting, compounding and batch costs, tapping,
+production, upgrade effects, researchers, research nodes, the AI wave, prestige
+resets and persistence, offline earnings and caps, achievements, stock history
+bounds, deterministic market noise, and Codable saves.
 
 ## Screenshots
 
@@ -54,3 +62,7 @@ stock history bounds, deterministic market noise, and Codable saves.
 ![Research](Screenshots/03-research.png)
 
 ![Market](Screenshots/04-market.png)
+
+![Achievement toast](Screenshots/05-achievement-toast.png)
+
+![Upgrades](Screenshots/06-upgrades.png)

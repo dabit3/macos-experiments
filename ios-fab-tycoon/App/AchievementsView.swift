@@ -32,15 +32,16 @@ struct ToastView: View {
       ForEach(store.toasts) { toast in
         VStack(alignment: .leading, spacing: 3) {
           Text(toast.title).font(.system(size: 10, weight: .black, design: .monospaced))
-            .foregroundStyle(Theme.green)
+            .foregroundStyle(toast.dramatic ? .black : Theme.green)
           Text(toast.detail).font(.headline)
         }.padding(13).frame(maxWidth: .infinity, alignment: .leading).background(
-          Theme.panel2, in: RoundedRectangle(cornerRadius: 12)
+          toast.dramatic ? Theme.green : Theme.panel2,
+          in: RoundedRectangle(cornerRadius: toast.dramatic ? 0 : 12)
         ).overlay(
           RoundedRectangle(cornerRadius: 12).stroke(Theme.green, lineWidth: toast.dramatic ? 2 : 1)
         ).neonGlow(toast.dramatic ? 12 : 4)
       }
       Spacer()
-    }.padding(.horizontal, 14).padding(.top, 8).animation(.spring(), value: store.toasts.map(\.id))
+    }.padding(.horizontal, 0).padding(.top, 8).animation(.spring(), value: store.toasts.map(\.id))
   }
 }

@@ -36,7 +36,12 @@ struct RootView: View {
       CircuitBackground()
       if store.screen == .title { TitleView(store: store) } else { GameView(store: store) }
       ToastView(store: store)
+      if store.flash {
+        Theme.green.opacity(0.35).ignoresSafeArea().allowsHitTesting(false)
+          .transition(.opacity).animation(.easeOut(duration: 0.6), value: store.flash)
+      }
     }
+    .tint(Theme.green)
     .sheet(isPresented: $store.showingSettings) { SettingsView(store: store) }
     .sheet(
       item: Binding(

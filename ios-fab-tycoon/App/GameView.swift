@@ -57,6 +57,7 @@ struct HUDView: View {
         Spacer()
         Text("RP \(NumberFormat.format(engine.state.researchPoints))").foregroundStyle(Theme.green)
       }.font(.system(size: 10, weight: .bold, design: .monospaced)).foregroundStyle(Theme.muted)
+      TickerView(engine: engine)
     }
     .padding(.horizontal, 16).padding(.top, 9).padding(.bottom, 10)
     .background(.ultraThinMaterial)
@@ -71,10 +72,17 @@ struct TapZone: View {
       Circle().fill(Theme.green.opacity(0.08)).frame(width: 240, height: 240).blur(radius: 18)
       DieArt(size: 184).scaleEffect(pressed ? 0.92 : 1).animation(
         .spring(response: 0.22, dampingFraction: 0.45), value: pressed)
-      ForEach(store.floatingNumbers) { item in
-        Text(item.value).font(.system(size: 15, weight: .black, design: .monospaced))
-          .foregroundStyle(Theme.lime).offset(x: item.x, y: item.y - 78)
-          .transition(.opacity.combined(with: .move(edge: .bottom)))
+      TimelineView(.animation(minimumInterval: 1 / 30)) { context in
+        ForEach(store.floatingNumbers) { item in
+          let age = min(1, max(0, context.date.timeIntervalSince(item.birth)))
+          let progress = age / 0.9
+          Text(item.value).font(.system(size: 15, weight: .black, design: .monospaced))
+            .foregroundStyle(Theme.lime).offset(
+              x: item.x,
+              y: item.y - 78 - 90 * min(1, progress)
+            ).opacity(max(0, 1 - progress)).rotationEffect(.degrees(item.rotation))
+            .transition(.opacity.combined(with: .move(edge: .bottom)))
+        }
       }
     }
     .frame(maxWidth: .infinity).frame(height: 230)
@@ -147,7 +155,8 @@ struct FabsView: View {
         Picker("Buy quantity", selection: $quantity) {
           Text("x1").tag(1)
           Text("x10").tag(10)
-        }.pickerStyle(.segmented).frame(width: 115)
+          Text("MAX").tag(100)
+        }.pickerStyle(.segmented).frame(width: 175)
       }
       ForEach(BuildingKind.allCases, id: \.self) { kind in
         BuildingRow(store: store, kind: kind, quantity: quantity)
@@ -160,7 +169,12 @@ struct BuildingRow: View {
   @ObservedObject var store: GameStore
   let kind: BuildingKind
   let quantity: Int
-  var cost: Double { store.engine.cost(of: kind) * (quantity == 10 ? 10 : 1) }
+  var purchaseCount: Int {
+    guard quantity > 1 else { return 1 }
+    return max(1, min(quantity, store.engine.affordableCount(of: kind)))
+  }
+  var cost: Double { store.engine.cost(of: kind, count: purchaseCount) }
+  var canPurchase: Bool { store.engine.affordableCount(of: kind) >= 1 }
   var body: some View {
     Panel {
       HStack(spacing: 12) {
@@ -177,19 +191,15 @@ struct BuildingRow: View {
           Text("×\(store.engine.state.buildings[kind] ?? 0)").font(
             .system(size: 19, weight: .black, design: .monospaced))
           Button {
-            if quantity == 1 {
-              store.buy(kind)
-            } else {
-              for _ in 0..<10 { if !store.engine.buy(kind) { break } }
-            }
+            store.buy(kind, quantity: quantity)
           } label: {
-            Text(NumberFormat.formatCash(cost)).font(
+            Text((quantity == 100 ? "MAX · " : "") + NumberFormat.formatCash(cost)).font(
               .system(size: 11, weight: .bold, design: .monospaced)
             ).padding(.horizontal, 10).padding(.vertical, 7).background(
-              store.engine.canBuy(kind) ? Theme.green : Theme.panel2, in: Capsule()
-            ).foregroundStyle(store.engine.canBuy(kind) ? .black : Theme.muted)
+              canPurchase ? Theme.green : Theme.panel2, in: Capsule()
+            ).foregroundStyle(canPurchase ? .black : Theme.muted)
           }
-          .disabled(!store.engine.canBuy(kind))
+          .disabled(!canPurchase)
         }
       }
     }

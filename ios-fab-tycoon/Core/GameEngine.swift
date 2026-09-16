@@ -88,6 +88,23 @@ public struct GameEngine {
   public func cost(of kind: BuildingKind) -> Double {
     kind.baseCost * pow(1.15, Double(state.buildings[kind] ?? 0))
   }
+  public func cost(of kind: BuildingKind, count: Int) -> Double {
+    guard count > 0 else { return 0 }
+    let firstCost = cost(of: kind)
+    return firstCost * (pow(1.15, Double(count)) - 1) / 0.15
+  }
+  public func affordableCount(of kind: BuildingKind, maxCount: Int = 100) -> Int {
+    guard maxCount > 0 else { return 0 }
+    var count = 0
+    var remaining = state.cash
+    while count < maxCount {
+      let nextCost = kind.baseCost * pow(1.15, Double((state.buildings[kind] ?? 0) + count))
+      guard remaining >= nextCost else { break }
+      remaining -= nextCost
+      count += 1
+    }
+    return count
+  }
   public func canBuy(_ kind: BuildingKind) -> Bool { state.cash >= cost(of: kind) }
   @discardableResult public mutating func buy(_ kind: BuildingKind) -> Bool {
     let cost = cost(of: kind)

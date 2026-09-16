@@ -1,9 +1,14 @@
 import Charts
+import Foundation
 import SwiftUI
 
 struct TickerView: View {
   let engine: GameEngine
   var expanded = false
+  private var change: Double {
+    guard let previous = engine.state.stockHistory.dropLast().last, previous > 0 else { return 0 }
+    return (engine.stockPrice - previous) / previous * 100
+  }
   var body: some View {
     VStack(alignment: .leading, spacing: 5) {
       HStack(alignment: .firstTextBaseline) {
@@ -11,20 +16,22 @@ struct TickerView: View {
           Theme.green)
         Text(NumberFormat.formatCash(engine.stockPrice)).font(
           .system(size: expanded ? 25 : 16, weight: .black, design: .monospaced))
-        Text("▲ 2.4%").font(.system(size: 10, weight: .bold, design: .monospaced)).foregroundStyle(
-          Theme.lime)
+        Text("\(change >= 0 ? "▲" : "▼") \(String(format: "%.1f", abs(change)))%").font(
+          .system(size: 10, weight: .bold, design: .monospaced)
+        ).foregroundStyle(change >= 0 ? Theme.lime : .red)
         Spacer()
-        Text(NumberFormat.formatCash(engine.marketCap) + " CAP").font(
+        Text("MKT CAP " + NumberFormat.formatCash(engine.marketCap)).font(
           .system(size: 10, weight: .bold, design: .monospaced)
         ).foregroundStyle(Theme.muted)
       }
-      Chart(Array(engine.state.stockHistory.enumerated()), id: \.offset) { index, value in
+      Chart(Array(engine.state.stockHistory.suffix(60).enumerated()), id: \.offset) {
+        index, value in
         AreaMark(x: .value("Tick", index), y: .value("Price", value)).foregroundStyle(
           LinearGradient(
             colors: [Theme.green.opacity(0.36), .clear], startPoint: .top, endPoint: .bottom))
         LineMark(x: .value("Tick", index), y: .value("Price", value)).foregroundStyle(Theme.lime)
           .lineStyle(StrokeStyle(lineWidth: 2))
-      }.chartXAxis(.hidden).chartYAxis(.hidden).frame(height: expanded ? 220 : 70)
+      }.chartXAxis(.hidden).chartYAxis(.hidden).frame(height: expanded ? 220 : 26)
     }
   }
 }
