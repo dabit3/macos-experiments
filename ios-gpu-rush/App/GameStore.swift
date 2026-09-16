@@ -45,7 +45,8 @@ final class GameStore: ObservableObject {
   }
 
   func startRun() {
-    sim = RunSimulation(seed: UInt64.random(in: 1...UInt64.max))
+    let fixedSeed = UInt64(UserDefaults.standard.string(forKey: "GPURushSeed") ?? "") ?? 0
+    sim = RunSimulation(seed: fixedSeed == 0 ? UInt64.random(in: 1...UInt64.max) : fixedSeed)
     sim.start()
     lastCrash = nil
     crashLine = ""
