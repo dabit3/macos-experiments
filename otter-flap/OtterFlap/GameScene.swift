@@ -26,6 +26,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     private var lastUpdate: TimeInterval = 0
     private var timeSincePipe: TimeInterval = 0
     private var gameOverTime: TimeInterval = 0
+    private var topInset: CGFloat = 0
 
     private let worldNode = SKNode()      // pipes + clouds, scrolled world
     private var pipes: [SKNode] = []
@@ -50,6 +51,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     override func didMove(to view: SKView) {
+        topInset = view.safeAreaInsets.top
         physicsWorld.gravity = CGVector(dx: 0, dy: -11.8)
         physicsWorld.contactDelegate = self
         best = UserDefaults.standard.integer(forKey: "otterflap.best")
@@ -166,7 +168,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     private func buildUI() {
         scoreLabel.fontName = roundedFont(44)
         scoreLabel.fontColor = .white
-        scoreLabel.position = CGPoint(x: size.width / 2, y: size.height - 120)
+        scoreLabel.position = CGPoint(x: size.width / 2, y: size.height - topInset - 40)
         scoreLabel.zPosition = 20
         scoreLabel.text = "0"
         scoreLabel.verticalAlignmentMode = .top
@@ -417,8 +419,9 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
             }
 
             // Ceiling clamp
-            if otter.position.y > size.height - 30 {
-                otter.position.y = size.height - 30
+            let ceiling = size.height - topInset - 30
+            if otter.position.y > ceiling {
+                otter.position.y = ceiling
                 otter.physicsBody?.velocity.dy = min(otter.physicsBody?.velocity.dy ?? 0, 0)
             }
 
