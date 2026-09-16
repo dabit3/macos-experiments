@@ -63,6 +63,4 @@ bounds, deterministic market noise, and Codable saves.
 
 ![Market](Screenshots/04-market.png)
 
-![Achievement toast](Screenshots/05-achievement-toast.png)
-
 ![Upgrades](Screenshots/06-upgrades.png)
