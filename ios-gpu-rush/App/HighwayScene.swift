@@ -144,7 +144,14 @@ final class HighwayScene: SKScene {
     player.addChild(card)
     player.position = CGPoint(x: laneXs[1], y: playerY)
     player.zPosition = 10
+    player.alpha = 0
     world.addChild(player)
+  }
+
+  private func setPlayerHidden(_ hidden: Bool) {
+    let target: CGFloat = hidden ? 0 : 1
+    guard player.action(forKey: "fade") == nil, player.alpha != target else { return }
+    player.run(.fadeAlpha(to: target, duration: 0.2), withKey: "fade")
   }
 
   private func buildEmitters() {
@@ -202,8 +209,10 @@ final class HighwayScene: SKScene {
     card.yScale = 1
     card.zRotation = 0
     card.alpha = 1
+    player.alpha = 0
     player.position = CGPoint(x: laneXs[1], y: playerY)
     world.position = .zero
+    setPlayerHidden(false)
   }
 
   // MARK: - Frame loop
@@ -225,10 +234,12 @@ final class HighwayScene: SKScene {
       syncEntities(runDistance: store.sim.state.runDistance)
       scrollSpeed = store.sim.state.phase == .running ? store.sim.state.speed : 0
       syncPlayer(state: store.sim.state)
+      setPlayerHidden(false)
     } else {
       idleDistance += dt * scrollSpeed
-      syncEntities(runDistance: idleDistance)
+      syncEntities(runDistance: store?.sim.state.runDistance ?? 0)
       if let store { syncPlayer(state: store.sim.state) }
+      setPlayerHidden(true)
     }
     scrollBoard(by: scrollSpeed, dt: dt)
     updateSpeedLines(dt: dt)

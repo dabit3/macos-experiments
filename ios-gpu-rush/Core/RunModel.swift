@@ -160,12 +160,13 @@ public struct RunSimulation {
       config.maxBaseSpeed, config.baseSpeed + config.accelPerSecond * state.elapsed)
     state.speed =
       state.baseSpeed * (state.dlssActive ? config.dlssMultiplier : 1)
+    let previousDistance = state.runDistance
     state.runDistance += state.speed * dt
     while state.runDistance + 120 >= state.nextSpawnDistance {
       spawnRow(at: state.nextSpawnDistance)
       state.nextSpawnDistance += max(11, config.spawnGap - state.runDistance * 0.002)
     }
-    checkCollisions(&events)
+    checkCollisions(&events, from: previousDistance)
     state.entities.removeAll { $0.distance < state.runDistance - 10 }
     while state.runDistance >= state.nextMilestone {
       events.append(.milestone(Int(state.nextMilestone)))
@@ -174,11 +175,12 @@ public struct RunSimulation {
     return events
   }
 
-  private mutating func checkCollisions(_ events: inout [RunEvent]) {
+  private mutating func checkCollisions(_ events: inout [RunEvent], from previousDistance: Double) {
     var consumed: Set<Int> = []
     for entity in state.entities {
       guard entity.lane == state.lane,
-        abs(entity.distance - state.runDistance) < config.hitWindow
+        entity.distance >= previousDistance - config.hitWindow,
+        entity.distance <= state.runDistance + config.hitWindow
       else { continue }
       switch entity.kind {
       case .pickup(.cudaCoin):

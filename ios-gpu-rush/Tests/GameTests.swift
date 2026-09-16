@@ -192,6 +192,41 @@ final class GameTests: XCTestCase {
     XCTAssertEqual(first.state, second.state)
   }
 
+  func testSweptCollisionAtDlssSpeed() {
+    var config = RunConfig()
+    config.baseSpeed = 30
+    config.maxBaseSpeed = 30
+    var sim = RunSimulation(config: config, seed: 5)
+    sim.start()
+    sim.advance(by: 0.05)
+    sim.insertEntity(
+      Entity(id: 910, lane: .center, distance: sim.state.runDistance + 0.3, kind: .pickup(.dlssOrb))
+    )
+    sim.advance(by: 0.05)
+    sim.advance(by: 0.05)
+    XCTAssertGreaterThan(sim.state.speed * 0.05, 2 * sim.config.hitWindow)
+    sim.insertEntity(
+      Entity(
+        id: 911, lane: .center, distance: sim.state.runDistance + 2, kind: .obstacle(.heatWave)))
+    let events = sim.advance(by: 0.05)
+    XCTAssertTrue(events.contains(.crashed(.heatWave)))
+    XCTAssertEqual(sim.state.phase, .crashed)
+
+    var sim2 = RunSimulation(config: config, seed: 5)
+    sim2.start()
+    sim2.advance(by: 0.05)
+    sim2.insertEntity(
+      Entity(
+        id: 912, lane: .center, distance: sim2.state.runDistance + 0.3, kind: .pickup(.dlssOrb)))
+    sim2.advance(by: 0.05)
+    sim2.advance(by: 0.05)
+    sim2.insertEntity(
+      Entity(id: 913, lane: .center, distance: sim2.state.runDistance + 2, kind: .pickup(.cudaCoin))
+    )
+    let coinEvents = sim2.advance(by: 0.05)
+    XCTAssertTrue(coinEvents.contains(.coin(total: 1)))
+  }
+
   func testStreakTracker() {
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = TimeZone(identifier: "UTC")!
