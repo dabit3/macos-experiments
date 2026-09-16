@@ -1,0 +1,48 @@
+name: CudaBlocks
+options:
+  bundleIdPrefix: studio.cudablocks
+  deploymentTarget:
+    iOS: "17.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    TARGETED_DEVICE_FAMILY: "1"
+    CODE_SIGNING_ALLOWED: NO
+targets:
+  CudaBlocksCore:
+    type: framework
+    platform: iOS
+    sources:
+      - Core
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: studio.cudablocks.core
+        GENERATE_INFOPLIST_FILE: YES
+        SKIP_INSTALL: YES
+  CudaBlocks:
+    type: application
+    platform: iOS
+    sources:
+      - App
+    dependencies:
+      - target: CudaBlocksCore
+        embed: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: studio.cudablocks.game
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_UIStatusBarHidden: YES
+        INFOPLIST_KEY_CFBundleDisplayName: CUDA Blocks
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+schemes:
+  CudaBlocks:
+    build:
+      targets:
+        CudaBlocks: all
+    run:
+      config: Debug
