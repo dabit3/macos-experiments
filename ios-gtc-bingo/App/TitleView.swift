@@ -79,17 +79,42 @@ struct TitleView: View {
 private struct DieShot: View {
   var body: some View {
     TimelineView(.animation(minimumInterval: 0.08)) { timeline in
-      let phase = Int(timeline.date.timeIntervalSinceReferenceDate * 8)
-      HStack(spacing: 7) {
-        ForEach(0..<25, id: \.self) { index in
-          RoundedRectangle(cornerRadius: 2)
-            .fill((index + phase) % 9 == 0 ? Theme.green : Theme.panel)
-            .frame(width: 14, height: 14)
-            .shadow(color: Theme.green.opacity((index + phase) % 9 == 0 ? 0.7 : 0), radius: 6)
+      Canvas { context, size in
+        let columns = 16
+        let rows = 2
+        let gap = min(6.0, size.width / 100)
+        let square = min(14.0, (size.width - gap * CGFloat(columns - 1)) / CGFloat(columns))
+        let width = CGFloat(columns) * square + CGFloat(columns - 1) * gap
+        let height = CGFloat(rows) * square + gap
+        let originX = max(0, (size.width - width) / 2)
+        let originY = max(0, (size.height - height) / 2)
+        let phase = Int(timeline.date.timeIntervalSinceReferenceDate * 8)
+        for row in 0..<rows {
+          for column in 0..<columns {
+            let index = row * columns + column
+            let lit = (index + phase) % 11 == 0
+            let rect = CGRect(
+              x: originX + CGFloat(column) * (square + gap),
+              y: originY + CGFloat(row) * (square + gap),
+              width: square,
+              height: square
+            )
+            context.fill(
+              Path(roundedRect: rect, cornerRadius: 2),
+              with: .color(lit ? Theme.green : Theme.panel)
+            )
+            if lit {
+              context.fill(
+                Path(ellipseIn: rect.insetBy(dx: square * 0.2, dy: square * 0.2)),
+                with: .color(Theme.green.opacity(0.8))
+              )
+            }
+          }
         }
       }
-      .frame(maxWidth: .infinity)
     }
+    .frame(maxWidth: .infinity)
+    .clipped()
   }
 }
 

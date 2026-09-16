@@ -12,7 +12,6 @@
 		2409EA310C53ABF1A3FB6BCE /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A0BD201160638873C6A70 /* Theme.swift */; };
 		2568C426FE5980CF2E5E3BBF /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D68DB8EC73A2BB2E8C3FABD /* Haptics.swift */; };
 		41D4CCCB084FA82A0BC169BC /* ShareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3748A302F43D871AFA7BBC69 /* ShareCardView.swift */; };
-		434813F3078B8A39127AD903 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBD4C051276C1BD559E1CE9 /* ShareSheet.swift */; };
 		77405BB0CB4B63D931F5698C /* ScoreboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F71EEFD845BD64E0B700B9 /* ScoreboardView.swift */; };
 		89C488B237B8D099B384BA49 /* BingoDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4129151D2911FC5D9A0D21 /* BingoDeck.swift */; };
 		8F5C3476ED7A8A1CE60904CD /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1470120183D9F65EDAF3B1D3 /* ConfettiView.swift */; };
@@ -34,7 +33,6 @@
 		64CAE32445F0A6B836FFEB1E /* GTCBingoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GTCBingoApp.swift; sourceTree = "<group>"; };
 		6D68DB8EC73A2BB2E8C3FABD /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		83064055A4B387D701FE8DCB /* SoundEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngine.swift; sourceTree = "<group>"; };
-		8EBD4C051276C1BD559E1CE9 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		901FA46D3CEC45952996F064 /* TitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleView.swift; sourceTree = "<group>"; };
 		B74B0E357C13163F7B51FEEF /* Scoreboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scoreboard.swift; sourceTree = "<group>"; };
 		D3323AE08FC775F000F12E43 /* BingoCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BingoCard.swift; sourceTree = "<group>"; };
@@ -64,7 +62,6 @@
 				6D68DB8EC73A2BB2E8C3FABD /* Haptics.swift */,
 				E8F71EEFD845BD64E0B700B9 /* ScoreboardView.swift */,
 				3748A302F43D871AFA7BBC69 /* ShareCardView.swift */,
-				8EBD4C051276C1BD559E1CE9 /* ShareSheet.swift */,
 				83064055A4B387D701FE8DCB /* SoundEngine.swift */,
 				096A0BD201160638873C6A70 /* Theme.swift */,
 				901FA46D3CEC45952996F064 /* TitleView.swift */,
@@ -167,7 +164,6 @@
 				D1624186F72F44C712142DAE /* Scoreboard.swift in Sources */,
 				77405BB0CB4B63D931F5698C /* ScoreboardView.swift in Sources */,
 				41D4CCCB084FA82A0BC169BC /* ShareCardView.swift in Sources */,
-				434813F3078B8A39127AD903 /* ShareSheet.swift in Sources */,
 				C88A82DB4918D7211EE00AA7 /* SoundEngine.swift in Sources */,
 				2409EA310C53ABF1A3FB6BCE /* Theme.swift in Sources */,
 				D962522CAC3AA989E98CD6C4 /* TitleView.swift in Sources */,

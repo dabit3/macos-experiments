@@ -4,9 +4,7 @@ import UIKit
 struct BoardView: View {
   @EnvironmentObject private var store: GameStore
   @State private var showBingo = false
-  @State private var showShare = false
-  @State private var shareImage: UIImage?
-  @State private var boardFlip = false
+  @State private var flipAngle: Double = 0
   @State private var tileBounce: Set<Int> = []
 
   private let columns = Array(repeating: GridItem(.flexible(), spacing: 7), count: 5)
@@ -23,16 +21,14 @@ struct BoardView: View {
       .padding(.horizontal, 14)
       .padding(.top, 6)
       if showBingo {
+        Color.black.opacity(0.55)
+          .ignoresSafeArea()
+          .onTapGesture { showBingo = false }
         ConfettiView()
         bingoOverlay
       }
     }
     .toolbar(.hidden, for: .navigationBar)
-    .sheet(isPresented: $showShare) {
-      if let shareImage {
-        ShareSheet(items: [shareImage])
-      }
-    }
   }
 
   private var header: some View {
@@ -51,7 +47,11 @@ struct BoardView: View {
         .font(.monoStat(12))
         .foregroundStyle(.white)
       Menu {
-        Button("New Card", systemImage: "arrow.clockwise") { store.newCard() }
+        Button("New Card", systemImage: "arrow.clockwise") {
+          withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+            store.newCard()
+          }
+        }
         Button("Share", systemImage: "square.and.arrow.up") { share() }
         NavigationLink("Players", destination: ScoreboardView())
       } label: {
@@ -95,12 +95,24 @@ struct BoardView: View {
             withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) { showBingo = true }
           }
         }
-        .rotation3DEffect(
-          .degrees(boardFlip ? 0 : 0),
-          axis: (x: 0, y: 1, z: 0)
+        .transition(
+          .asymmetric(
+            insertion: .scale(scale: 0.6).combined(with: .opacity),
+            removal: .opacity
+          )
+        )
+        .animation(
+          .spring(response: 0.4, dampingFraction: 0.7).delay(Double(index) * 0.02),
+          value: store.currentPlayer.card.seed
         )
       }
     }
+    .id(store.currentPlayer.card.seed)
+    .rotation3DEffect(
+      .degrees(flipAngle),
+      axis: (x: 0, y: 1, z: 0),
+      perspective: 0.4
+    )
     .animation(.easeInOut(duration: 0.35), value: store.currentPlayer.card.marked)
   }
 
@@ -113,8 +125,10 @@ struct BoardView: View {
       .foregroundStyle(Theme.muted)
       if store.state.players.count > 1 {
         Button {
-          withAnimation(.easeInOut(duration: 0.35)) {
-            boardFlip.toggle()
+          withAnimation(.easeInOut(duration: 0.45)) {
+            flipAngle += 360
+          }
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
             store.passToNextPlayer()
           }
         } label: {
@@ -139,8 +153,10 @@ struct BoardView: View {
       Button("SHARE CARD") { share() }
         .buttonStyle(GlowButtonStyle(filled: true))
       Button("NEW CARD") {
-        store.newCard()
-        showBingo = false
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+          store.newCard()
+          showBingo = false
+        }
       }
       .buttonStyle(GlowButtonStyle())
     }
@@ -156,9 +172,37 @@ struct BoardView: View {
   private func share() {
     let renderer = ImageRenderer(content: ShareCardView(player: store.currentPlayer))
     renderer.scale = 3
-    shareImage = renderer.uiImage
-    showShare = shareImage != nil
+    guard let image = renderer.uiImage else { return }
+    DispatchQueue.main.async {
+      guard
+        let windowScene = UIApplication.shared.connectedScenes
+          .compactMap({ $0 as? UIWindowScene })
+          .first(where: { $0.activationState == .foregroundActive }),
+        let window = windowScene.windows.first(where: \.isKeyWindow),
+        let root = window.rootViewController
+      else { return }
+      let presenter = topViewController(from: root)
+      presenter.present(
+        UIActivityViewController(activityItems: [image], applicationActivities: nil),
+        animated: true
+      )
+    }
   }
+}
+
+private func topViewController(from root: UIViewController) -> UIViewController {
+  if let presented = root.presentedViewController {
+    return topViewController(from: presented)
+  }
+  if let navigation = root as? UINavigationController,
+    let visible = navigation.visibleViewController
+  {
+    return topViewController(from: visible)
+  }
+  if let tab = root as? UITabBarController, let selected = tab.selectedViewController {
+    return topViewController(from: selected)
+  }
+  return root
 }
 
 private struct TileView: View {
