@@ -1,0 +1,371 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02FBCA46DF28E8F3BBADB6ED /* BingoCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3323AE08FC775F000F12E43 /* BingoCard.swift */; };
+		1E32C5D7DF313B3E51636B69 /* GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6038EDA4BD0866734509095A /* GameStore.swift */; };
+		2409EA310C53ABF1A3FB6BCE /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A0BD201160638873C6A70 /* Theme.swift */; };
+		2568C426FE5980CF2E5E3BBF /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D68DB8EC73A2BB2E8C3FABD /* Haptics.swift */; };
+		41D4CCCB084FA82A0BC169BC /* ShareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3748A302F43D871AFA7BBC69 /* ShareCardView.swift */; };
+		434813F3078B8A39127AD903 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBD4C051276C1BD559E1CE9 /* ShareSheet.swift */; };
+		77405BB0CB4B63D931F5698C /* ScoreboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F71EEFD845BD64E0B700B9 /* ScoreboardView.swift */; };
+		89C488B237B8D099B384BA49 /* BingoDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4129151D2911FC5D9A0D21 /* BingoDeck.swift */; };
+		8F5C3476ED7A8A1CE60904CD /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1470120183D9F65EDAF3B1D3 /* ConfettiView.swift */; };
+		95B2DE1B5B505F457BEDCE3B /* GTCBingoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CAE32445F0A6B836FFEB1E /* GTCBingoApp.swift */; };
+		AFB5BC1AA5FECE16E4F215A8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D9AA75E86AA32B0D0B7F7D2D /* Assets.xcassets */; };
+		C88A82DB4918D7211EE00AA7 /* SoundEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83064055A4B387D701FE8DCB /* SoundEngine.swift */; };
+		D1624186F72F44C712142DAE /* Scoreboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B74B0E357C13163F7B51FEEF /* Scoreboard.swift */; };
+		D962522CAC3AA989E98CD6C4 /* TitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 901FA46D3CEC45952996F064 /* TitleView.swift */; };
+		F27D655CF8787CB188771585 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12ED3D2119C7C5FB09395742 /* BoardView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		096A0BD201160638873C6A70 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		12ED3D2119C7C5FB09395742 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
+		1470120183D9F65EDAF3B1D3 /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
+		3748A302F43D871AFA7BBC69 /* ShareCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardView.swift; sourceTree = "<group>"; };
+		5E4129151D2911FC5D9A0D21 /* BingoDeck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BingoDeck.swift; sourceTree = "<group>"; };
+		6038EDA4BD0866734509095A /* GameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStore.swift; sourceTree = "<group>"; };
+		64CAE32445F0A6B836FFEB1E /* GTCBingoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GTCBingoApp.swift; sourceTree = "<group>"; };
+		6D68DB8EC73A2BB2E8C3FABD /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		83064055A4B387D701FE8DCB /* SoundEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngine.swift; sourceTree = "<group>"; };
+		8EBD4C051276C1BD559E1CE9 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		901FA46D3CEC45952996F064 /* TitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleView.swift; sourceTree = "<group>"; };
+		B74B0E357C13163F7B51FEEF /* Scoreboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scoreboard.swift; sourceTree = "<group>"; };
+		D3323AE08FC775F000F12E43 /* BingoCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BingoCard.swift; sourceTree = "<group>"; };
+		D9AA75E86AA32B0D0B7F7D2D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E8F71EEFD845BD64E0B700B9 /* ScoreboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreboardView.swift; sourceTree = "<group>"; };
+		ED1C9DDD6F16BD25794CBDB3 /* GTCBingo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GTCBingo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		3D522A3856953852E4D11DF9 = {
+			isa = PBXGroup;
+			children = (
+				430FB299D882EF0A938ED613 /* App */,
+				F919DA269E845BE521FBEE98 /* Core */,
+				647FE28DACBED8F46693EEE2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		430FB299D882EF0A938ED613 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				D9AA75E86AA32B0D0B7F7D2D /* Assets.xcassets */,
+				12ED3D2119C7C5FB09395742 /* BoardView.swift */,
+				1470120183D9F65EDAF3B1D3 /* ConfettiView.swift */,
+				6038EDA4BD0866734509095A /* GameStore.swift */,
+				64CAE32445F0A6B836FFEB1E /* GTCBingoApp.swift */,
+				6D68DB8EC73A2BB2E8C3FABD /* Haptics.swift */,
+				E8F71EEFD845BD64E0B700B9 /* ScoreboardView.swift */,
+				3748A302F43D871AFA7BBC69 /* ShareCardView.swift */,
+				8EBD4C051276C1BD559E1CE9 /* ShareSheet.swift */,
+				83064055A4B387D701FE8DCB /* SoundEngine.swift */,
+				096A0BD201160638873C6A70 /* Theme.swift */,
+				901FA46D3CEC45952996F064 /* TitleView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		647FE28DACBED8F46693EEE2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ED1C9DDD6F16BD25794CBDB3 /* GTCBingo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F919DA269E845BE521FBEE98 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				D3323AE08FC775F000F12E43 /* BingoCard.swift */,
+				5E4129151D2911FC5D9A0D21 /* BingoDeck.swift */,
+				B74B0E357C13163F7B51FEEF /* Scoreboard.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A19029E5E9F3F52438D4F008 /* GTCBingo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 50EE7F7A9C208227BA2A21B4 /* Build configuration list for PBXNativeTarget "GTCBingo" */;
+			buildPhases = (
+				E451038311AE9C37C1DC146E /* Sources */,
+				D17CAF08C13AA303F8A47EF6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GTCBingo;
+			packageProductDependencies = (
+			);
+			productName = GTCBingo;
+			productReference = ED1C9DDD6F16BD25794CBDB3 /* GTCBingo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		39FE30CCB73B929EC0549EF8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 97897E2877CAB3E4C5D637F2 /* Build configuration list for PBXProject "GTCBingo" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 3D522A3856953852E4D11DF9;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 647FE28DACBED8F46693EEE2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A19029E5E9F3F52438D4F008 /* GTCBingo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D17CAF08C13AA303F8A47EF6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AFB5BC1AA5FECE16E4F215A8 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E451038311AE9C37C1DC146E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02FBCA46DF28E8F3BBADB6ED /* BingoCard.swift in Sources */,
+				89C488B237B8D099B384BA49 /* BingoDeck.swift in Sources */,
+				F27D655CF8787CB188771585 /* BoardView.swift in Sources */,
+				8F5C3476ED7A8A1CE60904CD /* ConfettiView.swift in Sources */,
+				95B2DE1B5B505F457BEDCE3B /* GTCBingoApp.swift in Sources */,
+				1E32C5D7DF313B3E51636B69 /* GameStore.swift in Sources */,
+				2568C426FE5980CF2E5E3BBF /* Haptics.swift in Sources */,
+				D1624186F72F44C712142DAE /* Scoreboard.swift in Sources */,
+				77405BB0CB4B63D931F5698C /* ScoreboardView.swift in Sources */,
+				41D4CCCB084FA82A0BC169BC /* ShareCardView.swift in Sources */,
+				434813F3078B8A39127AD903 /* ShareSheet.swift in Sources */,
+				C88A82DB4918D7211EE00AA7 /* SoundEngine.swift in Sources */,
+				2409EA310C53ABF1A3FB6BCE /* Theme.swift in Sources */,
+				D962522CAC3AA989E98CD6C4 /* TitleView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		51702C0EF7597618B4D593B5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "GTC Bingo";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = studio.gtcbingo.game;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7106CE7926160C3DD26BF50F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		968BB3BAEAF144A934929C73 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "GTC Bingo";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = studio.gtcbingo.game;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		DD8D45D98CA0091ABE3EBC81 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		50EE7F7A9C208227BA2A21B4 /* Build configuration list for PBXNativeTarget "GTCBingo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				51702C0EF7597618B4D593B5 /* Debug */,
+				968BB3BAEAF144A934929C73 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		97897E2877CAB3E4C5D637F2 /* Build configuration list for PBXProject "GTCBingo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD8D45D98CA0091ABE3EBC81 /* Debug */,
+				7106CE7926160C3DD26BF50F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 39FE30CCB73B929EC0549EF8 /* Project object */;
+}
