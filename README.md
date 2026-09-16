@@ -81,3 +81,7 @@ parity. Interactive macOS/iPhone/iPad play, accessibility, signed Keychain and
 upgrade behavior, physical-device networking/performance, and distribution
 signing still require validation. Archived Flutter tests, screenshots and
 reports are historical evidence only.
+
+### Native experiments
+
+- `otter-flap/` — native iOS Flappy Bird-style game starring a procedurally-drawn otter (SwiftUI + SpriteKit). See `otter-flap/README.md`.

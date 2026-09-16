@@ -1,0 +1,22 @@
+name: OtterFlap
+options:
+  bundleIdPrefix: com.experiments
+targets:
+  OtterFlap:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - OtterFlap
+    info:
+      path: OtterFlap/Info.plist
+      properties:
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        CFBundleDisplayName: OtterFlap
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.experiments.otterflap
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
