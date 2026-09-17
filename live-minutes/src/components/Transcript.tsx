@@ -2,17 +2,24 @@ import { useEffect, useRef } from "react";
 import type { Row } from "../lib/useMeeting.ts";
 import { fmtClock, fmtMs } from "../lib/stats.ts";
 import { KIND_LABEL, speakerClass } from "./labels.ts";
+import { Pane, type PaneIdx } from "./Pane.tsx";
 
 export function Transcript({
   rows,
   interim,
   micSpeaker,
   micError,
+  running,
+  active,
+  onActivate,
 }: {
   rows: Row[];
   interim: string;
   micSpeaker: string;
   micError: string | null;
+  running: boolean;
+  active: PaneIdx;
+  onActivate: (i: PaneIdx) => void;
 }) {
   const bottom = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -20,14 +27,14 @@ export function Transcript({
   }, [rows.length, interim]);
 
   return (
-    <section className="panel transcript">
-      <header className="panel-head">
-        <h2>Transcript</h2>
-        <span className="muted">{rows.length} utterances</span>
-      </header>
+    <Pane idx={0} className="transcript" active={active} onActivate={onActivate} right={<span className="muted">{rows.length} utterances</span>}>
       <div className="scroll">
         {micError && <p className="empty mic-error">{micError}</p>}
-        {rows.length === 0 && !interim && !micError && <p className="empty">Press <b>Start</b> to replay the standup, or switch to Live mic.</p>}
+        {rows.length === 0 && !interim && !micError && (
+          <p className="empty">
+            $ press <b>s</b> (or ▶ start) to replay the standup · <b>m</b> switches to live mic · <b>1</b>/<b>4</b>/<b>a</b> set speed
+          </p>
+        )}
         {rows.map((r) => (
           <div key={r.id} className={`utt ${r.status}`}>
             <span className="utt-time">{fmtClock(r.endsAt)}</span>
@@ -52,8 +59,9 @@ export function Transcript({
             <span className="utt-text">{interim}</span>
           </div>
         )}
+        {running && !interim && <div className="utt"><span className="utt-time">&nbsp;</span><span /><span className="cursor" /></div>}
         <div ref={bottom} />
       </div>
-    </section>
+    </Pane>
   );
 }

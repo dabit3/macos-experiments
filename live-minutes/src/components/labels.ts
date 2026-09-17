@@ -11,10 +11,10 @@ export const KIND_LABEL: Record<Kind, string> = {
 };
 
 export const BUCKET_TITLE: Record<Bucket, string> = {
-  decisions: "Decisions",
-  actions: "Action items",
-  questions: "Open questions",
-  risks: "Risks & blockers",
+  decisions: "decisions",
+  actions: "action-items",
+  questions: "open-questions",
+  risks: "risks",
 };
 
 const SPEAKER_CLASSES = ["s0", "s1", "s2", "s3", "s4", "s5"];
@@ -24,10 +24,3 @@ export function speakerClass(name: string): string {
   return SPEAKER_CLASSES[h % SPEAKER_CLASSES.length];
 }
 
-export const initials = (name: string) =>
-  name
-    .split(/\s+/)
-    .map((p) => p[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();

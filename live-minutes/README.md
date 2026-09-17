@@ -24,13 +24,25 @@ I meant", click the `?` chip to fix the owner). Ten minutes later it is a diff s
 
 ## What is on screen
 
-| Area | What it shows |
+The UI is laid out like a tmux session: seven bordered panes labelled `0:transcript` … `6:keyword-heuristic`
+(the active pane has a green border), a measured-metrics line, and a green status bar with the windows,
+the active pane, the key bindings, the data source and a clock. Everything is keyboard-driven:
+
+| key | action |
 |---|---|
-| **Transcript** (left) | Speaker-labelled utterances with the kind Jev assigned and the round-trip latency of that call. |
-| **Action items / Decisions / Open questions / Risks & blockers** (centre) | Cards that appear as utterances are judged. Each card carries a **latency tag: measured end-of-utterance → card committed to the DOM**. Action items show an owner chip (initials + name), a resolved due date, and a yellow `? who?` chip when Jev is not confident about the owner — click it to see the probability over attendees and fix it. Reversed decisions are struck through and marked *superseded*. Blocked status updates surface under Risks. |
-| **Post-meeting summary — illustrative, LLM style** (top right) | The "old way": nothing until the meeting ends, a timer counting up, then the whole list at once. Labelled as illustrative; it reuses the live items, it does not run a summarisation prompt. |
-| **Keyword heuristic — old way** (bottom right) | A keyword rule (`will`, `I'll`, `by`, `todo`, `action item`, `need to`, `should`, `can you`, …) applied to the same transcript, with its miss rate against the fixture's ground-truth labels, false positives, and the missed utterances. |
-| **HUD** (bottom) | Meeting clock, wall elapsed, judged / in-flight, items surfaced, utterances/s, last call, **p50 / p95 end-of-utterance → on-screen**, browser round-trip, Jev API time (measured server-side), errors. Every number is measured. |
+| `s` | start / stop |
+| `x` | reset |
+| `r` / `m` | replay / live mic |
+| `1` / `4` / `a` | 1× / 4× / all at once |
+| `j` / `k` | next / previous pane (or click a pane) |
+
+| Pane | What it shows |
+|---|---|
+| **0:transcript** (left) | Speaker-labelled utterances with the kind Jev assigned and the round-trip latency of that call. |
+| **1:action-items / 2:decisions / 3:open-questions / 4:risks** (centre) | Cards that appear as utterances are judged. Each card carries a **latency tag: measured end-of-utterance → card committed to the DOM**. Action items show an `@owner` chip, a resolved `due:` date, and a yellow `@who?` chip when Jev is not confident about the owner — click it to see the probability over attendees and fix it. Reversed decisions are struck through and marked *superseded*. Blocked status updates surface under Risks. |
+| **5:post-meeting-summary** — illustrative, LLM style (top right) | The "old way": nothing until the meeting ends, a timer counting up, then the whole list at once. Labelled as illustrative; it reuses the live items, it does not run a summarisation prompt. |
+| **6:keyword-heuristic** — old way (bottom right) | A keyword rule (`will`, `I'll`, `by`, `todo`, `action item`, `need to`, `should`, `can you`, …) applied to the same transcript, with its miss rate against the fixture's ground-truth labels, false positives, and the missed utterances. |
+| **Metrics line** (above the status bar) | Meeting clock, wall elapsed, judged / in-flight, items surfaced, utterances/s, last call, **p50 / p95 end-of-utterance → on-screen**, browser round-trip, Jev API time (measured server-side), errors. Every number is measured. |
 
 ### Input modes
 
@@ -85,7 +97,7 @@ npm ci
 TYPESAFE_API_KEY=... npm run dev     # proxy on :8787 + Vite on :5173, one command
 ```
 
-Open http://localhost:5173, pick **4×**, press **Start**.
+Open http://localhost:5173, press `4` then `s` (or click **[4×]** and **▶ start**).
 
 - `MOCK=1 npm run dev` replays recorded answers from `server/mock-answers.json` (no key needed). The header
   badge turns amber and reads **MOCK · recorded answers**.
@@ -101,11 +113,11 @@ Real TypeSafe API (`jev-latest`), Linux VM, 2026-09-17. Fixture: 180 utterances,
 
 | metric | value |
 |---|---|
-| items surfaced live | 118 of 180 utterances (50 action items, 12 decisions, 23 questions, 33 risks) |
-| end-of-utterance → on-screen, p50 | **143 ms** |
-| end-of-utterance → on-screen, p95 | 457 ms |
-| browser round-trip p50 | 125 ms |
-| Jev API time p50 (server-side) | 110 ms |
+| items surfaced live | 117 of 180 utterances (50 action items, 12 decisions, 23 questions, 32 risks) |
+| end-of-utterance → on-screen, p50 | **123 ms** |
+| end-of-utterance → on-screen, p95 | 292 ms |
+| browser round-trip p50 | 118 ms |
+| Jev API time p50 (server-side) | 109 ms |
 | errors | 0 |
 
 **Browser, all at once** (180 requests, concurrency 12): 180 judged in 9.1 s (19.9 utt/s), 0 errors. The

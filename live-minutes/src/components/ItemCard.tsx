@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { MinuteItem } from "../lib/aggregate.ts";
 import type { Attendee } from "../lib/types.ts";
 import { fmtMs } from "../lib/stats.ts";
-import { initials, speakerClass } from "./labels.ts";
+import { speakerClass } from "./labels.ts";
 
 interface Props {
   item: MinuteItem;
@@ -41,8 +41,7 @@ export function ItemCard({ item, spokenAt, attendees, onShown, onFix }: Props) {
                 onClick={() => setOpen((o) => !o)}
                 title={item.assigneeUncertain ? "Owner uncertain — click to fix" : "Click to change owner"}
               >
-                {item.assigneeUncertain ? "?" : item.assignee ? initials(item.assignee) : "—"}
-                <span className="owner-name">{item.assigneeUncertain ? "who?" : item.assignee ?? "unassigned"}</span>
+                <span className="owner-name">{item.assigneeUncertain ? "who?" : item.assignee ? item.assignee.split(" ")[0].toLowerCase() : "unassigned"}</span>
               </button>
               {open && (
                 <div className="owner-menu" onMouseLeave={() => setOpen(false)}>
@@ -78,7 +77,7 @@ export function ItemCard({ item, spokenAt, attendees, onShown, onFix }: Props) {
           )}
           {item.deadline.kind !== "none" && (
             <span className={`due${item.deadline.date ? "" : " vague"}`} title={item.deadline.date ?? "date not parsed"}>
-              ⏱ {item.deadline.label}
+              {item.deadline.label}
             </span>
           )}
           {item.blocked && <span className="flag blocked">blocked</span>}

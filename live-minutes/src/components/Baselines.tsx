@@ -4,16 +4,25 @@ import { fmtClock } from "../lib/stats.ts";
 import { ACTION_KEYWORDS } from "../lib/keyword.ts";
 import { BUCKET_TITLE } from "./labels.ts";
 import type { Bucket } from "../lib/resolve.ts";
+import { Pane, type PaneIdx } from "./Pane.tsx";
 
-export function PostMeetingPanel({ phase, clock, wallStart, wallEnd, items }: { phase: Phase; clock: number; wallStart: number | null; wallEnd: number | null; items: MinuteItem[] }) {
+interface PaneProps {
+  active: PaneIdx;
+  onActivate: (i: PaneIdx) => void;
+}
+
+export function PostMeetingPanel({ phase, clock, wallStart, wallEnd, items, active, onActivate }: { phase: Phase; clock: number; wallStart: number | null; wallEnd: number | null; items: MinuteItem[] } & PaneProps) {
   const waited = wallStart !== null ? ((wallEnd ?? performance.now()) - wallStart) / 1000 : 0;
   const order: Bucket[] = ["actions", "decisions", "questions", "risks"];
   return (
-    <div className="panel baseline post">
-      <header className="panel-head">
-        <h2>Post-meeting summary <span className="pill illustrative">illustrative · LLM style</span></h2>
-        <span className="muted">{phase === "done" ? "delivered after the call" : "nothing until the call ends"}</span>
-      </header>
+    <Pane
+      idx={5}
+      className="baseline post"
+      active={active}
+      onActivate={onActivate}
+      title={<>post-meeting-summary <span className="pill illustrative">illustrative · LLM style</span></>}
+      right={<span className="muted">{phase === "done" ? "delivered after the call" : "nothing until the call ends"}</span>}
+    >
       <div className="scroll">
         {phase !== "done" ? (
           <div className="waiting">
@@ -48,11 +57,11 @@ export function PostMeetingPanel({ phase, clock, wallStart, wallEnd, items }: { 
           </div>
         )}
       </div>
-    </div>
+    </Pane>
   );
 }
 
-export function KeywordPanel({ rows, hasTruth }: { rows: Row[]; hasTruth: boolean }) {
+export function KeywordPanel({ rows, hasTruth, active, onActivate }: { rows: Row[]; hasTruth: boolean } & PaneProps) {
   const flagged = rows.filter((r) => r.keywordFlag);
   const trueActions = rows.filter((r) => r.truth?.kind === "action_item");
   const missed = trueActions.filter((r) => !r.keywordFlag);
@@ -62,11 +71,14 @@ export function KeywordPanel({ rows, hasTruth }: { rows: Row[]; hasTruth: boolea
   const jevMissed = trueActions.filter((r) => r.status === "done" && r.judgment?.kind !== "action_item");
 
   return (
-    <div className="panel baseline keyword">
-      <header className="panel-head">
-        <h2>Keyword heuristic <span className="pill">old way</span></h2>
-        <span className="muted mono small">{ACTION_KEYWORDS.source.slice(0, 40)}…</span>
-      </header>
+    <Pane
+      idx={6}
+      className="baseline keyword"
+      active={active}
+      onActivate={onActivate}
+      title={<>keyword-heuristic <span className="pill">old way</span></>}
+      right={<span className="muted mono small">/{ACTION_KEYWORDS.source.slice(0, 32)}…/</span>}
+    >
       <div className="kw-stats">
         <div className="stat">
           <span className="v">{flagged.length}</span>
@@ -98,6 +110,6 @@ export function KeywordPanel({ rows, hasTruth }: { rows: Row[]; hasTruth: boolea
           ))}
         {!hasTruth && flagged.slice(-6).map((r) => <div key={r.id} className="kw-miss">{r.text}</div>)}
       </div>
-    </div>
+    </Pane>
   );
 }

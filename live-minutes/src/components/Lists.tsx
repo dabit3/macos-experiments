@@ -3,9 +3,14 @@ import type { Bucket } from "../lib/resolve.ts";
 import type { Attendee } from "../lib/types.ts";
 import type { Row } from "../lib/useMeeting.ts";
 import { ItemCard } from "./ItemCard.tsx";
-import { BUCKET_TITLE } from "./labels.ts";
+import { Pane, type PaneIdx } from "./Pane.tsx";
 
-const ORDER: Bucket[] = ["actions", "decisions", "questions", "risks"];
+const ORDER: { bucket: Bucket; pane: PaneIdx }[] = [
+  { bucket: "actions", pane: 1 },
+  { bucket: "decisions", pane: 2 },
+  { bucket: "questions", pane: 3 },
+  { bucket: "risks", pane: 4 },
+];
 
 interface Props {
   items: MinuteItem[];
@@ -13,20 +18,18 @@ interface Props {
   attendees: Attendee[];
   onShown: (id: number, ms: number) => void;
   onFix: (id: number, name: string | null) => void;
+  active: PaneIdx;
+  onActivate: (i: PaneIdx) => void;
 }
 
-export function Lists({ items, rows, attendees, onShown, onFix }: Props) {
+export function Lists({ items, rows, attendees, onShown, onFix, active, onActivate }: Props) {
   const spokenAt = new Map(rows.map((r) => [r.id, r.spokenAt]));
   return (
     <section className="lists">
-      {ORDER.map((b) => {
+      {ORDER.map(({ bucket: b, pane }) => {
         const list = items.filter((x) => x.bucket === b);
         return (
-          <div key={b} className={`panel list ${b}`}>
-            <header className="panel-head">
-              <h2>{BUCKET_TITLE[b]}</h2>
-              <span className="count">{list.length}</span>
-            </header>
+          <Pane key={b} idx={pane} className={`list ${b}`} active={active} onActivate={onActivate} right={<span className="count">{list.length}</span>}>
             <div className="scroll">
               {list.length === 0 && <p className="empty">—</p>}
               {list.map((x) => (
@@ -40,7 +43,7 @@ export function Lists({ items, rows, attendees, onShown, onFix }: Props) {
                 />
               ))}
             </div>
-          </div>
+          </Pane>
         );
       })}
     </section>
