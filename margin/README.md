@@ -1,5 +1,7 @@
 # Margin
 
+![Margin screenshot](screenshots/margin.jpg)
+
 A quiet, native macOS research studio. Read a source, keep cited passages, and shape a research brief without leaving the page.
 
 Linen, warm ink, oxblood, and Georgia typography frame three connected spaces: a small library, a real PDFKit reader, and an editable AppKit writing surface. The collection is empty on first launch; an original five-page source and a thoughtful starter draft are ready to explore.

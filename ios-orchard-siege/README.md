@@ -1,5 +1,7 @@
 # Orchard Siege
 
+![Orchard Siege screenshot](screenshots/ios-orchard-siege.jpg)
+
 A native landscape iOS slingshot game. Original illustrated orchard, expressive fruit, six authored rigid-body forts, local best scores and an eighteen-star trail. Built with SwiftUI, SpriteKit, Core Graphics and AVAudioEngine; no external assets, network, accounts or packages.
 
 ## Build and run

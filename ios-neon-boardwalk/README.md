@@ -1,5 +1,7 @@
 # Neon Boardwalk
 
+![Neon Boardwalk screenshot](screenshots/ios-neon-boardwalk.jpg)
+
 A native, offline three-lane skate runner for iPhone. Original procedural SceneKit
 art puts a glowing arcade strip on one side of a coastal boardwalk and sunset,
 water and palm silhouettes on the other. SwiftUI supplies the title, HUD, guide,

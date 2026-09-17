@@ -1,5 +1,7 @@
 # Prism Sixteen
 
+![Prism Sixteen screenshot](screenshots/prism-sixteen.jpg)
+
 A native portrait iPhone rhythm battle inspired by jubeat's sixteen-panel touch
 matrix. Two real guests play the same original song over WebSockets, with a common
 clock, independent timing judgments and live scores. All application files are

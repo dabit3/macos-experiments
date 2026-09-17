@@ -1,5 +1,7 @@
 # Moon Market
 
+![Moon Market screenshot](screenshots/moon-market.jpg)
+
 A native, offline iPhone strategy game in SwiftUI. Run a tiny lunar produce stall
 for eight nights. Original illustrated dioramas with native Canvas stardust, deterministic markets, transparent
 transaction previews, persistent runs, illustrated receipt sharing and no dependencies.

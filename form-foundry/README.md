@@ -1,5 +1,7 @@
 # Form Foundry
 
+![Form Foundry screenshot](screenshots/form-foundry.jpg)
+
 A native, landscape-first iPad studio for small product forms. A porcelain workplane,
 fine grid, shaded materials and a live dimensioned profile keep the object at the center.
 Built with SwiftUI and SceneKit. Entirely offline; no packages, accounts or signing needed

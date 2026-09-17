@@ -1,5 +1,7 @@
 # Domino Daydream
 
+![Domino Daydream screenshot](screenshots/domino-daydream.jpg)
+
 A native SwiftUI and SceneKit tabletop puzzle game for iPhone. Build tiny porcelain machines
 on a walnut-and-brass tray, then send a deterministic domino ripple through a miniature
 town. No packages, network services, accounts, purchases or signing credentials

@@ -1,5 +1,7 @@
 # Kerf
 
+![Kerf screenshot](screenshots/kerf.jpg)
+
 A native macOS fabrication sketchbook for precise laser-cut objects. A warm ivory
 sheet, blue engineering vectors, amber selection dimensions and a charcoal
 inspector put the material at the centre of the workspace. All geometry and files

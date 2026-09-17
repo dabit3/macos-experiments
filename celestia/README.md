@@ -1,5 +1,7 @@
 # Celestia — the night, within reach
 
+![Celestia — the night, within reach screenshot](screenshots/celestia.jpg)
+
 A native, offline iPad observatory: an interactive all-sky atlas, a time instrument,
 and a locally saved field notebook. Deep observatory blue, warm ivory stars and
 fine gold constellation lines keep the sky at the center of the experience.

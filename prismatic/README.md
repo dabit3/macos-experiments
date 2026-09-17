@@ -1,5 +1,7 @@
 # Prismatic
 
+![Prismatic screenshot](screenshots/prismatic.jpg)
+
 A native SwiftUI / UIKit generative drawing atelier. Draw once; every mark repeats around a center with 1–24 radial axes and optional reflection. No account, network, or runtime packages.
 
 ## Studio

@@ -1,5 +1,7 @@
 # Bloomguard
 
+![Bloomguard screenshot](screenshots/ios-bloomguard.jpg)
+
 An original, offline, native iOS cottage-garden lane defense game. SwiftUI renders
 all scenery and characters as original vector artwork; the deterministic Swift
 simulation has no third-party dependencies. Supports iOS 17+, in landscape.

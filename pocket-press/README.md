@@ -1,5 +1,7 @@
 # Pocket Press
 
+![Pocket Press screenshot](screenshots/pocket-press.jpg)
+
 A native iPhone studio for tiny travel magazines. Turn a place into a beautifully
 typeset issue, with warm paper, confident editorial typography, photographs and
 small observations. Every page shown in the editor is drawn by the same UIKit

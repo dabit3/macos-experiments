@@ -1,5 +1,7 @@
 # Last Slice
 
+![Last Slice screenshot](screenshots/last-slice.jpg)
+
 A native SwiftUI geometry game in an editorial Italian pizzeria. Divide a pizza
 with a limited number of straight cuts; satisfy each guest's appetite and exact
 topping request. No packages, server, login or signing credentials are needed for

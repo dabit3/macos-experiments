@@ -1,5 +1,7 @@
 # Patchwork
 
+![Patchwork screenshot](screenshots/patchwork.jpg)
+
 A native, landscape-first iPad modular synthesizer. Four pastel modules sit on a pale aluminum patch table. Connect sockets, play notes, shape a sound, and watch the actual output samples move across the scope.
 
 ## Prerequisites

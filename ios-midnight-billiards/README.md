@@ -1,5 +1,7 @@
 # Midnight Billiards
 
+![Midnight Billiards screenshot](screenshots/ios-midnight-billiards.jpg)
+
 A native, offline iOS billiards room, built with SwiftUI Canvas, custom fixed-substep physics, and
 original procedural artwork and synthesized audio. Landscape gives the table enough space for
 precise touch aiming. iOS 17 or later; iPhone and iPad.

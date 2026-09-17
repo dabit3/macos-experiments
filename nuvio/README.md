@@ -1,5 +1,7 @@
 # Nuvio
 
+![Nuvio screenshot](screenshots/nuvio.jpg)
+
 A local architectural visualization editor inspired by **Twinmotion 2025.1**.
 Opens directly to Forest House: a cantilevered glazed pavilion with a cedar terrace,
 furnished interior, lounge chairs, boardwalk, reflected pond, rocks and seeded forest.

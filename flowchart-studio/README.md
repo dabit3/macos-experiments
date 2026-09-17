@@ -1,5 +1,7 @@
 # Flowchart Studio: node-and-edge diagramming
 
+![Flowchart Studio: node-and-edge diagramming screenshot](screenshots/flowchart-studio.jpg)
+
 A self-contained flowchart editor built with hand-rolled SVG (no React Flow). Drag shapes from the
 palette onto an infinite canvas, wire them together by dragging from one node's port to another,
 rename things inline, and export the result as SVG or JSON.

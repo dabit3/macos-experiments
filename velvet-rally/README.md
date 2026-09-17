@@ -1,5 +1,7 @@
 # Velvet Rally
 
+![Velvet Rally screenshot](screenshots/velvet-rally.jpg)
+
 A native, offline iPhone table-tennis arcade, built with SwiftUI and a deterministic Swift physics engine. A cream paddle, a tangerine ball, and two courts under the lights.
 
 ## Play

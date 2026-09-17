@@ -1,5 +1,7 @@
 # Circuit Garden
 
+![Circuit Garden screenshot](screenshots/circuit-garden.jpg)
+
 A native, landscape-first iPad electronics workbench. Cream engineering paper, graphite schematics, brass terminals, curved colored wires and a warm model lamp surround a miniature live instrument. Everything is drawn locally with SwiftUI and Canvas; there are no remote assets, accounts, packages or services.
 
 ## Prerequisites

@@ -1,5 +1,7 @@
 # Wavecraft
 
+![Wavecraft screenshot](screenshots/wavecraft.jpg)
+
 A native macOS audio workbench for finding the useful moment inside a sound. Graphite studio chrome surrounds a real stereo waveform, precise range controls, and a compact destructive editing chain. Everything runs locally.
 
 ## Build and run

@@ -1,5 +1,7 @@
 # Mise
 
+![Mise screenshot](screenshots/mise.jpg)
+
 A native iPhone cooking companion: a little order, a lovely dinner.
 
 Warm paper, tomato red and basil green frame an editorial cookbook with original

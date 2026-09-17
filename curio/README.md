@@ -1,5 +1,7 @@
 # Curio
 
+![Curio screenshot](screenshots/curio.jpg)
+
 A private, offline museum for the objects you love. Native SwiftUI for iPhone,
 iOS 17 or later. No runtime dependencies, account, or network requests.
 

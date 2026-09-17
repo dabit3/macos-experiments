@@ -1,5 +1,7 @@
 # Nova Brawl
 
+![Nova Brawl screenshot](screenshots/nova-brawl.jpg)
+
 A native iPhone 3D arena duel inspired by **Dragon Ball Zenkai Battle Royale
 (2011)**. Two guests fight across a grass-and-water island with aerial movement,
 target tracking, combos, charge auras and large energy attacks. Original procedural

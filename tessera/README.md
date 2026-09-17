@@ -1,5 +1,7 @@
 # Tessera
 
+![Tessera screenshot](screenshots/tessera.jpg)
+
 A native iPhone optical puzzle game. Six obsidian chambers become luminous
 architectural drawings as you route pearl light through mirrors and RGB prisms.
 All artwork is rendered locally with SwiftUI shapes and Canvas; no network,

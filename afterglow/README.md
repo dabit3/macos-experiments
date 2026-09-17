@@ -1,5 +1,7 @@
 # Afterglow
 
+![Afterglow screenshot](screenshots/afterglow.jpg)
+
 A cinematic pocket darkroom for iPhone. Museum-black surfaces, warm serif typography,
 amber tools, and three original, bundled photographic studies. Everything works offline.
 SwiftUI drives the interface; Core Image develops the actual preview and exported pixels.

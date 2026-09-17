@@ -1,5 +1,7 @@
 # Tape Deck
 
+![Tape Deck screenshot](screenshots/tape-deck.jpg)
+
 A native, fully offline pocket groove instrument for iPhone. Bone-white hardware,
 charcoal pads, amber signal meters and an original animated cassette make a
 four-voice drum sequencer feel like a little physical machine.

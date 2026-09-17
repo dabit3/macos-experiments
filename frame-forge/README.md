@@ -1,5 +1,7 @@
 # Frame Forge
 
+![Frame Forge screenshot](screenshots/frame-forge.jpg)
+
 A native, landscape-first iPad animation desk. Draw on warm paper, trace the previous pose with onion skins, and turn an editable frame sequence into a real looping GIF.
 
 ## Requirements

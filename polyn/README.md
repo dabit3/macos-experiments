@@ -1,5 +1,7 @@
 # Polyn
 
+![Polyn screenshot](screenshots/polyn.jpg)
+
 A Blender-inspired browser workspace opening directly into **Atelier No. 04**: a procedural architectural cutaway with a concrete shell, glazed window bays, oak mezzanine, sculptural spiral stair, kitchen, furnished living room, plants and warm lighting.
 
 ## Run

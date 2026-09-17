@@ -1,5 +1,7 @@
 # Nectar Dash
 
+![Nectar Dash screenshot](screenshots/nectar-dash.jpg)
+
 A native SwiftUI botanical arcade game. Trace short flights between numbered,
 color-sequenced flowers, carry pollen, and return to the hive before the sun sets.
 All artwork is procedural Canvas/AppKit vector drawing; no dependencies or network.

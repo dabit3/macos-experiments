@@ -1,5 +1,7 @@
 # Reel Horizon
 
+![Reel Horizon screenshot](screenshots/reel-horizon.jpg)
+
 A native SwiftUI (iOS 17+, landscape) fishing simulator in the style of Fishing Planet:
 a map hub of licensed waterways, a tackle shop and inventory with durability, missions,
 angler progression, and a cast → wait → strike → fight → land loop with a tension gauge,

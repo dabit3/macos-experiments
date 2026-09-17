@@ -1,5 +1,7 @@
 # Lanternfall
 
+![Lanternfall screenshot](screenshots/ios-lanternfall.jpg)
+
 A native, portrait iPhone survival game about a lone lantern keeper in a haunted
 midnight garden. SwiftUI presents the gate, HUD, gifts and results; SpriteKit
 renders combat. Original procedural art and synthesized chimes require no assets

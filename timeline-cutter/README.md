@@ -1,5 +1,7 @@
 # Timeline Cutter
 
+![Timeline Cutter screenshot](screenshots/timeline-cutter.jpg)
+
 A non-linear video editor timeline with trim, split and ripple — built with
 Vite + React + TypeScript. There are no real video files: every "clip" is a
 procedurally drawn canvas animation (sunrise gradient, ocean waves, neon grid,

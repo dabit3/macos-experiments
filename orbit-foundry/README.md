@@ -1,5 +1,7 @@
 # Orbit Foundry
 
+![Orbit Foundry screenshot](screenshots/orbit-foundry.jpg)
+
 A native, offline iPhone gravity puzzle, built in SwiftUI with original procedural astronomical artwork.
 
 ## Play

@@ -1,5 +1,7 @@
 # Havik
 
+![Havik screenshot](screenshots/havik.jpg)
+
 A locally editable residential-design application inspired by **Chief Architect Premier X16**. Opens to the furnished **Cedar Point Lake House**: a 260 m², seven-room residence with a lakeside deck, landscaping, dimensioned vector plan, and a linked WebGL model.
 
 ## Run

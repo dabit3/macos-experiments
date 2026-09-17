@@ -1,5 +1,7 @@
 # Nightjar
 
+![Nightjar screenshot](screenshots/nightjar.jpg)
+
 A native macOS virtual stage-lighting desk. Shape six lights around an original
 three-dimensional set, record cinematic looks, and play a timed cue sequence.
 The charcoal console, colored cue chips, sculptural portal, stepped plinth and

@@ -1,5 +1,7 @@
 # Keystone
 
+![Keystone screenshot](screenshots/keystone.jpg)
+
 A native macOS structural playground: shape a small truss, apply a nodal load, and follow the real axial forces through the span. An ivory drafting canvas, ink-blue supports, copper tension members, and dimension overlays make the engineering itself the interface.
 
 ## Run

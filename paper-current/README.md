@@ -1,5 +1,7 @@
 # Paper Current
 
+![Paper Current screenshot](screenshots/paper-current.jpg)
+
 A native iPhone water-routing puzzle in a rain-soaked paper city. Ten handcrafted
 letters introduce rotating canals, operable locks and one-way currents. Every
 route has three stamps and a postbox dock.

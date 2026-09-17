@@ -1,5 +1,7 @@
 # Impossible Postcards
 
+![Impossible Postcards screenshot](screenshots/ios-impossible-postcards.jpg)
+
 A native iOS collection of four small perspective puzzles. Turn bridges to align
 walkable paths, carry a cloaked traveler to sun seals, and collect each world as
 a postcard. Original procedural architecture, icon, character and synthesized

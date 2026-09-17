@@ -1,5 +1,7 @@
 # Nitro Tots
 
+![Nitro Tots screenshot](screenshots/nitro-tots.jpg)
+
 A native arcade kart racer for **macOS, iPhone and iPad**. SwiftUI provides the
 menus and adaptive controls; SpriteKit renders the race. The Apple client uses a
 Swift port of the original rules offline and for prediction, and real

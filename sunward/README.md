@@ -1,5 +1,7 @@
 # Sunward
 
+![Sunward screenshot](screenshots/sunward.jpg)
+
 A native, offline iPhone field companion for photographers. Explore the sun's
 path, find golden light, and save the moments worth returning to.
 

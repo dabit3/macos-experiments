@@ -1,5 +1,7 @@
 # Emberglass
 
+![Emberglass screenshot](screenshots/emberglass.jpg)
+
 A native, offline iPhone glassblowing skill game. SwiftUI presents the studio and
 its instruments; SceneKit turns the player's traced contour into a rotating,
 hollow glass sculpture with reflected studio lighting, flowing colored glaze,

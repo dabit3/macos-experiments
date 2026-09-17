@@ -1,5 +1,7 @@
 # Tiny Tectonics
 
+![Tiny Tectonics screenshot](screenshots/tiny-tectonics.jpg)
+
 A native, offline iPhone game about shaping miniature landscapes. SwiftUI renders
 procedural 2.5D terracotta islands, layered cliffs, topographic contours, pines and
 turquoise rivers. A midnight-green mineral gallery, brass instruments and engraved

@@ -1,5 +1,7 @@
 # Transit Atelier
 
+![Transit Atelier screenshot](screenshots/ios-transit-atelier.jpg)
+
 A native, offline iPhone transit game presented as an 8-bit overworld. Turn a growing coastal city into a living diagram: draw lines, carry passengers to matching shapes, build interchanges and keep stations from overcrowding.
 
 ## Build and run

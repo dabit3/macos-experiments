@@ -1,5 +1,7 @@
 # Azure Paradox
 
+![Azure Paradox screenshot](screenshots/azure-paradox.jpg)
+
 A native landscape iPhone fantasy fighter inspired by the **BlazBlue 2008–2015**
 series. Two original combatants duel in a painted celestial cathedral using real
 WebSocket multiplayer. All project files are isolated in this directory.

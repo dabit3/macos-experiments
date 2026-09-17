@@ -1,5 +1,7 @@
 # Bento Circuit
 
+![Bento Circuit screenshot](screenshots/bento-circuit.jpg)
+
 A native iPhone lunchbox packing puzzle. SwiftUI, original illustrated food assets,
 UIKit sharing, local persistence, and no third-party runtime dependencies.
 

@@ -1,5 +1,7 @@
 # Groovebox / GB—01
 
+![Groovebox / GB—01 screenshot](screenshots/groovebox.jpg)
+
 A native pocket rhythm instrument for iPhone. Graphite panels, warm markings, colored
 drum voices and a sample-clock sequencer turn the screen into a small electronic
 instrument. No accounts, internet, sound downloads or external packages.

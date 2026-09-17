@@ -1,5 +1,7 @@
 # Golden Drop
 
+![Golden Drop screenshot](screenshots/ios-golden-drop.jpg)
+
 A native iPhone precision drop game: brass, glass and small celestial gardens.
 Built with SwiftUI Canvas, original vector artwork and synthesized glass tones.
 There are no external packages, ads, accounts or network services.

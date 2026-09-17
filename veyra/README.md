@@ -1,5 +1,7 @@
 # Veyra
 
+![Veyra screenshot](screenshots/veyra.jpg)
+
 A local, interactive browser BIM workspace inspired by Autodesk Revit 2025.1.
 The included Alder Cultural Pavilion is original procedural architecture: two
 storeys, glazed galleries, a timber screen, roof garden, courtyard, reflecting
