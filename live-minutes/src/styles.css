@@ -654,3 +654,10 @@ h3 {
     box-shadow: 0 0 0 4px rgb(245 196 81 / 0);
   }
 }
+
+.empty.mic-error {
+  color: var(--warn, #f5b83d);
+  border: 1px dashed currentColor;
+  border-radius: 6px;
+  padding: 8px 10px;
+}

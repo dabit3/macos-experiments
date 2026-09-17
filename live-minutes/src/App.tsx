@@ -26,7 +26,7 @@ export default function App() {
       {s.health?.mock && <div className="mock-banner">MOCK MODE — answers replayed from server/mock-answers.json, no TypeSafe calls are being made</div>}
       <Controls s={s} onStart={m.start} onStop={m.stop} onReset={m.reset} onMode={m.setMode} onSpeed={m.setSpeed} onMicSpeaker={m.setMicSpeaker} />
       <main className="grid">
-        <Transcript rows={s.rows} interim={s.micInterim} micSpeaker={s.micSpeaker} />
+        <Transcript rows={s.rows} interim={s.micInterim} micSpeaker={s.micSpeaker} micError={s.micError} />
         <Lists items={s.agg.items} rows={s.rows} attendees={attendees} onShown={m.shown} onFix={m.fixAssignee} />
         <aside className="baselines">
           <PostMeetingPanel phase={s.phase} clock={s.clock} wallStart={s.wallStart} wallEnd={s.wallEnd} items={s.agg.items} />

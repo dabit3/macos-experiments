@@ -51,6 +51,8 @@ export interface MeetingState {
   micSupported: boolean;
   micInterim: string;
   micSpeaker: string;
+  /** Why the microphone session ended, if it did not end by the user pressing Stop. */
+  micError: string | null;
 }
 
 type Action =
@@ -67,9 +69,17 @@ type Action =
   | { type: "shown"; itemId: number; ms: number }
   | { type: "fixAssignee"; itemId: number; name: string | null }
   | { type: "interim"; text: string }
+  | { type: "micError"; error: string }
   | { type: "finish"; wallEnd: number };
 
 export const CONCURRENCY = 12;
+
+const MIC_ERROR_TEXT: Record<string, string> = {
+  "not-allowed": "Microphone access was denied. Allow the mic for this site (or use Replay).",
+  "service-not-allowed": "Speech recognition is not allowed in this browser context.",
+  "audio-capture": "No microphone was found on this device.",
+  network: "Speech recognition needs a network connection to the browser's speech service.",
+};
 
 const initial = (): MeetingState => ({
   mode: "replay",
@@ -90,6 +100,7 @@ const initial = (): MeetingState => ({
   micSupported: typeof window !== "undefined" && getSpeechRecognition() !== null,
   micInterim: "",
   micSpeaker: "You",
+  micError: null,
 });
 
 export function reducer(s: MeetingState, a: Action): MeetingState {
@@ -140,6 +151,8 @@ export function reducer(s: MeetingState, a: Action): MeetingState {
       return { ...s, agg: setAssignee(s.agg, a.itemId, a.name) };
     case "interim":
       return { ...s, micInterim: a.text };
+    case "micError":
+      return { ...s, micError: a.error, micInterim: "" };
     case "finish":
       return s.phase === "running" ? { ...s, phase: "done", wallEnd: a.wallEnd, micInterim: "" } : s;
     default:
@@ -256,6 +269,22 @@ export function useMeeting() {
     raf.current = requestAnimationFrame(loop);
   }, [stopEngines, submit, finishWhenDrained]);
 
+  const stop = useCallback(() => {
+    const r = recog.current as (SpeechRecognitionLike & { flush?: () => void }) | null;
+    r?.flush?.();
+    if (raf.current !== null) cancelAnimationFrame(raf.current);
+    raf.current = null;
+    for (const t of timers.current) window.clearTimeout(t);
+    timers.current = [];
+    if (recog.current) {
+      recog.current.onend = null;
+      recog.current.onresult = null;
+      recog.current.stop();
+      recog.current = null;
+    }
+    finishWhenDrained();
+  }, [finishWhenDrained]);
+
   const startMic = useCallback(() => {
     stopEngines();
     const Ctor = getSpeechRecognition();
@@ -297,11 +326,25 @@ export function useMeeting() {
       dispatch({ type: "interim", text: `${seg.pending} ${interim}`.trim() });
     };
     r.onerror = (ev) => {
-      dispatch({ type: "failed", id: -1, error: `mic: ${ev.error}` });
+      if (ev.error === "no-speech" || ev.error === "aborted") return;
+      // not-allowed / audio-capture / network / service-not-allowed: nothing to listen to, end the session.
+      dispatch({ type: "micError", error: MIC_ERROR_TEXT[ev.error] ?? `Speech recognition error: ${ev.error}` });
+      if (recog.current === r) {
+        r.onend = null;
+        r.onresult = null;
+        recog.current = null;
+        r.abort();
+        stop();
+      }
     };
     r.onend = () => {
-      // Chrome stops after silence; keep listening while the session is running.
-      if (recog.current === r && stateRef.current.phase === "running") r.start();
+      // Chrome stops after silence; keep listening while the session is running (never in a tight loop).
+      if (recog.current !== r || stateRef.current.phase !== "running") return;
+      timers.current.push(
+        window.setTimeout(() => {
+          if (recog.current === r && stateRef.current.phase === "running") r.start();
+        }, 250),
+      );
     };
     const tick = () => {
       dispatch({ type: "tick", clock: Math.floor((performance.now() - wallStart) / 100) / 10 });
@@ -313,23 +356,7 @@ export function useMeeting() {
     (recog.current as SpeechRecognitionLike & { flush?: () => void }).flush = () => {
       for (const s of seg.flush()) emit(s);
     };
-  }, [stopEngines, submit]);
-
-  const stop = useCallback(() => {
-    const r = recog.current as (SpeechRecognitionLike & { flush?: () => void }) | null;
-    r?.flush?.();
-    if (raf.current !== null) cancelAnimationFrame(raf.current);
-    raf.current = null;
-    for (const t of timers.current) window.clearTimeout(t);
-    timers.current = [];
-    if (recog.current) {
-      recog.current.onend = null;
-      recog.current.onresult = null;
-      recog.current.stop();
-      recog.current = null;
-    }
-    finishWhenDrained();
-  }, [finishWhenDrained]);
+  }, [stopEngines, submit, stop]);
 
   const reset = useCallback(() => {
     stopEngines();

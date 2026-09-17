@@ -3,7 +3,17 @@ import type { Row } from "../lib/useMeeting.ts";
 import { fmtClock, fmtMs } from "../lib/stats.ts";
 import { KIND_LABEL, speakerClass } from "./labels.ts";
 
-export function Transcript({ rows, interim, micSpeaker }: { rows: Row[]; interim: string; micSpeaker: string }) {
+export function Transcript({
+  rows,
+  interim,
+  micSpeaker,
+  micError,
+}: {
+  rows: Row[];
+  interim: string;
+  micSpeaker: string;
+  micError: string | null;
+}) {
   const bottom = useRef<HTMLDivElement>(null);
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "end" });
@@ -16,7 +26,8 @@ export function Transcript({ rows, interim, micSpeaker }: { rows: Row[]; interim
         <span className="muted">{rows.length} utterances</span>
       </header>
       <div className="scroll">
-        {rows.length === 0 && !interim && <p className="empty">Press <b>Start</b> to replay the standup, or switch to Live mic.</p>}
+        {micError && <p className="empty mic-error">{micError}</p>}
+        {rows.length === 0 && !interim && !micError && <p className="empty">Press <b>Start</b> to replay the standup, or switch to Live mic.</p>}
         {rows.map((r) => (
           <div key={r.id} className={`utt ${r.status}`}>
             <span className="utt-time">{fmtClock(r.endsAt)}</span>
