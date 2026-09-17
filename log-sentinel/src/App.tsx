@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState, type WheelEvent } from "react";
 import type { Config, Disagreement, Incident, Metrics, ServerMessage, Severity } from "../shared/types.ts";
 import { initialState, reduce, type Row } from "./lib/store.ts";
 
@@ -97,10 +97,15 @@ function Firehose({ rows }: { rows: Row[] }) {
   useEffect(() => {
     if (follow && ref.current) ref.current.scrollTop = ref.current.scrollHeight;
   }, [rows, follow]);
-  const onScroll = () => {
+  const atBottom = () => {
     const el = ref.current;
-    if (!el) return;
-    setFollow(el.scrollHeight - el.scrollTop - el.clientHeight < 40);
+    return !el || el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+  };
+  const onWheel = (e: WheelEvent<HTMLDivElement>) => {
+    if (e.deltaY < 0) setFollow(false);
+  };
+  const onScroll = () => {
+    if (atBottom()) setFollow(true);
   };
   return (
     <section className="pane firehose">
@@ -112,7 +117,7 @@ function Firehose({ rows }: { rows: Row[] }) {
           </button>
         )}
       </h2>
-      <div className="scroll mono" ref={ref} onScroll={onScroll}>
+      <div className="scroll mono" ref={ref} onScroll={onScroll} onWheel={onWheel}>
         {rows.map(({ event, judgment }) => (
           <div key={event.id} className={`line sev-${judgment ? judgment.severity : "pending"} ${judgment?.actionable ? "act" : ""} ${event.storm ? "storm" : ""}`}>
             <span className="svc">{event.service}</span>
