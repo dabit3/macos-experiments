@@ -20,15 +20,15 @@ export function PostMeetingPanel({ phase, clock, wallStart, wallEnd, items, acti
       className="baseline post"
       active={active}
       onActivate={onActivate}
-      title={<>post-meeting-summary <span className="pill illustrative">illustrative · LLM style</span></>}
-      right={<span className="muted">{phase === "done" ? "delivered after the call" : "nothing until the call ends"}</span>}
+      title={<>post-meeting-summary <span className="pill illustrative">illustrative</span></>}
+      right={<span className="muted">{phase === "done" ? "delivered" : "waiting…"}</span>}
     >
       <div className="scroll">
         {phase !== "done" ? (
           <div className="waiting">
             <div className="big-timer">{fmtClock(clock)}</div>
             <p>
-              {phase === "idle" ? "A summarisation prompt runs once, on the full transcript, after the meeting." : "Meeting in progress — the summariser has nothing to show yet."}
+              {phase === "idle" ? "LLM-style summary: one prompt over the full transcript, after the meeting. Nothing until the call ends." : "Meeting in progress — the summariser has nothing to show yet."}
             </p>
             <p className="muted small">Live items on the right have been visible for the whole time this counter has been running.</p>
           </div>
