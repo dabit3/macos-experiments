@@ -16,8 +16,9 @@ export interface Sample {
 export interface GuardState {
   answers: Record<string, Answer>;
   spans: Span[];
-  /** The draft the current answers were computed for. */
+  /** The draft and channel the current answers were computed for. */
   judgedDraft: string;
+  judgedChannel: string;
   inflight: boolean;
   last: Sample | null;
   samples: Sample[];
@@ -31,6 +32,7 @@ const EMPTY: GuardState = {
   answers: {},
   spans: [],
   judgedDraft: "",
+  judgedChannel: "",
   inflight: false,
   last: null,
   samples: [],
@@ -79,6 +81,7 @@ export function useGuard(draft: string, channel: Channel) {
           answers: data.answers,
           spans,
           judgedDraft: text,
+          judgedChannel: ch.id,
           inflight: false,
           last: sample,
           samples: [...s.samples, sample].slice(-500),
@@ -103,7 +106,7 @@ export function useGuard(draft: string, channel: Channel) {
       ctrl.current?.abort();
       ctrl.current = null;
       seq.current++;
-      setState((s) => ({ ...s, answers: {}, spans: [], judgedDraft: "", inflight: false }));
+      setState((s) => ({ ...s, answers: {}, spans: [], judgedDraft: "", judgedChannel: "", inflight: false }));
       return;
     }
     timer.current = setTimeout(() => void run(draft, channel), DEBOUNCE_MS);

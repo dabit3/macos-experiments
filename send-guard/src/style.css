@@ -293,6 +293,11 @@ h3 {
   border-color: var(--warn);
   color: #ffe4a3;
 }
+.send-pending {
+  background: #1a2233;
+  border-color: var(--border);
+  color: var(--dim);
+}
 .send-block {
   background: #3d1218;
   border-color: var(--bad);

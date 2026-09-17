@@ -5,7 +5,7 @@ import Latency from "./Latency";
 import { AUDIENCE_LABEL, CHANNELS } from "./lib/channels";
 import { decide } from "./lib/policy";
 import { SCENARIOS } from "./lib/scenarios";
-import { regexOnlyFlags } from "./lib/spans";
+import { findSpans, regexOnlyFlags } from "./lib/spans";
 import type { Verdict } from "./lib/types";
 import { DEBOUNCE_MS, useGuard } from "./useGuard";
 
@@ -49,14 +49,19 @@ export default function App() {
       .catch(() => setHealth({ mock: false, hasKey: false }));
   }, []);
 
-  const stale = guard.judgedDraft !== draft;
+  const stale = guard.judgedDraft !== draft || guard.judgedChannel !== channel.id;
   const decision = useMemo(() => decide(guard.answers, channel.audience, guard.spans), [guard.answers, channel.audience, guard.spans]);
-  const regexFlagged = useMemo(() => regexOnlyFlags(guard.spans), [guard.spans]);
+  const liveSpans = useMemo(() => findSpans(draft), [draft]);
+  const regexFlagged = useMemo(() => regexOnlyFlags(liveSpans), [liveSpans]);
   const regex = regexVerdict(regexFlagged.map((s) => s.kind));
   const hasAnswers = Object.keys(guard.answers).length > 0;
 
+  const empty = draft.trim().length === 0;
   const shown: { verdict: Verdict; reason: string } = regexOnly ? regex : hasAnswers ? decision : { verdict: "send", reason: "Start typing…" };
-  const buttonVerdict: Verdict = draft.trim().length === 0 ? "send" : shown.verdict;
+  const buttonVerdict: Verdict = empty ? "send" : shown.verdict;
+  // Jev mode: Send only unlocks once the exact current draft + channel has been judged.
+  const awaitingJudgment = !regexOnly && !empty && (stale || guard.inflight || !hasAnswers);
+  const canSend = !empty && buttonVerdict !== "block" && !awaitingJudgment;
 
   const guardRef = useRef(guard);
   guardRef.current = guard;
@@ -112,7 +117,7 @@ export default function App() {
   }, [replaying]);
 
   const onSend = () => {
-    if (buttonVerdict === "block") return;
+    if (!canSend) return;
     setSent(`Sent to ${channel.name} at ${new Date().toLocaleTimeString()}`);
     setDraft("");
   };
@@ -158,7 +163,7 @@ export default function App() {
           <Composer
             value={draft}
             onChange={setDraft}
-            spans={guard.spans}
+            spans={regexOnly ? liveSpans : guard.spans}
             culprits={new Set(decision.culpritSpanIds)}
             regexOnly={regexOnly}
             regexFlagged={new Set(regexFlagged.map((s) => s.id))}
@@ -167,9 +172,9 @@ export default function App() {
           />
 
           <div className="send-row">
-            <button className={`send send-${buttonVerdict}`} disabled={buttonVerdict === "block" || draft.trim().length === 0} onClick={onSend}>
-              {buttonVerdict === "block" ? "Blocked" : buttonVerdict === "warn" ? "Send anyway" : "Send"}
-              <span className="send-reason">{draft.trim().length === 0 ? "" : shown.reason}</span>
+            <button className={`send send-${awaitingJudgment ? "pending" : buttonVerdict}`} disabled={!canSend} onClick={onSend}>
+              {awaitingJudgment ? "Judging…" : buttonVerdict === "block" ? "Blocked" : buttonVerdict === "warn" ? "Send anyway" : "Send"}
+              <span className="send-reason">{empty ? "" : awaitingJudgment ? "waiting for Jev on the current draft" : shown.reason}</span>
             </button>
             <div className="status">
               {regexOnly ? (
