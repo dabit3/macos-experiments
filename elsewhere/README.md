@@ -1,5 +1,7 @@
 # Elsewhere
 
+![Elsewhere screenshot](screenshots/elsewhere.jpg)
+
 A native, offline iPhone travel scrapbook. Cream paper, cobalt passport stamps,
 original procedural destination illustrations and vermilion journal details.
 

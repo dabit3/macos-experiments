@@ -1,5 +1,7 @@
 # Aster
 
+![Aster screenshot](screenshots/aster.jpg)
+
 A native macOS orbital laboratory. Plan an impulse, inspect the predicted trajectory, and guide a probe into a higher Earth orbit. The midnight instrument canvas, procedural globe and app icon are original local artwork; there are no network services, packages, credentials or downloaded assets.
 
 ## Build and run

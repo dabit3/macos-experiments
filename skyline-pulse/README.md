@@ -1,5 +1,7 @@
 # Skyline Pulse
 
+![Skyline Pulse screenshot](screenshots/skyline-pulse.jpg)
+
 A native **iPad landscape** rhythm score battle inspired by the perspective highway and broad touch slider of Chunithm. Original character **Aria**, two original electronic tracks, 16 touch segments, red taps, gold sustained notes, cyan moving slides, green upward air gestures, per-tick timing/combo/accuracy, real two-player WebSocket rooms and mutual rematches.
 
 The tablet choice preserves the wide two-hand slider and gestures without shrinking sixteen touch segments beside the character/HUD. This is SwiftUI + SpriteKit + AVFoundation, not a web view. Reference research and the explicit adaptation boundaries are in [REFERENCE.md](Docs/REFERENCE.md). No arcade assets, music or ROMs are bundled.

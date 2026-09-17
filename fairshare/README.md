@@ -1,5 +1,7 @@
 # Fairshare
 
+![Fairshare screenshot](screenshots/fairshare.jpg)
+
 A native iPhone trip ledger for the small, human side of shared money. An illustrated
 Lisbon getaway opens with four friends, five editable expenses, and a settlement plan
 computed from the actual ledger. Cream, plum, coral and periwinkle frame an original

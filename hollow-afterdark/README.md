@@ -1,5 +1,7 @@
 # Hollow Afterdark
 
+![Hollow Afterdark screenshot](screenshots/hollow-afterdark.jpg)
+
 A native landscape iPhone duel under a moonlit city skyline. Two guests connect
 to the same room over real WebSockets. The Node server owns all combat state;
 neither client can set health, score, positions or victory.

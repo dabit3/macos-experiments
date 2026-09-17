@@ -1,5 +1,7 @@
 # SlideForge: build a deck, present it fullscreen, export a PDF
 
+![SlideForge: build a deck, present it fullscreen, export a PDF screenshot](screenshots/slide-forge.jpg)
+
 A Google-Slides-lite editor that runs entirely in the browser. Slides live in a
 thumbnail rail on the left (drag to reorder, right-click to duplicate/delete);
 the 16:9 canvas holds text boxes, rectangles, ellipses, arrows and emoji

@@ -1,5 +1,7 @@
 # Foldscape
 
+![Foldscape screenshot](screenshots/foldscape.jpg)
+
 A native SwiftUI iPhone puzzle: slide eight paper pieces into place and reveal a
 living landscape. Six original, locally rendered paper dioramas: Mosslight,
 Coral Summit, Indigo Tide, Amber Dunes, Lilac Hour, and Terra Arch.

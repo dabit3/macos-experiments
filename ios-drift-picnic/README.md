@@ -1,5 +1,7 @@
 # Drift Picnic
 
+![Drift Picnic screenshot](screenshots/ios-drift-picnic.jpg)
+
 A native SwiftUI + SceneKit kart racer on a sunlit picnic blanket. Clover the rabbit
 races Maple, Mochi and Pepper around Strawberry Circuit: three laps, strawberry
 curbs, a cake centerpiece and lemonade towers. The original art, icon, characters

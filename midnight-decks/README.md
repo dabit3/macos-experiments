@@ -1,5 +1,7 @@
 # Midnight Decks
 
+![Midnight Decks screenshot](screenshots/midnight-decks.jpg)
+
 A native landscape iPhone rhythm battle, inspired by beatmania IIDX's seven-key
 DJ deck. Original vector graphics and a generated 64-second electronic track.
 Two guests play the same chart over a real authoritative WebSocket connection.

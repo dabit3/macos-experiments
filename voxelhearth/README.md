@@ -1,5 +1,7 @@
 # VoxelHearth
 
+![VoxelHearth screenshot](screenshots/voxelhearth.jpg)
+
 An original multiplayer voxel sandbox with native **macOS**, **iPhone** and
 **iPad** clients. SwiftUI provides the application and HUD, AppKit/UIKit handle
 input, Metal renders the voxel world, and `URLSessionWebSocketTask` connects to

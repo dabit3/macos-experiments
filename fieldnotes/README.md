@@ -1,5 +1,7 @@
 # Fieldnotes
 
+![Fieldnotes screenshot](screenshots/fieldnotes.jpg)
+
 A native iPhone field journal with a warm-paper, natural-history-book design.
 SwiftUI, PhotosUI and Foundation only. iOS 17 or later. No network, accounts,
 backend, API keys or runtime packages.

@@ -1,5 +1,7 @@
 # Emberpath
 
+![Emberpath screenshot](screenshots/emberpath.jpg)
+
 A native, offline iPhone lantern puzzle. Carry a finite light through eight
 handcrafted chambers, gather embers, find golden keys and reach the glowing exit.
 Original stone, explorer, lantern, jewel and doorway artwork is drawn with SwiftUI

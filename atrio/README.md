@@ -1,5 +1,7 @@
 # Atrio
 
+![Atrio screenshot](screenshots/atrio.jpg)
+
 A local, editable architectural workspace inspired by **Graphisoft Archicad 28**.
 The included Oak & Light arts campus links a real Three.js axonometric model to
 an SVG floor plan. No account, backend, commercial engine, or remote assets required.

@@ -1,5 +1,7 @@
 # Crown Clash
 
+![Crown Clash screenshot](screenshots/crown-clash.jpg)
+
 A native landscape iPhone team fighter inspired by **The King of Fighters XIII**.
 Choose three original fighters in order, meet another guest over a real WebSocket,
 and win only when the opposing three-member roster is eliminated.

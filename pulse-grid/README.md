@@ -1,5 +1,7 @@
 # Pulse Grid
 
+![Pulse Grid screenshot](screenshots/pulse-grid.jpg)
+
 A native SwiftUI light-circuit puzzle for iPhone. Rotate frosted circuit tiles,
 connect a mint source to every coral receiver, and follow the live current.
 Ten handcrafted circuits introduce bends, branches, blocked cells and loops.

@@ -1,5 +1,7 @@
 # Railway — The Stillwater Line
 
+![Railway — The Stillwater Line screenshot](screenshots/railway.jpg)
+
 A native macOS miniature railway dispatch simulator. An original, procedurally drawn
 forest diorama surrounds a working track graph: cream station buildings, layered
 pine trees, timber sleepers, brass points and two moving passenger services.

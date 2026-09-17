@@ -1,5 +1,7 @@
 # Trailhead
 
+![Trailhead screenshot](screenshots/trailhead.jpg)
+
 A native iPhone field guide for the day you want to spend outside. Forest-green typography, limestone paper, original vector contour artwork and burnt-orange trails make a compact, offline expedition planner.
 
 **These are illustrative trail studies, not real hiking directions.** Coordinates and elevations are authored numeric fixtures located near three broad geographic regions; they are not surveyed routes. Decorative contours, water features and labels are not derived from elevation data. Never use this app or its exports for navigation.

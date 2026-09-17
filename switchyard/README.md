@@ -1,5 +1,7 @@
 # Switchyard
 
+![Switchyard screenshot](screenshots/switchyard.jpg)
+
 A native SwiftUI miniature railway dispatch puzzle. Route color-and-letter-coded trains to three stations across six authored shifts. Tap switches A and B, hold/release entrance signals, pause to plan, change speed, and retry. Correct deliveries earn 100 points; completing a shift unlocks the next.
 
 ## Run

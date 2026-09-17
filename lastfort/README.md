@@ -1,5 +1,7 @@
 # Lastfort
 
+![Lastfort screenshot](screenshots/lastfort.jpg)
+
 Lastfort is an original top-down battle-royale shooter with building. Up to
 16 players drop from a sky bus onto a deterministic 1000 × 1000 island,
 harvest wood, stone and metal, loot weapons and consumables, build and edit

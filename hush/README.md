@@ -1,5 +1,7 @@
 # Hush
 
+![Hush screenshot](screenshots/hush.jpg)
+
 A native, offline iPhone soundscape mixer. Midnight ink, a procedural moonlit
 coast, and four independent vertical faders: rain, ocean, wind, and brown noise.
 All sounds are original deterministic synthesis, generated on device into

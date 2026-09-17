@@ -1,5 +1,7 @@
 # Rippletone
 
+![Rippletone screenshot](screenshots/rippletone.jpg)
+
 A native SwiftUI rhythm game set on an ink-black koi pond. No dependencies,
 network, accounts, signing credentials, or generated web content.
 

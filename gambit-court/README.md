@@ -1,5 +1,7 @@
 # Gambit Court
 
+![Gambit Court screenshot](screenshots/gambit-court.jpg)
+
 Gambit Court is an original online chess game with native SwiftUI applications
 for **macOS 14+** and **iOS/iPadOS 17+**. iPhone and iPad share the iOS target
 (device families 1 and 2). SwiftUI Canvas draws the original ceramic vector

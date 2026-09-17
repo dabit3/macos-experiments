@@ -1,5 +1,7 @@
 # Tower Tussle
 
+![Tower Tussle screenshot](screenshots/tower-tussle.jpg)
+
 A real-time card/tower battle game in the spirit of Clash Royale, built twice from
 scratch: a native iOS app (Swift 5.9, SwiftUI, `Canvas`) and a native Android app
 (Kotlin, Jetpack Compose). Both share the same rules, card roster, arena layout and

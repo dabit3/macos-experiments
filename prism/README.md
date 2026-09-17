@@ -1,5 +1,7 @@
 # Prism
 
+![Prism screenshot](screenshots/prism.jpg)
+
 A native macOS image studio built around a real, editable image-processing graph. A graphite workspace, color-coded ports, curved connections and a live Core Image viewer keep the composition at the center of the app.
 
 ## Requirements and launch

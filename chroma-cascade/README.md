@@ -1,5 +1,7 @@
 # Chroma Cascade
 
+![Chroma Cascade screenshot](screenshots/chroma-cascade.jpg)
+
 A native iPhone color-sorting game, composed as a small art gallery. SwiftUI and
 Apple frameworks only; no accounts, network, ads, paywalls, or runtime packages.
 

@@ -1,5 +1,7 @@
 # Mossball
 
+![Mossball screenshot](screenshots/mossball.jpg)
+
 A native, offline iPhone mini-golf game in a miniature overgrown garden. SwiftUI
 and Canvas draw the travertine, moss, ferns, mushrooms, milky ponds and golden
 flags. There are no external packages, APIs, accounts or web views.

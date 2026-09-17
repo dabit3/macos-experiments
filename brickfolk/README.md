@@ -1,5 +1,7 @@
 # Brickfolk
 
+![Brickfolk screenshot](screenshots/brickfolk.jpg)
+
 An original social sandbox for **macOS, iPhone and iPad**. Native SwiftUI
 screens and Canvas characters meet the existing authoritative Dart multiplayer
 server. There is no Flutter runtime, WebView, or local substitute for the

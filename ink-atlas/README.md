@@ -1,5 +1,7 @@
 # Ink Atlas
 
+![Ink Atlas screenshot](screenshots/ink-atlas.jpg)
+
 A native, landscape-first iPad sketchbook for thinking in space. Warm dotted paper,
 quiet colors, editorial typography and a floating toolbox turn loose thoughts into
 connected, editable diagrams. SwiftUI provides the interface; a touch-driven UIKit

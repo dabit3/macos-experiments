@@ -1,5 +1,7 @@
 # Starcap Circuit
 
+![Starcap Circuit screenshot](screenshots/starcap-circuit.jpg)
+
 A native landscape iPhone kart racer inspired by the colorful arcade presentation
 of **Mario Kart Arcade GP DX**. SwiftUI + SceneKit, original geometry and synthesized
 music, and an authoritative Node WebSocket server. Two real guests, two winding

@@ -1,5 +1,7 @@
 # Cadence Coach
 
+![Cadence Coach screenshot](screenshots/cadence-coach.jpg)
+
 A native, offline iPhone interval coach. A warm cream routine studio gives way to
 a graphite workout instrument with electric lime work phases and soft sea-glass
 rest phases. Original procedural interval artwork and app icon, system typography,

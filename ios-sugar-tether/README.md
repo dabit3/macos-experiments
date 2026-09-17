@@ -1,5 +1,7 @@
 # Sugar Tether
 
+![Sugar Tether screenshot](screenshots/ios-sugar-tether.jpg)
+
 A native iPhone physics puzzle about silk, candy, and Pip, an original mint felt creature.
 Eight handcrafted puzzles introduce cutting, multiple tethers, pendulum timing, air puffs,
 bubbles, and moving thorns. Built with SwiftUI, Canvas, UIKit haptics, and original synthesized

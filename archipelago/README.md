@@ -1,5 +1,7 @@
 # Archipelago
 
+![Archipelago screenshot](screenshots/archipelago.jpg)
+
 A native, landscape-first iPad logistics game. Connect five hand-drawn isometric
 islands, assign four distinct ferries, and bring the distant lighthouse to life.
 SwiftUI and Canvas render all artwork locally: turquoise water, fields, windmill,

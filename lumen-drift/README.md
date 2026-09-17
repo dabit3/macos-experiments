@@ -1,5 +1,7 @@
 # Lumen Drift
 
+![Lumen Drift screenshot](screenshots/lumen-drift.jpg)
+
 A native portrait iPhone arcade game about finding a clean line through a luminous canyon. A SwiftUI cockpit surrounds a procedural SpriteKit world: faceted indigo cliffs, an eclipsed moon, cyan flight rails, a hovering craft and coral obstacles. Everything runs offline.
 
 ## Requirements

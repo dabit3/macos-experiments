@@ -1,5 +1,7 @@
 # Tidepool
 
+![Tidepool screenshot](screenshots/tidepool.jpg)
+
 A native iPhone marine-restoration puzzle. Five handcrafted shores turn bare rock,
 sand, and water into small living communities. Procedural SwiftUI artwork draws
 every coral branch, anemone tentacle, fish stripe, sea-star dot, and urchin spine

@@ -1,5 +1,7 @@
 # Pocket Derby
 
+![Pocket Derby screenshot](screenshots/ios-pocket-derby.jpg)
+
 A native, landscape car-soccer game for iPhone and iPad. Original toy cars compete on a miniature rooftop court: one player, one local CPU opponent, and 90 seconds to own the skyline.
 
 ## Build

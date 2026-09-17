@@ -1,5 +1,7 @@
 # Buttonwood Adventure
 
+![Buttonwood Adventure screenshot](screenshots/ios-buttonwood-adventure.jpg)
+
 A native, landscape iOS platformer about a tiny explorer finding a way home through
 a clockwork woodland. Built with SwiftUI, SpriteKit, UIKit and synthesized local
 audio. Original vector artwork; no network, account, external assets or paid services.

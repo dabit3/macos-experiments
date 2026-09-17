@@ -1,5 +1,7 @@
 # Lucid Lanes
 
+![Lucid Lanes screenshot](screenshots/lucid-lanes.jpg)
+
 A native iPhone precision-bowling game in an impossible art-deco hotel. A native
 SceneKit stage renders sculpted porcelain pins, marbled bowling balls, polished
 terrazzo, brass trim and dimensional peach archways with physical lighting.

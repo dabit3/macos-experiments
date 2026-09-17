@@ -1,5 +1,7 @@
 # Rooftop Raccoon
 
+![Rooftop Raccoon screenshot](screenshots/rooftop-raccoon.jpg)
+
 A native, offline iPhone stealth game about grand snack larceny. SwiftUI renders an original blue-hour city and custom vector raccoon; every move advances a deterministic city beat. No packages, web views, network calls, accounts, signing secrets or shared game dependencies.
 
 ## Build and run

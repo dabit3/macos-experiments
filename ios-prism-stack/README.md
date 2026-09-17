@@ -1,5 +1,7 @@
 # Prism Stack
 
+![Prism Stack screenshot](screenshots/ios-prism-stack.jpg)
+
 A native, offline falling-tetromino game for iPhone. Smoked glass, seven jewel
 colors, quiet original tones, and a board-first portrait layout. Built with
 SwiftUI Canvas and a deterministic Swift rules engine; no web content, backend,

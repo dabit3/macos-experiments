@@ -1,5 +1,7 @@
 # Velvet Voltage
 
+![Velvet Voltage screenshot](screenshots/velvet-voltage.jpg)
+
 A native SwiftUI + SpriteKit designer pinball machine. Three balls, three ordered
 districts, one miniature city to power. No third-party runtime dependencies,
 accounts, network requests, signing credentials, or purchases.

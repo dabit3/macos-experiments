@@ -1,5 +1,7 @@
 # Lantern Parade
 
+![Lantern Parade screenshot](screenshots/lantern-parade.jpg)
+
 A native iPhone path puzzle, made with SwiftUI, Canvas and UIKit. Guide a growing
 procession through an indigo town: collect Amber → Rose → Jade, pass gates with
 the matching light, then reach the festival square without crossing the ribbon.

@@ -1,5 +1,7 @@
 # Silverroom
 
+![Silverroom screenshot](screenshots/silverroom.jpg)
+
 A native, on-device photo darkroom for iPhone. SwiftUI provides the interface;
 Core Image develops real photographs. No runtime dependencies, accounts,
 backend, or API keys.

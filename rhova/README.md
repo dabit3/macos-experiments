@@ -1,5 +1,7 @@
 # Rhova
 
+![Rhova screenshot](screenshots/rhova.jpg)
+
 A local browser modeling application studying the **Rhino 8 for Windows** interface. Opens directly into Aurelian Museum: a sweeping, parameterized rib canopy over a patterned glass pavilion, with terraces, a reflecting pool, sculpture, furniture and planted site.
 
 ## Run

@@ -1,5 +1,7 @@
 # Cutline
 
+![Cutline screenshot](screenshots/cutline.jpg)
+
 A quiet, native macOS editing room for short travel films. Assemble real local video,
 shape the cuts, choose an opening title and export a playable H.264 film. The charcoal
 workspace pairs a cinematic program monitor with a cyan playhead, thumbnail timeline,

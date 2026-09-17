@@ -1,5 +1,7 @@
 # Skyhook Salvage
 
+![Skyhook Salvage screenshot](screenshots/skyhook-salvage.jpg)
+
 A native SwiftUI / Canvas iPhone game about rescuing whimsical cargo with a swinging
 crane and balancing it on a tiny brass airship. No services, accounts or third-party
 runtime dependencies.

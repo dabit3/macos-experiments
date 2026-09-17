@@ -1,5 +1,7 @@
 # Devin Studio
 
+![Devin Studio screenshot](screenshots/creative-suite.jpg)
+
 A native macOS suite with twelve editors and a shared launcher. Create images, vector artwork, page layouts, video, animation, audio, PDFs, web pages, and 3D scenes.
 
 The suite uses Swift, SwiftUI, AppKit, and Apple media frameworks. It has no third-party package dependencies.

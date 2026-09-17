@@ -1,5 +1,7 @@
 # 3D Sneaker Configurator (Three.js)
 
+![3D Sneaker Configurator (Three.js) screenshot](screenshots/configurator-3d.jpg)
+
 A Three.js product configurator for a low-top court sneaker in the spirit of the Nike Air Force 1. The shoe is built entirely from procedural geometry: a lofted "last" surface (superellipse cross-sections swept along a Hermite profile) forms the upper, and every overlay panel (toe cap with perforations, mudguard, eyestays, heel counter, swoosh) is a thin shell offset from that same surface, so panels sit flush no matter how the profile is tuned. The chunky cupsole and gum outsole are extruded from the last's footprint and bent with the toe spring. There are no external model files, no backend and no runtime network calls; everything is bundled by Vite.
 
 ## Features

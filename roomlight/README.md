@@ -1,5 +1,7 @@
 # Roomlight
 
+![Roomlight screenshot](screenshots/roomlight.jpg)
+
 A native, landscape-first iPad interior studio: an architectural plan beside a softly lit, procedural miniature. Arrange a room, explore oak/walnut/limestone and chalk/clay/sage, and take away a real PDF.
 
 ## Prerequisites

@@ -1,5 +1,7 @@
 # Titan Uprising
 
+![Titan Uprising screenshot](screenshots/titan-uprising.jpg)
+
 A native landscape iPhone fighter inspired by **Injustice Arcade (2017)**: select three collectible hero cards, connect two human players to a room, and eliminate the opposing team. SwiftUI draws the metallic card collection and combat HUD; SpriteKit animates the arena, fighters and cinematic attacks. A Node WebSocket server owns all combat state.
 
 ## Requirements and build

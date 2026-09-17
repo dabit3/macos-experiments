@@ -1,5 +1,7 @@
 # Hourgarden
 
+![Hourgarden screenshot](screenshots/hourgarden.jpg)
+
 A native, offline iPhone focus ritual. Real time becomes an illustrated specimen
 in a personal herbarium: olive, eucalyptus, then wild cosmos.
 

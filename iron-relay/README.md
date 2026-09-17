@@ -1,5 +1,7 @@
 # Iron Relay
 
+![Iron Relay screenshot](screenshots/iron-relay.jpg)
+
 A native landscape iPhone tag fighter set in **The Foundry**: an illuminated steel
 arena, four original articulated fighters, authored strike animations, reserve
 health, sidestep, guard, punch strings, launch/juggle/tag feedback and first-to-two

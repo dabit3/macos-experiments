@@ -1,5 +1,7 @@
 # Dusk Angler
 
+![Dusk Angler screenshot](screenshots/dusk-angler.jpg)
+
 A native SwiftUI fishing game for iPhone. Follow fish silhouettes across a painted
 sunset lake, meet the bite, and balance the line through a short tension duel.
 No backend, external accounts, dependencies, or signing credentials are required.

@@ -1,5 +1,7 @@
 # Orbital Versus
 
+![Orbital Versus screenshot](screenshots/orbital-versus.jpg)
+
 A native **iPhone landscape** 3D mecha arena game. SwiftUI + SceneKit, original
 articulated Aster/Vesper frames and synthesized audio, authoritative WebSocket
 combat. Two human guest pilots face each other with one clearly marked AI wingman

@@ -1,5 +1,7 @@
 # Verdant
 
+![Verdant screenshot](screenshots/verdant.jpg)
+
 A native iPhone greenhouse journal. Six bespoke, procedural botanical illustrations live in a quiet conservatory of warm paper, olive ink, sage panels, and serif typography. The first launch includes a small established collection with two plants ready for care.
 
 ## Prerequisites

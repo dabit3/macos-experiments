@@ -1,5 +1,7 @@
 # Battleship Commander
 
+![Battleship Commander screenshot](screenshots/battleship-commander.jpg)
+
 Battleship against a hunt-and-target AI. Two 10×10 grids, the classic 5/4/3/3/2
 fleet, drag-and-drop ship placement, a deterministic seed so any game can be
 replayed move-for-move, animated hits/misses/sunk announcements, a shot log, an

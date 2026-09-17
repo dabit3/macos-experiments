@@ -1,5 +1,7 @@
 # Koi Keeper
 
+![Koi Keeper screenshot](screenshots/koi-keeper.jpg)
+
 A small native iPhone garden, seen from above. SwiftUI Canvas draws the jade
 water, swimming koi, lily pads, stones and irises procedurally. No web view,
 account, backend, network data or runtime package dependencies.

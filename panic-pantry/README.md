@@ -1,5 +1,7 @@
 # Panic Pantry
 
+![Panic Pantry screenshot](screenshots/panic-pantry.jpg)
+
 A cooperative kitchen-chaos game for **macOS, iPhone and iPad**. Up to four
 chefs share one top-down kitchen: grab ingredients, chop at boards, cook in
 pots, plate dishes, serve timed orders and wash the returning plates.

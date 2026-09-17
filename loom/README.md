@@ -1,5 +1,7 @@
 # Loom
 
+![Loom screenshot](screenshots/loom.jpg)
+
 A native macOS data-storytelling studio. Turn a CSV into a warm, editorial graphic with live field mapping, filtering, aggregation, and matching PNG or vector PDF exports.
 
 Loom is SwiftUI for the studio and AppKit/Core Graphics for the artwork. It runs entirely offline. There are no package dependencies, accounts, browser views, or signing-service requirements.

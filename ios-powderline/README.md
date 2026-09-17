@@ -1,5 +1,7 @@
 # Powderline
 
+![Powderline screenshot](screenshots/ios-powderline.jpg)
+
 A native, one-touch snowboarding odyssey for iPhone. SwiftUI draws an original
 layered alpine world with continuous hills, drifting snow, a tiny scarf-wearing
 rider, warm chalets and a dawn-to-apricot sky. A fixed-step Swift simulation runs

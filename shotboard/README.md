@@ -1,5 +1,7 @@
 # Shotboard
 
+![Shotboard screenshot](screenshots/shotboard.jpg)
+
 A native iPad director’s notebook: a quiet, charcoal studio with warm paper frames,
 electric yellow slate markers, original editable vector artwork and a horizontal
 sequence. Turn a sketch into a shot, then screen the film and hand off a real PDF.

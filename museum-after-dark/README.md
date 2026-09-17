@@ -1,5 +1,7 @@
 # Museum After Dark
 
+![Museum After Dark screenshot](screenshots/museum-after-dark.jpg)
+
 A native, offline iPhone stealth puzzle in SwiftUI. Ten authored museum rooms, ruby security lasers, rotating amber searchlights, mirrors, independent power circuits, unlimited undo, par medals and a locally saved collection.
 
 ## Art direction

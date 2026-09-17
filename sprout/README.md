@@ -1,5 +1,7 @@
 # Sprout
 
+![Sprout screenshot](screenshots/sprout.jpg)
+
 A small, native iPhone plant-care companion. SwiftUI, original procedural botanical
 illustrations, local storage, and no runtime dependencies. iOS 17 or newer.
 

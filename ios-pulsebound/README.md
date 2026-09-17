@@ -1,5 +1,7 @@
 # Pulsebound
 
+![Pulsebound screenshot](screenshots/ios-pulsebound.jpg)
+
 A native, one-touch rhythm platformer for iPhone. Follow a cyan cube through three
 authored neon tracks: **First Light** (26s), **Afterimage** (29s), and **Overdrive**
 (31s). Original SpriteKit vector scenery and a synthesized four-bar electronic

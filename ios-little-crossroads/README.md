@@ -1,5 +1,7 @@
 # Little Crossroads
 
+![Little Crossroads screenshot](screenshots/ios-little-crossroads.jpg)
+
 A native iPhone hopping game built with SwiftUI and SceneKit. Guide an original tiny duck through a saturated, blocky 8-bit-style countryside: dodge traffic, ride moving logs, collect coins and welcome three additional companions.
 
 The presentation follows classic console conventions: an original 5x7 bitmap typeface (`Sources/PixelFont.swift`) for every label, a monospaced sans-serif system font for body copy (no serif fonts anywhere), a limited saturated palette, chunky outlined panels with offset block shadows, a D-pad plus A-button control cluster, and frame-stepped animation for coins, ripples, logs and the hop arc. The SceneKit view renders without antialiasing at a reduced content scale so the world reads as crisp pixels.

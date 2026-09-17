@@ -1,5 +1,7 @@
 # Orbit Encore
 
+![Orbit Encore screenshot](screenshots/orbit-encore.jpg)
+
 A native **iPhone rhythm score battle**, inspired by maimai's eight-position
 circular cabinet. Tap outward-moving rings, sustain holds, trace cyan star paths,
 hit two-finger yellow pairs and weighted gold breaks. Both guests play authored

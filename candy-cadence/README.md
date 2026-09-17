@@ -1,5 +1,7 @@
 # Candy Cadence
 
+![Candy Cadence screenshot](screenshots/candy-cadence.jpg)
+
 A native landscape **iPad** rhythm game with nine staggered candy buttons,
 original animated vector mascots, two original instrumental songs, authored charts,
 and real two-player WebSocket competition. Distinct application identifier:

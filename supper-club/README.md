@@ -1,5 +1,7 @@
 # Supper Club
 
+![Supper Club screenshot](screenshots/supper-club.jpg)
+
 A native, offline iPhone cooking companion, styled as a small food magazine. Built with SwiftUI, Canvas and Foundation. iOS 17+, no packages, servers, accounts or API keys.
 
 ## Features

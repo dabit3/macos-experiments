@@ -1,5 +1,7 @@
 # Swapmate
 
+![Swapmate screenshot](screenshots/swapmate.jpg)
+
 Native **iPhone, iPad and macOS** Bughouse chess, built with SwiftUI and native
 Canvas artwork. The unchanged pure Dart server owns rooms, bots, rules, clocks
 and match progression. Clients connect over real WebSockets using the typed

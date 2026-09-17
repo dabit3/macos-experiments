@@ -1,5 +1,7 @@
 # Terra Table
 
+![Terra Table screenshot](screenshots/terra-table.jpg)
+
 A native, landscape-first iPad sculpting studio. Shape moss-covered islands, carve passages,
 soften ridges and raise turquoise water around a live 3D diorama. SwiftUI provides the
 workspace; SceneKit renders an actual editable 81 × 81 heightfield, with calculated normals,

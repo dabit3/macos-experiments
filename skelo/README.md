@@ -1,5 +1,7 @@
 # Skelo
 
+![Skelo screenshot](screenshots/skelo.jpg)
+
 A local, interactive architectural modeling demo inspired by **SketchUp Pro 2023 for Windows**. Opens directly into Komorebi House, an original procedural Japanese courtyard residence with timber screens, sliding glazing, open furnished rooms, a stone garden, hillside terraces and trees.
 
 ```sh
