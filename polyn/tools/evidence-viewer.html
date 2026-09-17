@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Polyn — Computer-use demo</title>
+  <style>
+    :root { color-scheme: dark; font: 14px/1.5 Inter, ui-sans-serif, system-ui, sans-serif; background: #121417; color: #e9eaed; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, select, input { font: inherit; }
+    button, select, .download { color: inherit; background: #23262b; border: 1px solid #373b42; border-radius: 6px; cursor: pointer; }
+    button:hover, .download:hover { background: #30343a; }
+    button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid #f69a51; outline-offset: 3px; }
+    header { height: 82px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; border-bottom: 1px solid #303339; background: #191b20; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 16px; }
+    .mark { font-size: 30px; font-weight: 750; color: #f49b55; }
+    h1, h2, p { margin: 0; }
+    h1 { font-size: 19px; letter-spacing: -.5px; }
+    .sub, .muted { color: #999fa9; font-size: 12px; }
+    .run-status { border: 1px solid #335044; background: #1f3028; color: #a7dab8; padding: 7px 11px; border-radius: 5px; font-size: 12px; white-space: nowrap; }
+    main { display: grid; grid-template-columns: minmax(0, 1fr) 400px; height: calc(100dvh - 82px); }
+    .media { min-width: 0; padding: 24px 28px; display: grid; grid-template-rows: auto minmax(200px, 1fr) auto auto auto; gap: 19px; overflow: auto; }
+    .eyebrow { color: #9da4b0; font-size: 11px; text-transform: uppercase; letter-spacing: 1.7px; font-weight: 650; }
+    .media-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .media-heading h2 { font-size: 18px; margin-top: 4px; font-weight: 550; }
+    .format { font-size: 11px; color: #c6cbd3; border: 1px solid #3c4149; padding: 3px 7px; border-radius: 4px; white-space: nowrap; }
+    .screen { min-height: 0; display: flex; flex-direction: column; background: #090a0c; border: 1px solid #393d44; border-radius: 8px; overflow: hidden; box-shadow: 0 12px 40px #0005; }
+    video { display: block; width: 100%; min-height: 0; flex: 1 1 0; object-fit: contain; background: #090a0c; }
+    .transport { flex: 0 0 auto; display: flex; align-items: center; gap: 9px; flex-wrap: wrap; border-top: 1px solid #30343b; padding: 12px 14px; background: #1b1e23; }
+    .transport button, select { min-height: 33px; padding: 5px 10px; }
+    .clock { font: 12px ui-monospace, monospace; color: #bcc2cc; margin-left: auto; }
+    .now { display: flex; gap: 13px; align-items: start; min-height: 54px; }
+    .live-dot { margin-top: 6px; width: 7px; height: 7px; background: #ee9550; border-radius: 50%; flex: 0 0 auto; }
+    #current-step { margin-top: 3px; font-size: 13px; color: #d7dbe2; }
+    .downloads { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 9px; }
+    .download { padding: 7px 11px; font-size: 12px; text-decoration: none; }
+    .footnote { font-size: 11px; color: #8b929e; }
+    aside { background: #1a1c21; border-left: 1px solid #32363d; display: flex; flex-direction: column; min-height: 0; }
+    .panel-top { padding: 22px 20px 16px; border-bottom: 1px solid #33373e; }
+    .panel-top h2 { font-size: 15px; }
+    .panel-top p { font-size: 12px; color: #959da9; margin-top: 5px; }
+    .tabs { display: flex; gap: 6px; margin: 14px 0 11px; }
+    .tabs button { flex: 1; padding: 7px 4px; font-size: 12px; }
+    .tabs button[aria-pressed="true"] { color: #ffc28c; background: #372a21; border-color: #87552f; }
+    .follow { font-size: 12px; color: #b1b8c2; display: flex; align-items: center; gap: 7px; }
+    input { accent-color: #f1a15b; }
+    #timeline, #action-log { overflow: auto; padding: 13px 12px 30px; min-height: 0; }
+    #timeline { list-style: none; margin: 0; }
+    .event { margin-bottom: 8px; }
+    .event button { text-align: left; width: 100%; padding: 12px; background: transparent; border-color: transparent; display: block; }
+    .event button:hover { background: #252930; }
+    .event.active button { background: #302820; border-color: #7e5231; box-shadow: inset 3px 0 #ef9c53; }
+    .event-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font: 10px ui-monospace, monospace; letter-spacing: .4px; color: #969eab; }
+    .event-meta time { margin-left: auto; }
+    .event-text { display: block; font-size: 12px; line-height: 1.65; color: #cfd4dd; overflow-wrap: anywhere; }
+    .badge { color: #cab39b; }
+    .assertion .badge { color: #8ecfa7; }
+    .action .event-text { font-family: ui-monospace, monospace; }
+    .batch { padding: 12px; margin-bottom: 10px; border: 1px solid #343941; border-radius: 6px; }
+    .batch summary { cursor: pointer; font: 11px ui-monospace, monospace; color: #dda978; }
+    .batch ol { padding-left: 25px; font: 11px/1.9 ui-monospace, monospace; color: #bfc7d3; }
+    .batch li { padding-left: 4px; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .log-note { font-size: 12px; color: #aeb5c0; padding: 8px 12px 18px; }
+    [hidden] { display: none !important; }
+    #media-error { color: #ffc28c; background: #32251d; border: 1px solid #785230; padding: 14px; font-size: 12px; }
+    @media (max-width: 1200px) { main { grid-template-columns: minmax(0, 1fr) 340px; } .media { padding: 20px; } }
+    @media (max-width: 820px) { header { padding: 0 16px; height: 76px; } .run-status { font-size: 10px; } main { display: block; height: auto; } aside { border-left: 0; border-top: 1px solid #333; height: 650px; } .media { padding: 20px 16px; grid-template-rows: auto; } video { flex: none; aspect-ratio: 16 / 9; } h1 { font-size: 17px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="mark" aria-hidden="true">P</span><div><h1>Polyn <span class="muted">/ Computer-use demo</span></h1><p class="sub">Architectural loft · production browser verification</p></div></div>
+    <span class="run-status" id="run-status">Recorded test results</span>
+  </header>
+  <main>
+    <section class="media" aria-label="Test recording">
+      <div class="media-heading"><div><p class="eyebrow">Recorded session</p><h2>A real workspace. Real interactions.</h2></div><span class="format">VP9 / WEBM</span></div>
+      <div class="screen">
+        <video controls preload="metadata" poster="poster.png" aria-label="Polyn full computer-use test recording"><source src="recording.webm" type="video/webm">Your browser does not support WebM. Download the WebM below.</video>
+        <div id="media-error" role="alert" hidden>The recording could not load. Keep recording.webm next to this page, or choose the original WebM: <input id="video-file" type="file" accept=".webm,video/webm" aria-label="Choose recording WebM"></div>
+        <div class="transport"><button id="play" type="button">Play</button><button id="restart" type="button">Restart</button><label class="muted" for="speed">Speed</label><select id="speed"><option value="1">1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="4">4×</option></select><span class="clock" id="clock">00:00 / --:--</span></div>
+      </div>
+      <div class="now"><span class="live-dot"></span><div><p class="eyebrow">At the playhead</p><p id="current-step">Ready to play the full recorded session.</p></div></div>
+      <div class="downloads"><a class="download" href="recording.webm" download>Download WebM</a><a class="download" href="programmatic-steps.jsonl" download>Programmatic steps</a><a class="download" href="TEST_REPORT.md" download>Test report</a></div>
+      <p class="footnote">Runtime revision 38f2ddd0 · full, normal-speed capture · source recording timestamps</p>
+    </section>
+    <aside aria-label="Programmatic test steps">
+      <div class="panel-top"><h2>Programmatic test steps</h2><p id="panel-description">Select a timestamp to seek. Highlight follows playback.</p>
+        <div class="tabs" role="group" aria-label="Evidence view"><button id="recorded-tab" type="button" aria-pressed="true" aria-controls="timeline">Recorded steps</button><button id="log-tab" type="button" aria-pressed="false" aria-controls="action-log">Full action log</button></div>
+        <label class="follow"><input id="follow" type="checkbox" checked> Follow the playhead</label>
+      </div>
+      <ol id="timeline"></ol>
+      <div id="action-log" hidden><p class="log-note">Exact commands from the browser harness, grouped by their UTC batch timestamp. This log includes earlier runs. Individual commands have no recording-relative timestamp; they are not synchronized to playback.</p></div>
+    </aside>
+  </main>
+  <script id="evidence-data" type="application/json">/* EVIDENCE_DATA */</script>
+  <script>/* VIEWER_SCRIPT */</script>
+</body>
+</html>
