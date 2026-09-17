@@ -73,23 +73,28 @@ struct LobbyView: View {
   @State private var fill = 16
   var body: some View {
     VStack(alignment: .leading, spacing: 22) {
-      ZStack(alignment: .bottomLeading) {
-        Image("IslandKeyart").resizable().scaledToFill().frame(height: 275).clipped()
-        LinearGradient(colors: [.clear, .fortBackground], startPoint: .top, endPoint: .bottom)
-        HStack(alignment: .bottom) {
-          VStack(alignment: .leading, spacing: 5) {
-            Text("THE ISLAND IS CALLING").font(.custom("Rajdhani-SemiBold", size: 14)).tracking(3)
-              .foregroundStyle(Color.fortTeal)
-            Text("MAKE YOUR\nLAST STAND.").font(.custom("Rajdhani-Bold", size: 43)).lineSpacing(-8)
-            Text("Loot the island. Raise your fort.\nBe the last squad standing.").font(
-              .custom("Rajdhani-Medium", size: 18))
-          }
-          Spacer(minLength: 0)
-          if sizeClass != .compact, let outfit = catalogue.cosmetic(profile.data.loadout.o) {
-            CosmeticArt(cosmetic: outfit).frame(width: 140, height: 210)
-          }
-        }.padding(20).foregroundStyle(.white)
-      }.frame(height: 275).clipShape(RoundedRectangle(cornerRadius: 18))
+      HStack(alignment: .bottom) {
+        VStack(alignment: .leading, spacing: 5) {
+          Text("THE ISLAND IS CALLING").font(.custom("Rajdhani-SemiBold", size: 14)).tracking(3)
+            .foregroundStyle(Color.fortTeal).lineLimit(1).minimumScaleFactor(0.6)
+          Text("MAKE YOUR\nLAST STAND.").font(.custom("Rajdhani-Bold", size: 43)).lineSpacing(-8)
+            .lineLimit(2).minimumScaleFactor(0.6)
+          Text("Loot the island. Raise your fort.\nBe the last squad standing.").font(
+            .custom("Rajdhani-Medium", size: 18))
+        }
+        Spacer(minLength: 0)
+        if sizeClass != .compact, let outfit = catalogue.cosmetic(profile.data.loadout.o) {
+          CosmeticArt(cosmetic: outfit).frame(width: 140, height: 210)
+        }
+      }
+      .padding(20).foregroundStyle(.white)
+      .frame(maxWidth: .infinity, minHeight: 275, alignment: .bottomLeading)
+      .background {
+        Image("IslandKeyart").resizable().scaledToFill()
+          .overlay(
+            LinearGradient(colors: [.clear, .fortBackground], startPoint: .top, endPoint: .bottom))
+      }
+      .clipShape(RoundedRectangle(cornerRadius: 18))
       if let room = session.room {
         roomPanel(room)
       } else {

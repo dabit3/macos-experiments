@@ -24,6 +24,7 @@ struct ChatPanel: View {
       }
       HStack {
         TextField("Message your party…", text: $draft).textFieldStyle(.roundedBorder)
+          .foregroundStyle(Color.primary)
           .focused($editing).onSubmit(send).accessibilityIdentifier("chat-message")
         Button("Send", action: send).disabled(
           draft.trimmingCharacters(in: .whitespaces).isEmpty || !session.online)
@@ -78,9 +79,15 @@ struct SettingsScreen: View {
           )
         }
       }
+      .formStyle(.grouped)
       .navigationTitle("Settings")
       .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
-    }.frame(minWidth: 300, idealWidth: 540, minHeight: 440)
+    }
+    .foregroundStyle(Color.primary)
+    .tint(.accentColor)
+    #if os(macOS)
+      .frame(width: 560, height: 620)
+    #endif
   }
 }
 

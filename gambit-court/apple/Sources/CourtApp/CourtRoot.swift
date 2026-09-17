@@ -231,6 +231,7 @@ struct SettingsSheet: View {
                     Text("All legal moves, clocks and results are confirmed by the server.").font(.caption)
                 }
             }
+            .formStyle(.grouped)
             HStack {
                 Button("Cancel") { dismiss() }
                 Spacer()
@@ -244,7 +245,10 @@ struct SettingsSheet: View {
                 }.buttonStyle(CourtButtonStyle(primary: true))
             }
         }
-        .padding(24).frame(idealWidth: 520, idealHeight: 650)
-        .onAppear { name = store.name; endpoint = store.endpoint }
+        .padding(24)
+        #if os(macOS)
+            .frame(width: 560, height: 650)
+        #endif
+            .onAppear { name = store.name; endpoint = store.endpoint }
     }
 }

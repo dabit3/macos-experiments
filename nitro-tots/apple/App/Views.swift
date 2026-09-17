@@ -70,6 +70,7 @@ struct RootView: View {
             }
           }.frame(maxWidth: 1100).padding(24).frame(maxWidth: .infinity)
         }
+        .id(model.screen)
         .foregroundStyle(colorScheme == .dark ? .white : ink)
       }
       if let error = model.notice ?? model.connection.error {
@@ -111,15 +112,22 @@ struct RootView: View {
   }
   private var title: some View {
     VStack(spacing: 24) {
-      ZStack(alignment: .bottomLeading) {
-        Art(name: "arcade-keyart.jpg").frame(height: 330).clipped()
-        LinearGradient(colors: [.clear, ink.opacity(0.95)], startPoint: .top, endPoint: .bottom)
-        VStack(alignment: .leading, spacing: 4) {
-          Text("TINY KARTS. BIG TROUBLE.").font(.custom("Nunito-ExtraBold", size: 13)).tracking(3)
-          Text("NITRO TOTS").font(.custom("Fredoka-Bold", size: 54))
-          Text("Toybox racing. Full-throttle fun.").font(.custom("Nunito-Regular", size: 20))
-        }.foregroundStyle(.white).padding(28)
-      }.clipShape(RoundedRectangle(cornerRadius: 28))
+      VStack(alignment: .leading, spacing: 4) {
+        Text("TINY KARTS. BIG TROUBLE.").font(.custom("Nunito-ExtraBold", size: 13)).tracking(3)
+          .lineLimit(1).minimumScaleFactor(0.6)
+        Text("NITRO TOTS").font(.custom("Fredoka-Bold", size: 54))
+          .lineLimit(1).minimumScaleFactor(0.5)
+        Text("Toybox racing. Full-throttle fun.").font(.custom("Nunito-Regular", size: 20))
+      }
+      .foregroundStyle(.white).padding(28)
+      .frame(maxWidth: .infinity, minHeight: 330, alignment: .bottomLeading)
+      .background {
+        Art(name: "arcade-keyart.jpg")
+          .overlay(
+            LinearGradient(
+              colors: [.clear, ink.opacity(0.95)], startPoint: .top, endPoint: .bottom))
+      }
+      .clipShape(RoundedRectangle(cornerRadius: 28))
       LazyVGrid(columns: [GridItem(.adaptive(minimum: 200))], spacing: 16) {
         ForEach(PlayMode.allCases) { mode in
           Button {
@@ -149,13 +157,16 @@ struct RootView: View {
             maxWidth: .infinity, minHeight: 90)
         }
       }
-      HStack {
-        Button("Garage") { model.go(.garage) }
-        Button("Settings") { model.go(.settings) }
-        Spacer()
-        Art(name: "\(model.preferences.character).jpg").frame(width: 48, height: 48).clipShape(
-          Circle())
-        Text(model.preferences.name).font(.headline)
+      ViewThatFits(in: .horizontal) {
+        HStack {
+          titleButtons
+          Spacer()
+          playerBadge
+        }
+        VStack(spacing: 16) {
+          HStack { titleButtons }
+          playerBadge
+        }
       }
       if !model.preferences.lastRoom.isEmpty {
         Button("Rejoin room \(model.preferences.lastRoom)") {
@@ -169,6 +180,17 @@ struct RootView: View {
       }
       Text("WASD / arrows to drive · Space to drift · Z to use item · Q to look back")
         .font(.footnote).foregroundStyle(.secondary)
+    }
+  }
+  @ViewBuilder private var titleButtons: some View {
+    Button("Garage") { model.go(.garage) }
+    Button("Settings") { model.go(.settings) }
+  }
+  private var playerBadge: some View {
+    HStack {
+      Art(name: "\(model.preferences.character).jpg").frame(width: 48, height: 48).clipShape(
+        Circle())
+      Text(model.preferences.name).font(.headline).lineLimit(1)
     }
   }
   private var online: some View {
