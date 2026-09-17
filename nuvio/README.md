@@ -23,9 +23,11 @@ For the production build and full reproducible test instructions, see [TESTING.m
 - Search/filter eight local assets and click to place real geometry.
 - Click an object or its scene row to select; set position, rotation, scale, visibility
   and surface finish. Duplicate, delete, frame selection; use undo/redo.
+  Numeric transforms commit on Enter or blur, including negative/fractional values.
 - Set time of day, summer/autumn/winter foliage, clear/overcast/mist weather and haze.
 - Orbit, pan and zoom the real camera. Save and rename camera images, restore their
   camera and ambience, open presentation mode, export the current viewport as PNG.
+  Use the refresh icon below an image to update its camera, ambience and thumbnail.
 - Edits auto-save to `nuvio.project.v1` in localStorage. Export/import a validated
   `.nuvio.json` file for portable projects. Reset Demo is undoable.
 - Library, scene/properties, and media docks can collapse independently.
@@ -70,7 +72,11 @@ affiliation. React, Three.js, Vite, Vitest and Lucide retain their package licen
 
 Uses a seeded procedural forest with instanced foliage/trunks, static-on-change
 shadow maps, a real planar reflection, procedural wood texture, physical materials,
-and direct Three.js rendering. No Lumen, path tracing, volumetric clouds, native CAD
+and direct Three.js rendering. Software WebGL automatically enables the visible
+Performance mode: 75% viewport resolution, lighter forest detail and smaller
+reflection/shadow maps. Hardware WebGL uses Standard mode. Thumbnails render when
+visible and remain stable during object edits; update a shot explicitly to refresh it.
+No Lumen, path tracing, volumetric clouds, native CAD
 import, VR, cloud presentations, animation export, or commercial asset-library access.
 Render and FX controls are explicitly disabled. Project import accepts Nuvio JSON only.
 See [TESTING.md](TESTING.md) for further fidelity and persistence boundaries.

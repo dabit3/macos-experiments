@@ -35,6 +35,7 @@ Default time is 16:30, season Summer, weather Clear, haze 18%.
 - JSON export/import round trips including precise coordinates and saved ambience.
 - Malformed, duplicate, unsupported and oversized persistence inputs.
 - Seed determinism/range and the sun's east-to-west coordinate trajectory.
+- Flat project foundations and bounded raised terrain around the forest.
 
 ## Browser golden path and expected outcomes
 
@@ -48,11 +49,15 @@ Test the production preview with a fresh/reset fixture at 1440×900:
    Expect new bench geometry, a selected scene row, bounding-box selection and
    object properties.
 3. Rename the bench `Pond bench`. Set X=8, Y=0.3, Z=4, rotation=35, scale=1.2.
+   Commit numeric edits with Enter or blur. Also type X=-2.5 and scale=0.5 to
+   exercise intermediate negative/fractional input, then restore the above values.
    Apply Terracotta. Expect the inspector and rendered object to match.
 4. Undo material, then redo it. Duplicate the bench, hide/show the copy and delete
    it. Undo delete. Expect actual scene and object counts to follow each action.
 5. Choose Ambience. Change time, Autumn season, Mist weather and haze.
-   Expect lighting, foliage and depth haze to visibly change.
+   Expect lighting, foliage and depth haze to visibly change. Range edits commit on
+   pointer release, blur or a 200ms keyboard pause. Hold/repeat arrow keys rapidly;
+   expect correct final values without React update-depth errors.
 6. Drag to a new composition. Create image, rename it `Autumn retreat`.
    Switch to another media image, then return. Expect camera and saved ambience
    restored. Enter Present, use next/previous camera, exit with Escape.
@@ -65,15 +70,44 @@ Test the production preview with a fresh/reset fixture at 1440×900:
 9. Inspect default and changed-state layout at 1920×1080 and 1280×800.
    Critical controls should remain reachable; panels have independent scrolling.
    Inspect console/network for errors and missing assets.
+10. Hide both side panels and the media dock, then restore them with footer controls.
+    Repeat at all three desktop sizes. Expect Library, Scene and Properties footer
+    buttons to remain visible when their panel is hidden.
+11. Place rock, fern and lamp assets and apply Terracotta. Expect each asset's
+    surface to change. Ordinary object edits must not regenerate saved thumbnails.
+    Orbit and use a shot's refresh icon; expect updated camera, ambience and thumbnail.
+12. Exercise empty Library/Scene searches and recovery. Import 150 objects/20 shots;
+    expect further placement/camera creation disabled with a visible object-limit
+    explanation. A 500001-byte project import must be rejected without mutation.
 
 Capture the best full, uncropped scene PNG and a real annotated screen recording.
 Final recording format must be VP8/VP9 **WebM**, never MP4.
 
 ## Results
 
-Initial programmatic verification, September 15, 2026: lint (0 warnings/errors),
-TypeScript, all 18 unit tests and production build passed. Browser verification is
-pending; the final results section will be updated after production UI testing.
+Programmatic verification, September 15, 2026: clean install, lint (0 warnings/errors),
+TypeScript, all 19 unit tests, production build and dependency audit (0 vulnerabilities)
+passed. Production browser tests have verified real viewport selection, transforms,
+materials, undo/redo, environment/media/presentation, actual PNG/JSON exports, reload
+persistence and import boundaries. Import error recovery, visibility-driven thumbnails
+and panel restoration passed at 1440×900, 1920×1080 and 1280×800.
+
+Final executable revision `cc7c1cf12583ac6abae90e219ad72382a9a198ef` passed the
+rapid-arrow range regression, range undo/redo, saved ambience restoration and a
+continuous seven-step production golden path. No captured React exceptions or failed
+network requests remained. Unchanged comprehensive workflows retain their earlier
+revision evidence, explicitly identified in the report.
+
+Software WebGL measured approximately 2.3 seconds median / 6 seconds maximum from
+interaction to two animation frames, and approximately 22 seconds for thumbnails.
+These are observed rendering/scheduling delays, not isolated event-handler timings.
+
+- [Full test report and exact steps](https://app.devin.ai/attachments/41ef7988-cf5e-4161-b8a9-03ebdf4c25e1/nuvio-final-report.md)
+- [Full workspace screenshot](https://app.devin.ai/attachments/3d4ea03f-eca5-4832-a50b-7abc5bec5760/final-nuvio-cc7c1cf.png)
+- [Complete captioned VP9 WebM](https://app.devin.ai/attachments/bd761553-9f94-4589-ab9e-d3852876f09d/nuvio-golden-cc7c1cf.webm):
+  1440×900, 388.416 seconds, 6,080,467 bytes; verified with ffprobe and decoded
+  beginning/middle/end frames. A shortened recorder output was rejected; the final
+  artifact uses a continuous direct X11 capture with source-timed annotations.
 
 ## Boundaries
 
@@ -86,9 +120,13 @@ pending; the final results section will be updated after production UI testing.
   individual selectable objects. User-placed vegetation and architecture are editable.
 - Winter changes foliage tint, not snowfall accumulation; Mist changes depth fog,
   not particle precipitation. Foliage has no wind animation.
-- Media thumbnails render the saved camera; the actual camera click restores saved
-  ambience. Thumbnails are generated locally rather than commercial pre-rendered assets.
+- Media thumbnails render saved camera and ambience when visible after initial load,
+  shot creation or explicit refresh. Object edits retain the snapshot; reloading generates
+  thumbnails from current project geometry. A camera click restores saved ambience.
 - PNG exports the live viewport resolution, not an offline/path-traced render.
+- Software WebGL (SwiftShader/llvmpipe) uses automatic Performance mode at 75% render
+  resolution, lighter foliage, 256px reflection and 512px shadow maps; Standard mode
+  uses the hardware renderer. Software orbit and scene edits can take seconds.
 - Changes auto-save locally; undo history and current orbit position are session-only.
   Saved camera shots persist. Browser storage is per-origin and last write wins across
   tabs. Portable JSON export is the backup path.
