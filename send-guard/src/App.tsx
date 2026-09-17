@@ -162,7 +162,10 @@ export default function App() {
 
           <Composer
             value={draft}
-            onChange={setDraft}
+            onChange={(v) => {
+              setSent(null);
+              setDraft(v);
+            }}
             spans={regexOnly ? liveSpans : guard.spans}
             culprits={new Set(decision.culpritSpanIds)}
             regexOnly={regexOnly}
