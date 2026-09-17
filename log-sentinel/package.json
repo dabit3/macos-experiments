@@ -10,7 +10,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsc -b --noEmit",
     "lint": "oxlint --deny-warnings src server",
-    "test": "vitest run"
+    "test": "vitest run",
+    "evaluate": "tsx server/evaluate.ts"
   },
   "dependencies": {
     "@typesafe-ai/sdk": "0.6.0",

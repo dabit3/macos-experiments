@@ -105,9 +105,17 @@ button:disabled {
 .conn.off::before {
   color: var(--outage);
 }
+.brand,
+.conn,
+.mock {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 .err {
   color: var(--outage);
-  max-width: 420px;
+  max-width: 260px;
+  flex-shrink: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -14,6 +14,8 @@ function summary(line: string): string {
 }
 
 const BATCH_LINGER_MS = 40;
+const MIN_BACKOFF_MS = 250;
+const MAX_BACKOFF_MS = 8000;
 const SCHED_MS = 20;
 
 export class Pipeline {
@@ -36,6 +38,9 @@ export class Pipeline {
   private lingerTimer: NodeJS.Timeout | null = null;
   private queue: LogEvent[][] = [];
   private retried = new WeakSet<LogEvent[]>();
+  private backoffMs = 0;
+  private throttledUntil = 0;
+  private backoffTimer: NodeJS.Timeout | null = null;
   private inFlight = 0;
   private credit = 0;
   private startedAt = Date.now();
@@ -147,6 +152,14 @@ export class Pipeline {
   }
 
   private pump(): void {
+    const now = Date.now();
+    if (now < this.throttledUntil) {
+      if (!this.backoffTimer) this.backoffTimer = setTimeout(() => {
+        this.backoffTimer = null;
+        this.pump();
+      }, this.throttledUntil - now);
+      return;
+    }
     while (this.inFlight < this.config.concurrency && this.queue.length) {
       const batch = this.queue.shift()!;
       this.inFlight++;
@@ -158,6 +171,7 @@ export class Pipeline {
     try {
       const res = await this.jev.judge(batch);
       this.totalRequests++;
+      this.backoffMs = 0;
       this.latency.push(res.latencyMs);
       const now = Date.now();
       for (let i = 0; i < batch.length; i++) {
@@ -187,9 +201,13 @@ export class Pipeline {
         this.queue.unshift(batch);
       }
       const now = Date.now();
+      // Exponential backoff shared by every worker: 250 ms -> 8 s, reset on the next success.
+      this.backoffMs = this.backoffMs ? Math.min(this.backoffMs * 2, MAX_BACKOFF_MS) : MIN_BACKOFF_MS;
+      this.throttledUntil = Math.max(this.throttledUntil, now + this.backoffMs);
       if (now - this.lastErrorAt > 2000) {
         this.lastErrorAt = now;
-        this.emit({ type: "error", message: err instanceof Error ? err.message : String(err) });
+        const msg = err instanceof Error ? err.message : String(err);
+        this.emit({ type: "error", message: `${msg} — backing off ${this.backoffMs} ms` });
       }
     } finally {
       this.inFlight--;
