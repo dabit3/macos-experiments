@@ -23,7 +23,7 @@ export default function App() {
   const [sheet, setSheet] = useState("Reviews");
   const [sel, setSel] = useState<Selection>({ ar: 1, ac: 3, fr: 1, fc: 3 });
   const [editing, setEditing] = useState<Editing>(null);
-  const [barText, setBarText] = useState<string | null>(null);
+  const [bar, setBar] = useState<{ sheet: string; row: number; col: number; text: string } | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
   const [now, setNow] = useState(performance.now());
   const barRef = useRef<HTMLInputElement>(null);
@@ -63,7 +63,7 @@ export default function App() {
       if (!editing) return;
       store.setCell(sheet, editing.row, editing.col, text);
       setEditing(null);
-      setBarText(null);
+      setBar(null);
       if (dir === "down") move(1, 0);
       else if (dir === "right") move(0, 1);
     },
@@ -71,7 +71,7 @@ export default function App() {
   );
   const cancelEdit = useCallback(() => {
     setEditing(null);
-    setBarText(null);
+    setBar(null);
   }, []);
 
   const fillColumn = useCallback(() => {
@@ -183,7 +183,13 @@ export default function App() {
     [editing, sel, sheet, sh.rows, move, fillColumn, fillSelection],
   );
 
-  const barValue = editing ? editing.text : barText ?? raw;
+  const barOwnsSel = bar !== null && bar.sheet === sheet && bar.row === sel.ar && bar.col === sel.ac;
+  const barValue = editing ? editing.text : barOwnsSel ? bar.text : raw;
+  const commitBar = useCallback(() => {
+    if (!bar) return;
+    if (bar.text !== store.wb.getRaw(bar.sheet, bar.row, bar.col)) store.setCell(bar.sheet, bar.row, bar.col, bar.text);
+    setBar(null);
+  }, [bar]);
   const cellName = `${colToName(sel.ac)}${sel.ar + 1}`;
   const n = normalize(sel);
   const rangeName = n.r1 === n.r2 && n.c1 === n.c2 ? cellName : `${colToName(n.c1)}${n.r1 + 1}:${colToName(n.c2)}${n.r2 + 1}`;
@@ -237,19 +243,18 @@ export default function App() {
           className="formulainput"
           value={barValue}
           spellCheck={false}
-          onFocus={() => setBarText(raw)}
+          onFocus={() => setBar({ sheet, row: sel.ar, col: sel.ac, text: raw })}
           onChange={(e) => {
             if (editing) setEditing({ ...editing, text: e.target.value });
-            else setBarText(e.target.value);
+            else setBar({ sheet, row: sel.ar, col: sel.ac, text: e.target.value });
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
-              const text = editing ? editing.text : (barText ?? raw);
-              if (editing) commitEdit(text, "down");
+              if (editing) commitEdit(editing.text, "down");
               else {
-                store.setCell(sheet, sel.ar, sel.ac, text);
-                setBarText(null);
+                if (bar) store.setCell(bar.sheet, bar.row, bar.col, bar.text);
+                setBar(null);
                 move(1, 0);
               }
               (e.target as HTMLInputElement).blur();
@@ -259,8 +264,8 @@ export default function App() {
             }
           }}
           onBlur={() => {
-            if (!editing && barText !== null && barText !== raw) store.setCell(sheet, sel.ar, sel.ac, barText);
-            setBarText(null);
+            if (editing) return;
+            commitBar();
           }}
         />
         <div className="cellinfo" title={view.title}>
