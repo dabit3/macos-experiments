@@ -54,7 +54,10 @@ function questionsFor(path: string, servicePath: string, prefix: string): Questi
         false: "Routine, expected, self-healed, or merely informational. Nobody needs to act on this line.",
       },
     ),
-    [`${prefix}severity`]: score(`How severe is the situation described by the log line \`${path}\` for the production system?`, SEVERITY_LEVELS),
+    [`${prefix}severity`]: score(
+      `How severe is the situation described by the log line \`${path}\` for the production system? Judge the consequence, not the log level: a successful retry or an expected canary failure is noise even if it says ERROR; a silent failure (backup wrote 0 bytes, HTTP 200 with an empty body on a payment path, reconciliation mismatch, replication lag, cert expiring) is at least degraded even at INFO; a routine autoscaler or deploy event with no failure is at most degraded.`,
+      SEVERITY_LEVELS,
+    ),
     [`${prefix}category`]: choice(`What is the root-cause category of the log line \`${path}\`?`, CATEGORY_CRITERIA),
     [`${prefix}security`]: noul(`Is the log line \`${path}\` security-relevant: credential attacks, vulnerability scanning or probing, privilege or scope grants, suspicious tokens, or abuse?`, {
       true: "The line describes or strongly suggests a security event that a security or on-call engineer should know about.",
