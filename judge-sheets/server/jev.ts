@@ -32,7 +32,7 @@ export async function systemOne(
   opts: { maxAttempts?: number; fetchImpl?: typeof fetch; timeoutMs?: number } = {},
 ): Promise<JevResult> {
   const maxAttempts = opts.maxAttempts ?? 5;
-  const timeoutMs = opts.timeoutMs ?? 6000;
+  const timeoutMs = opts.timeoutMs ?? 2500;
   const f = opts.fetchImpl ?? fetch;
   const t0 = performance.now();
   let attempt = 0;

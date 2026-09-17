@@ -74,11 +74,13 @@ and what the same cells would cost at a simulated 4 s-per-cell LLM call.
 | Scenario | Cells | Requests | Wall time | p50 | p95 | Throughput | Per-cell LLM @ 4 s |
 |---|---|---|---|---|---|---|---|
 | Open workbook (both sheets, 7 Jev columns) | 1,478 | 443 | 4.8–7.4 s | 105–116 ms | 226–358 ms | 199–273 cells/s | 1.6 h |
-| Edit rubric in D2 → Ctrl+Shift+D (300-row column) | 295 | 295 | 3.0 s | 102 ms | 202 ms | 98 cells/s | 20 min |
+| Edit rubric in D2 → Ctrl+Shift+D (300-row column) | 295 | 295 | 2.8–3.0 s | 102 ms | 202 ms | 98 cells/s | 20 min |
 
-Variance across runs comes from the API's tail latency (a request that stalls is aborted
-after 6 s and retried; the status bar counts those as retries); everything shown in the
-status bar is from the run you are looking at.
+Variance across runs comes from the API's tail latency: p50/p95 are stable, but occasionally
+a single request stalls. A stalled request is aborted after 2.5 s and retried, and the status
+bar counts it as a retry (in testing, one stall added several seconds to an otherwise
+3-second column re-judge). Everything shown in the status bar is from the run you are
+looking at.
 
 Judgment quality was checked by hand against the fixtures: strongly negative reviews score
 ≤ 1 and get a low "recommend" probability, positive ones score ≥ 3 with ≥ 90 %
