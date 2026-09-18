@@ -167,11 +167,19 @@ alongside the PR.
 
 The first held-out run used `jev-1.13.0`, 20 requests, with **20/20 exact choices**,
 **19/20 expected write-gate outcomes**, and **0 false-positive permitted writes**.
-Median end-to-end request latency was **96 ms**, p95 **238 ms** on this VM.
+Median end-to-end request latency was **95 ms**, nearest-rank p95 **223 ms** on this VM.
 The one conservative abstention selected the correct accounts-payable email but
 its independent billing-role Noul was 0.27, below the 0.80 write threshold.
 The threshold was not relaxed to make this case pass. These are measured
 synthetic-workload results, not a general accuracy or human-speed guarantee.
+
+After the UI evidence excerpt was tightened, a second run still chose **20/20**
+exact values, but permitted **17/20** expected write outcomes, with **0** false
+positive writes. Its median was **157.5 ms**, nearest-rank p95 **268 ms**, across
+20 requests. Accounts-payable email, a refund amount and an intent-only email
+were correctly selected but blocked by independent role checks. The live gate
+can abstain on valid values; do not interpret exact-choice accuracy as write
+availability. Both runs used the same fixed approval thresholds and model version.
 
 ## Research
 

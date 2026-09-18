@@ -21,6 +21,24 @@ final class PasteCoreTests: XCTestCase {
     XCTAssertEqual(addresses, ["8 Oak Lane\nBath BA1", "4 Dock Road\nBristol BS1"])
   }
 
+  func testExcerptShowsTheSelectedLineAndPreservesUnicodeBoundaries() throws {
+    let document = try SourceDocument(
+      "Unrelated introductory prose\n\nBilling email: billing@example.test\nSales email: sales@example.test"
+    )
+    let billing = try XCTUnwrap(document.candidates.first { $0.text == "billing@example.test" })
+    XCTAssertEqual(billing.excerpt, "Billing email: billing@example.test\n")
+    let unicode = try SourceDocument(
+      String(repeating: "x", count: 100) + "🪴" + String(repeating: " ", count: 99)
+        + "mail@example.test")
+    let email = try XCTUnwrap(unicode.candidates.first { $0.text == "mail@example.test" })
+    XCTAssertTrue(unicode.text.contains(email.excerpt))
+    XCTAssertTrue(email.excerpt.hasPrefix("🪴"))
+  }
+
+  func testNoSupportedSpansStopsBeforeJev() {
+    XCTAssertThrowsError(try SourceDocument(String(repeating: "x", count: 300)))
+  }
+
   func testSourceLimitsFailWithoutSilentTruncation() throws {
     XCTAssertThrowsError(try SourceDocument(String(repeating: "a", count: 12_001)))
     XCTAssertThrowsError(

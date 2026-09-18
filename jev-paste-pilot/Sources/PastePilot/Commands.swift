@@ -30,7 +30,7 @@ struct EvalReport: Encodable {
   let choiceCorrect: Int
   let actionCorrect: Int
   let falsePositiveActions: Int
-  let medianMS: Int
+  let medianMS: Double
   let p95MS: Int
   let requests: Int
   let results: [EvalRow]
@@ -65,8 +65,9 @@ enum Commands {
       choiceCorrect: rows.filter(\.choiceCorrect).count,
       actionCorrect: rows.filter(\.actionCorrect).count,
       falsePositiveActions: rows.filter { $0.allowedPaste && $0.actual != $0.expected }.count,
-      medianMS: times.isEmpty ? 0 : times[times.count / 2],
-      p95MS: times.isEmpty ? 0 : times[min(times.count - 1, Int(Double(times.count) * 0.95))],
+      medianMS: times.isEmpty
+        ? 0 : Double(times[(times.count - 1) / 2] + times[times.count / 2]) / 2,
+      p95MS: times.isEmpty ? 0 : times[Int(ceil(Double(times.count) * 0.95)) - 1],
       requests: rows.map(\.requests).reduce(0, +), results: rows)
     let encoder = JSONEncoder()
     encoder.outputFormatting = [.prettyPrinted, .sortedKeys]

@@ -93,12 +93,20 @@ public struct SourceDocument: Equatable {
       throw PilotError.message(
         "Found more than 64 spans. Copy a smaller section; nothing was silently omitted.")
     }
+    guard !found.isEmpty else {
+      throw PilotError.message(
+        "No supported exact spans found. Copy labeled values, short lines, emails, phones or amounts."
+      )
+    }
     candidates = found.enumerated().map { index, item in
-      let before = max(0, item.0.location - 180)
-      let after = min(ns.length, NSMaxRange(item.0) + 120)
+      let line = ns.lineRange(for: item.0)
+      let before = max(line.location, item.0.location - 100)
+      let after = min(NSMaxRange(line), NSMaxRange(item.0) + 100)
+      let excerptRange = ns.rangeOfComposedCharacterSequences(
+        for: NSRange(location: before, length: after - before))
       return Candidate(
         id: "span_\(index + 1)", text: ns.substring(with: item.0), kind: item.1,
-        excerpt: ns.substring(with: NSRange(location: before, length: after - before)),
+        excerpt: ns.substring(with: excerptRange),
         location: item.0.location, length: item.0.length)
     }
   }

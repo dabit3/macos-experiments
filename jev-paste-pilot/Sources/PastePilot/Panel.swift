@@ -242,7 +242,7 @@ struct PilotView: View {
         TextField("Optional intent — e.g. billing email, not sales", text: $model.intent)
           .textFieldStyle(.plain).font(.system(size: 12)).padding(10)
           .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 8))
-          .onChange(of: model.intent) { _ in model.invalidate() }
+          .onChange(of: model.intent) { model.invalidate() }
         HStack {
           Text("Preview sends this brief + field labels to TypeSafe.")
             .font(.system(size: 10)).foregroundStyle(muted)
@@ -294,7 +294,7 @@ struct PilotView: View {
               Spacer()
               Text("↵")
             }
-            .font(.system(size: 13, weight: .semibold)).padding(10)
+            .font(.system(size: 13, weight: .semibold)).padding(10).contentShape(Rectangle())
           }.buttonStyle(.plain).foregroundStyle(ink)
             .background(model.canPaste ? mint : muted, in: RoundedRectangle(cornerRadius: 8))
             .disabled(!model.canPaste)
