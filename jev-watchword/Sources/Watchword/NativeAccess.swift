@@ -136,7 +136,11 @@ enum NativeAccess {
       {
         let value = axString(element, kAXValueAttribute)
         let title = axString(element, kAXTitleAttribute)
-        let text = (value.isEmpty ? title : value).trimmingCharacters(in: .whitespacesAndNewlines)
+        let text = (value.isEmpty ? title : value)
+          .replacingOccurrences(
+            of: #"\n[ \t]*\n(?:[ \t]*\n)+"#, with: "\n\n", options: .regularExpression
+          )
+          .trimmingCharacters(in: .whitespacesAndNewlines)
         if !text.isEmpty && seen.insert(text).inserted {
           characters += text.count
           guard characters <= 16_000 else { throw NativeError.tooLarge }

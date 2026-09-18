@@ -34,6 +34,7 @@ struct WatchwordApp: App {
 
 if CommandLine.arguments.contains("--eval") || CommandLine.arguments.contains("--native-smoke")
   || CommandLine.arguments.contains("--list-windows")
+  || CommandLine.arguments.contains("--snapshot")
 {
   Task { @MainActor in
     do {

@@ -38,7 +38,8 @@ enum CommandError: LocalizedError {
   var errorDescription: String? {
     switch self {
     case .usage:
-      return "Use --eval <cases.json>, --list-windows, or --native-smoke <output-folder> [raise]."
+      return
+        "Use --eval <cases.json>, --list-windows, --snapshot <app> <title>, or --native-smoke <output-folder> [raise]."
     case .failed(let detail): return detail
     }
   }
@@ -64,6 +65,14 @@ enum CommandRunner {
     } else if args.contains("--list-windows") {
       NativeAccess.requestPermission()
       for target in try NativeAccess.windows() { print("\(target.pid)\t\(target.label)") }
+    } else if let index = args.firstIndex(of: "--snapshot"), args.indices.contains(index + 2) {
+      let targets = try NativeAccess.windows().filter {
+        $0.appName == args[index + 1] && $0.title.contains(args[index + 2])
+      }
+      guard targets.count == 1, let target = targets.first else {
+        throw CommandError.failed("Select exactly one matching accessible window.")
+      }
+      try printJSON(NativeAccess.snapshot(target, sequence: 0).text)
     } else {
       throw CommandError.usage
     }
