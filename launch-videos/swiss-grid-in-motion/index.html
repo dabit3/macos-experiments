@@ -1,0 +1,490 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script src="config.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #000; }
+  * { box-sizing: border-box; }
+  #stage {
+    position: relative; width: 1920px; height: 1080px; overflow: hidden;
+    background: var(--bg); color: var(--text); font-family: var(--font);
+    -webkit-font-smoothing: antialiased; letter-spacing: -0.01em;
+  }
+  .abs { position: absolute; }
+  .mask { position: absolute; overflow: hidden; }
+  .headline { font-weight: 600; letter-spacing: -0.02em; line-height: 1; white-space: nowrap; }
+  .caption { font-size: 40px; font-weight: 500; line-height: 1.2; letter-spacing: -0.015em; }
+  .muted { color: var(--muted); }
+
+  /* Devin shell */
+  .shell { position: absolute; background: var(--shellBg); border-radius: 22px; overflow: hidden;
+           box-shadow: 0 0 0 1px var(--hairline), 0 40px 120px rgba(0,0,0,0.5); }
+  .topbar { position: absolute; left: 0; right: 0; top: 0; height: 60px; display: flex; align-items: center;
+            font-size: 30px; padding: 0 28px; }
+  .topbar .title { color: var(--text); font-weight: 500; }
+  .tabs { position: absolute; right: 24px; top: 6px; display: flex; gap: 8px; height: 48px; align-items: center; }
+  .tab { padding: 0 18px; height: 44px; line-height: 44px; border-radius: 12px; color: var(--muted); font-size: 30px; }
+  .tab.active { background: var(--panelRaised); color: var(--text); }
+  .hline { position: absolute; background: var(--hairline); }
+  .bubble { background: var(--panelRaised); border-radius: 18px; padding: 16px 22px; font-size: 30px; line-height: 1.3;
+            color: var(--text); }
+  .status { display: flex; align-items: flex-start; gap: 14px; font-size: 30px; line-height: 1.3; color: var(--muted); }
+  .status .mark { width: 30px; height: 30px; flex: 0 0 30px; margin-top: 4px; }
+  .viewer { position: absolute; background: #141417; border-radius: 16px; overflow: hidden;
+            box-shadow: inset 0 0 0 1px var(--hairline); }
+  .livebar { position: absolute; display: flex; align-items: center; gap: 22px; }
+  .pill { height: 48px; border-radius: 24px; background: var(--panel); box-shadow: inset 0 0 0 1px var(--hairline);
+          display: flex; align-items: center; gap: 12px; padding: 0 20px 0 18px; font-size: 30px; color: var(--text); }
+  .dot { width: 14px; height: 14px; border-radius: 50%; background: #FF3B30; }
+  .progress { height: 6px; border-radius: 3px; background: var(--panelRaised); flex: 1; position: relative; overflow: hidden; }
+  .progress > div { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); }
+
+  /* iPad */
+  .ipad { position: absolute; background: #0A0A0B; border-radius: 42px;
+          box-shadow: 0 0 0 2px #2A2A2E, 0 30px 80px rgba(0,0,0,0.6); }
+  .ipad .screen { position: absolute; left: 26px; top: 26px; right: 26px; bottom: 26px; border-radius: 22px; overflow: hidden; background: #000; }
+  .ipad .screen img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+
+  /* Composer */
+  .composer { position: absolute; background: var(--panel); border-radius: 26px;
+              box-shadow: 0 0 0 1px var(--hairline), 0 24px 70px rgba(0,0,0,0.45); }
+  .composer .text { position: absolute; left: 34px; top: 30px; right: 34px; font-size: 32px; line-height: 1.35; min-height: 88px; }
+  .composer .text .ph { color: var(--faint); }
+  .caret { display: inline-block; width: 3px; height: 34px; background: var(--accent); vertical-align: -6px; margin-left: 2px; }
+  .composer .row { position: absolute; left: 24px; right: 24px; bottom: 22px; height: 56px; display: flex; align-items: center; gap: 14px; }
+  .icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+  .chip { height: 52px; border-radius: 14px; background: var(--panelRaised); padding: 0 16px 0 18px; display: flex; align-items: center; gap: 12px;
+          font-size: 30px; color: var(--text); }
+  .send { width: 56px; height: 56px; border-radius: 50%; background: var(--text); display: flex; align-items: center; justify-content: center; margin-left: auto; }
+  .menu { position: absolute; width: 300px; background: var(--panelRaised); border-radius: 18px; padding: 10px;
+          box-shadow: 0 0 0 1px var(--hairline), 0 20px 60px rgba(0,0,0,0.5); }
+  .menu .item { height: 56px; border-radius: 12px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-size: 30px; }
+  .menu .item.hover { background: rgba(245,245,245,0.08); }
+  .cursor { position: absolute; width: 34px; height: 34px; }
+  .endurl { font-size: 40px; font-weight: 500; color: var(--text); letter-spacing: -0.01em; text-align: center; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+const C = window.CONFIG;
+const T = C.tokens;
+const G = C.grid;
+const stage = document.getElementById('stage');
+for (const [k, v] of Object.entries(T)) stage.style.setProperty('--' + k, v);
+
+// grid helpers
+const colW = (C.width - 2 * G.margin - (G.columns - 1) * G.gutter) / G.columns; // 122
+const colX = (i) => G.margin + i * (colW + G.gutter);            // left edge of column i (0-based)
+const spanW = (n) => n * colW + (n - 1) * G.gutter;
+
+// easing
+const clamp01 = (x) => Math.max(0, Math.min(1, x));
+const lerp = (a, b, x) => a + (b - a) * x;
+const cubicBezier = (p1x, p1y, p2x, p2y) => (x) => {
+  // solve for t given x with Newton iterations
+  x = clamp01(x); let t = x;
+  for (let i = 0; i < 8; i++) {
+    const cx = 3*p1x*t*(1-t)*(1-t) + 3*p2x*t*t*(1-t) + t*t*t - x;
+    const dx = 3*p1x*(1-t)*(1-t) + 6*(p2x-p1x)*t*(1-t) + 3*(1-p2x)*t*t;
+    if (Math.abs(dx) < 1e-6) break; t -= cx / dx;
+  }
+  return 3*p1y*t*(1-t)*(1-t) + 3*p2y*t*t*(1-t) + t*t*t;
+};
+const easeOut = cubicBezier(0.16, 1, 0.3, 1);      // fast-out, gentle-in
+const easeInOut = cubicBezier(0.65, 0, 0.35, 1);
+const prog = (t, a, b, ease = easeOut) => ease(clamp01((t - a) / (b - a)));
+const seg = (t, a, dur, ease = easeOut) => ease(clamp01((t - a) / dur));
+
+const el = (tag, cls, parent, style) => {
+  const e = document.createElement(tag); if (cls) e.className = cls; if (parent) parent.appendChild(e);
+  if (style) Object.assign(e.style, style); return e;
+};
+const px = (v) => `${v}px`;
+
+// ---------- SVG glyphs ----------
+const svg = (inner, size = 44, vb = 24) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 ${vb} ${vb}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+const ICON = {
+  sidebar: svg('<rect x="3" y="4.5" width="18" height="15" rx="3"/><path d="M9 4.5v15"/>', 36),
+  plus: svg('<path d="M12 5v14M5 12h14"/>', 40),
+  sliders: svg('<path d="M8 4v16M16 4v16"/><circle cx="8" cy="9" r="2.4" fill="#17171A"/><circle cx="16" cy="15" r="2.4" fill="#17171A"/>', 40),
+  chevron: svg('<path d="M6 9l6 6 6-6"/>', 30),
+  mic: svg('<rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>', 40),
+  up: `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0B0B0C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>`,
+  check: svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 30),
+  back: svg('<path d="M15 5l-7 7 7 7"/>', 36),
+  fwd: svg('<path d="M9 5l7 7-7 7"/>', 36),
+  apple: `<svg width="30" height="30" viewBox="0 0 24 24" fill="#F5F5F5"><path d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.5.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.1.8 1.3 0 2.1-1.2 2.9-2.3.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.7-1-2.7-4.1zM14.1 5.9c.6-.8 1.1-1.9.9-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1.1.1 2.1-.5 2.8-1.3z"/></svg>`,
+  cursor: `<svg width="34" height="34" viewBox="0 0 24 24"><path d="M5 3l14 9.5-6.2 1.2 3.6 6.6-2.6 1.4-3.6-6.6L5 19.5z" fill="#0B0B0C" stroke="#F5F5F5" stroke-width="1.4" stroke-linejoin="round"/></svg>`,
+  devinMark: `<img src="assets/DEVIN_AVATAR_SQUARE_WHITE_NO_BG.png" style="width:100%;height:100%;display:block">`,
+};
+
+// ---------- Build DOM ----------
+// Scene: open
+const openLayer = el('div', 'abs', stage, { left: 0, top: 0, width: px(C.width), height: px(C.height) });
+const openLockupMask = el('div', 'mask', openLayer);
+const openLockup = el('img', 'abs', openLockupMask); openLockup.src = 'assets/DEVIN_LOCKUP_HORIZONTAL_WHITE_TRANSPARENT.png';
+const openHeadMask = el('div', 'mask', openLayer);
+const headLines = Array.isArray(C.headline) ? C.headline : [C.headline];
+const openHead = el('div', 'headline abs', openHeadMask); openHead.innerHTML = headLines.map((l) => `<div>${l}</div>`).join(''); openHead.style.fontSize = px(C.headlineSize);
+
+// Scene: composer + session share a grid region
+const capCol = el('div', 'abs', stage, { left: px(colX(0)), top: px(G.top), width: px(spanW(3)), height: px(C.height - 2 * G.top) });
+const capMask1 = el('div', 'mask', capCol, { left: 0, width: '100%' });
+const cap1 = el('div', 'caption abs', capMask1, { left: 0, top: 0, width: px(spanW(3)) });
+const capMask2 = el('div', 'mask', capCol, { left: 0, width: '100%' });
+const cap2 = el('div', 'caption abs', capMask2, { left: 0, top: 0, width: px(spanW(3)) });
+
+const region = el('div', 'shell', stage);       // grid region that expands from cols 4-12 to 1-12
+// -- composer content
+const compLayer = el('div', 'abs', region, { left: 0, top: 0, width: '100%', height: '100%' });
+const compZoom = el('div', 'abs', compLayer, { left: 0, top: 0, width: '100%', height: '100%' });
+const compLockup = el('img', 'abs', compZoom); compLockup.src = 'assets/DEVIN_LOCKUP_HORIZONTAL_WHITE_TRANSPARENT.png';
+const composer = el('div', 'composer', compZoom, { height: px(212) });
+const compText = el('div', 'text', composer);
+const compRow = el('div', 'row', composer);
+compRow.innerHTML = `<div class="icon">${ICON.plus}</div><div class="icon">${ICON.sliders}</div>
+  <div class="chip" id="chip"><span id="chipApple" style="display:none;line-height:0">${ICON.apple}</span><span id="chipLabel">${C.composer.chipBefore}</span><span style="color:var(--muted);line-height:0">${ICON.chevron}</span></div>
+  <div class="icon" style="margin-left:auto">${ICON.mic}</div><div class="send" style="margin-left:0">${ICON.up}</div>`;
+const chip = compRow.querySelector('#chip'); const chipLabel = compRow.querySelector('#chipLabel'); const chipApple = compRow.querySelector('#chipApple');
+const sendBtn = compRow.querySelector('.send');
+const menu = el('div', 'menu', compZoom);
+menu.innerHTML = C.composer.menu.map((m) => `<div class="item" data-k="${m}"><span>${m}</span><span class="ck" style="line-height:0;opacity:0">${ICON.check}</span></div>`).join('');
+const cursor = el('div', 'cursor', compZoom); cursor.innerHTML = ICON.cursor;
+
+// -- session content
+const sessLayer = el('div', 'abs', region, { left: 0, top: 0, width: '100%', height: '100%' });
+const topbar = el('div', 'topbar', sessLayer);
+topbar.innerHTML = `<span class="icon muted" style="margin-left:-8px;margin-right:16px">${ICON.sidebar}</span><span class="title">${C.session.title}</span>
+  <div class="tabs"><div class="tab">Progress</div><div class="tab">Changes</div><div class="tab active">Computer</div></div>`;
+el('div', 'hline', sessLayer, { left: 0, right: 0, top: px(60), height: px(1) });
+const convo = el('div', 'abs', sessLayer, { left: 0, top: px(61), bottom: 0 });
+const convoInner = el('div', 'abs', convo, { left: px(24), right: px(24), top: px(28) });
+const bubbleWrap = el('div', '', convoInner, { display: 'flex', justifyContent: 'flex-end' });
+const bubble = el('div', 'bubble', bubbleWrap); bubble.textContent = C.composer.prompt;
+const statusWrap = el('div', '', convoInner, { marginTop: px(36), display: 'flex', flexDirection: 'column', gap: px(28) });
+const statusEls = C.session.status.map((s) => {
+  const d = el('div', 'status', statusWrap);
+  d.innerHTML = `<div class="mark">${s.done ? `<span style="color:var(--text);line-height:0">${ICON.check}</span>` : ICON.devinMark}</div><div>${s.text}</div>`;
+  if (s.done) d.style.color = 'var(--text)';
+  return d;
+});
+const vline = el('div', 'hline', sessLayer, { top: px(61), bottom: 0, width: px(1) });
+const viewer = el('div', 'viewer', sessLayer);
+const desktopBar = el('div', 'abs', viewer, { left: 0, right: 0, top: 0, height: px(1), background: 'var(--hairline)' });
+const ipad = el('div', 'ipad', viewer);
+const screen = el('div', 'screen', ipad);
+const footImg = el('img', '', screen);
+const livebar = el('div', 'livebar', sessLayer);
+livebar.innerHTML = `<span class="icon muted">${ICON.back}</span><span class="icon muted">${ICON.fwd}</span><div class="progress"><div id="prog"></div></div><div class="pill"><span class="dot"></span>Live</div>`;
+const progFill = livebar.querySelector('#prog');
+
+// Scene: end
+const endLayer = el('div', 'abs', stage, { left: 0, top: 0, width: px(C.width), height: px(C.height) });
+const endLockupMask = el('div', 'mask', endLayer);
+const endLockup = el('img', 'abs', endLockupMask); endLockup.src = 'assets/DEVIN_LOCKUP_HORIZONTAL_WHITE_TRANSPARENT.png';
+const endUrlMask = el('div', 'mask', endLayer);
+const endUrl = el('div', 'endurl abs', endUrlMask); endUrl.textContent = C.endUrl; endUrl.style.fontSize = px(C.endUrlSize);
+
+// ---------- Asset preload ----------
+let lockupBox = { x: 0, y: 0, w: 1, h: 1, W: 1, H: 1 }; // visible alpha bbox, in source pixels
+const footFrames = [];
+window.ready = (async () => {
+  const load = (src) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+  const lk = await load('assets/DEVIN_LOCKUP_HORIZONTAL_WHITE_TRANSPARENT.png');
+  const cv = document.createElement('canvas'); cv.width = lk.width; cv.height = lk.height;
+  const cx = cv.getContext('2d'); cx.drawImage(lk, 0, 0);
+  const d = cx.getImageData(0, 0, cv.width, cv.height).data;
+  let x0 = cv.width, y0 = cv.height, x1 = 0, y1 = 0;
+  for (let y = 0; y < cv.height; y++) for (let x = 0; x < cv.width; x++) {
+    if (d[(y * cv.width + x) * 4 + 3] > 16) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  }
+  lockupBox = { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1, W: cv.width, H: cv.height };
+  const n = C.footage.frameCount;
+  for (let i = 0; i < n; i++) footFrames.push(`${C.footage.dir}${String(i).padStart(4, '0')}.png`);
+  // decode a few so the first render is not blank; the renderer awaits decode per frame anyway
+  await load(footFrames[0]);
+  await Promise.all([load('assets/DEVIN_AVATAR_SQUARE_WHITE_NO_BG.png')]);
+  return lockupBox;
+})();
+
+// Place a lockup so that its VISIBLE mark spans `w` px with left/top at (x,y) of the visible box.
+function placeLockup(img, mask, x, y, w) {
+  const scale = w / lockupBox.w;
+  const W = lockupBox.W * scale, H = lockupBox.H * scale, h = lockupBox.h * scale;
+  mask.style.left = px(x); mask.style.top = px(y); mask.style.width = px(w); mask.style.height = px(h);
+  img.style.left = px(-lockupBox.x * scale); img.style.top = px(-lockupBox.y * scale); img.style.width = px(W); img.style.height = px(H);
+  return { w, h };
+}
+
+// ---------- Layout per time ----------
+const S = C.scenes;
+const sceneEnd = S.end;
+function layout(t) {
+  // ===== OPEN =====
+  const openVisible = t < S.composer + 0.2;
+  openLayer.style.display = openVisible ? 'block' : 'none';
+  if (openVisible) {
+    const lw = C.openLockupWidth;
+    const { h: lh } = placeLockup(openLockup, openLockupMask, colX(0), 0, lw);
+    // vertical: lockup and headline as one block, optically centered; lockup above headline with a gap
+    const gap = 84;
+    const hh = Math.round(C.headlineSize * 0.94) * headLines.length; // visual block height of the headline lines
+    const blockH = lh + gap + hh;
+    const y0 = Math.round((C.height - blockH) / 2);
+    openLockupMask.style.top = px(y0);
+    // headline reveal mask: rectangular wipe left to right
+    const r1 = seg(t, -0.12, 0.7);  // lockup wipe (already under way on frame 0)
+    const r2 = seg(t, 0.4, 0.95);   // headline wipe
+    const out = seg(t, S.composer - 0.7, 0.6, easeInOut);
+    openLockupMask.style.width = px(lw * r1);
+    openLockup.style.transform = `translateX(${(1 - r1) * -24}px)`;
+    openHeadMask.style.left = px(colX(0) - 8);
+    openHeadMask.style.top = px(y0 + lh + gap - 10);
+    openHeadMask.style.height = px(hh + 50);
+    openHeadMask.style.width = px(1800 * r2);
+    openHead.style.lineHeight = '0.94';
+    openHead.style.left = px(8); openHead.style.top = px(-C.headlineSize * 0.06);
+    openHead.style.transform = `translateX(${(1 - r2) * -40}px)`;
+    // exit: whole block slides up behind a mask and fades
+    openLayer.style.opacity = String(1 - out);
+    openLayer.style.transform = `translateY(${-60 * out}px)`;
+  }
+
+  // ===== REGION (composer -> session) =====
+  const regionVisible = t >= S.composer - 0.1 && t < S.end + 0.1;
+  region.style.display = regionVisible ? 'block' : 'none';
+  capCol.style.display = regionVisible ? 'block' : 'none';
+  if (regionVisible) {
+    const enter = seg(t, S.composer, 0.8);
+    const expand = seg(t, S.session - 0.5, 0.7, easeInOut);       // cols 4-12 -> 1-12
+    const leave = seg(t, S.outro, 0.7, easeInOut);
+    const xLeft = lerp(colX(3), colX(0), expand);
+    const width = colX(12 - 1) + colW - xLeft;                  // right edge fixed at col 12
+    const top = G.top, height = C.height - 2 * G.top;
+    // enter: slide in from right along the top line; leave: slide out right
+    const shiftIn = (1 - enter) * 160;
+    const shiftOut = leave * (C.width - colX(0));
+    region.style.left = px(xLeft + shiftIn); region.style.top = px(top);
+    region.style.width = px(width); region.style.height = px(height);
+    region.style.opacity = String(Math.min(enter, 1 - leave));
+    region.style.transformOrigin = '0 0';
+    region.style.transform = `translateX(${shiftOut}px)`;
+
+    // caption column (cols 1-3), text reveals through rectangular masks
+    const c1in = seg(t, S.composer + 0.35, 0.6);
+    const swapAt = 7.1;
+    const c1out = seg(t, swapAt, 0.45, easeInOut);
+    const c2in = seg(t, swapAt + 0.25, 0.6);
+    const c2out = seg(t, S.session - 0.6, 0.5, easeInOut);
+    cap1.textContent = 'Choose the macOS environment.';
+    cap2.textContent = 'Ask Devin to build and run it.';
+    const capTop = 0; // align caption top to region top line
+    for (const [mask, txt, i, o] of [[capMask1, cap1, c1in, c1out], [capMask2, cap2, c2in, c2out]]) {
+      mask.style.top = px(capTop); mask.style.height = px(220);
+      const vis = Math.min(i, 1 - o);
+      mask.style.width = px(spanW(3) * i);
+      txt.style.transform = `translateY(${(1 - i) * 18 - o * 18}px)`;
+      txt.style.opacity = String(vis);
+    }
+    capCol.style.opacity = String(1 - expand);
+    capCol.style.transform = `translateX(${-60 * expand}px)`;
+
+    // -- composer vs session crossfade
+    const toSession = seg(t, S.session - 0.35, 0.5, easeInOut);
+    compLayer.style.opacity = String(1 - toSession);
+    compLayer.style.display = toSession >= 1 ? 'none' : 'block';
+    sessLayer.style.opacity = String(toSession);
+    sessLayer.style.display = toSession <= 0 ? 'none' : 'block';
+
+    if (toSession < 1) layoutComposer(t, width, height);
+    if (toSession > 0) layoutSession(t, width, height, shiftOut);
+  }
+
+  // ===== END =====
+  const endVisible = t >= S.end - 0.1;
+  endLayer.style.display = endVisible ? 'block' : 'none';
+  if (endVisible) {
+    const lw = C.endLockupWidth;
+    const { h: lh } = placeLockup(endLockup, endLockupMask, 0, 0, lw);
+    const gap = 44;
+    const urlH = C.endUrlSize * 1.3;
+    const blockH = lh + gap + urlH;
+    const y0 = Math.round((C.height - blockH) / 2);
+    const x0 = Math.round((C.width - lw) / 2);
+    const r1 = seg(t, S.end + 0.1, 0.8);
+    const r2 = seg(t, S.end + 0.6, 0.7);
+    endLockupMask.style.left = px(x0); endLockupMask.style.top = px(y0);
+    endLockupMask.style.width = px(lw); endLockupMask.style.clipPath = `inset(0 ${(1 - r1) * 100}% 0 0)`;
+    endLockup.style.transform = `translateX(${(1 - r1) * -20}px)`;
+    endUrlMask.style.left = px(x0); endUrlMask.style.width = px(lw); endUrlMask.style.top = px(y0 + lh + gap - 6); endUrlMask.style.height = px(urlH + 12);
+    endUrl.style.left = 0; endUrl.style.width = '100%'; endUrl.style.top = px(6);
+    endUrl.style.opacity = String(r2); endUrl.style.transform = `translateY(${(1 - r2) * 14}px)`;
+  }
+}
+
+// ---------- Composer scene ----------
+function layoutComposer(t, W, H) {
+  const cw = C.composer.width, ch = 212;
+  const cx0 = Math.round((W - cw) / 2);
+  // block = lockup + composer, optically centered
+  const lkw = 300;
+  const { h: lkh } = placeLockupInline(compLockup, lkw);
+  const gap = 56;
+  const blockH = lkh + gap + ch;
+  const y0 = Math.round((H - blockH) / 2);
+  compLockup.style.left = px(Math.round((W - lkw) / 2 - (lockupBox.x / lockupBox.w) * lkw));
+  compLockup.style.top = px(y0 - (lockupBox.y / lockupBox.w) * lkw);
+  composer.style.left = px(cx0); composer.style.top = px(y0 + lkh + gap); composer.style.height = px(ch); composer.style.width = px(cw);
+
+  // typing
+  const tStart = 7.45;
+  const cps = C.composer.charsPerSecond;
+  const prompt = C.composer.prompt;
+  let n = 0;
+  if (t >= tStart) {
+    // slight natural variance: per-char duration from a deterministic hash
+    let acc = 0, i = 0;
+    while (i < prompt.length) {
+      const jitter = 0.72 + ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1 * 0.56;
+      acc += jitter / cps; if (acc > t - tStart) break; i++;
+    }
+    n = i;
+  }
+  const typed = prompt.slice(0, n);
+  const caretOn = t >= 7.0 && Math.floor((t - 7.0) * 2.2) % 2 === 0 || (n > 0 && n < prompt.length);
+  compText.innerHTML = typed.length ? `${typed}<span class="caret" style="opacity:${caretOn ? 1 : 0}"></span>`
+                                    : `<span class="ph">${C.composer.placeholder}</span>`;
+
+  // chip / menu choreography
+  const menuOpen = t >= 4.95 && t < 6.35;
+  const selected = t >= 6.05;
+  chipLabel.textContent = t >= 6.3 ? C.composer.chipAfter : C.composer.chipBefore;
+  chipApple.style.display = t >= 6.3 ? 'inline-block' : 'none';
+  chip.style.background = (t >= 4.6 && t < 4.95) || menuOpen ? 'rgba(245,245,245,0.14)' : 'var(--panelRaised)';
+  // menu placement: above the chip, left aligned with chip
+  const chipRect = { x: cx0 + 24 + 44 + 14 + 44 + 14, y: y0 + lkh + gap + ch - 22 - 56 + 2, w: 0, h: 52 };
+  const itemH = 56, menuH = 10 * 2 + itemH * C.composer.menu.length;
+  const mo = seg(t, 4.95, 0.28); const mc = seg(t, 6.35, 0.22, easeInOut);
+  const mvis = menuOpen ? mo : (t >= 6.35 && mc < 1 ? 1 - mc : 0);
+  menu.style.display = mvis > 0 ? 'block' : 'none';
+  menu.style.left = px(chipRect.x); menu.style.top = px(chipRect.y - 12 - menuH + (1 - mo) * 10);
+  menu.style.opacity = String(mvis); menu.style.transformOrigin = 'left bottom';
+  menu.style.transform = `scale(${0.96 + 0.04 * mo})`;
+  const items = menu.querySelectorAll('.item');
+  const hoverIdx = t >= 5.75 ? 1 : 0; // cursor lands on macOS
+  items.forEach((it, i) => {
+    it.classList.toggle('hover', t >= 5.55 && i === hoverIdx);
+    it.querySelector('.ck').style.opacity = (i === (selected ? 1 : 0)) ? '1' : '0';
+  });
+  // cursor path: from right of composer -> chip -> macOS item -> away
+  const pts = [
+    { t: 3.9, x: cx0 + 760, y: y0 + lkh + gap + 120 },
+    { t: 4.7, x: chipRect.x + 70, y: chipRect.y + 30 },
+    { t: 5.4, x: chipRect.x + 70, y: chipRect.y + 30 },
+    { t: 5.95, x: chipRect.x + 120, y: chipRect.y - 12 - menuH + 10 + itemH * 1.5 },
+    { t: 6.5, x: chipRect.x + 120, y: chipRect.y - 12 - menuH + 10 + itemH * 1.5 },
+    { t: 7.1, x: cx0 + 520, y: y0 + lkh + gap + 100 },
+  ];
+  let cxp = pts[0], cyp = pts[0];
+  let cxv = pts[0].x, cyv = pts[0].y;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1];
+    if (t >= a.t) { const p = prog(t, a.t, b.t, easeInOut); cxv = lerp(a.x, b.x, p); cyv = lerp(a.y, b.y, p); }
+  }
+  cursor.style.left = px(cxv - 5); cursor.style.top = px(cyv - 3);
+  const curIn = seg(t, 3.9, 0.4); const curOut = seg(t, 7.0, 0.35, easeInOut);
+  cursor.style.opacity = String(Math.min(curIn, 1 - curOut));
+  // click feedback on chip / item: brief scale
+  const clickA = t >= 4.9 && t < 5.05, clickB = t >= 6.0 && t < 6.15;
+  cursor.style.transform = `scale(${clickA || clickB ? 0.9 : 1})`;
+
+  // send button pressed
+  const sent = t >= 9.75;
+  sendBtn.style.background = sent ? 'var(--accent)' : 'var(--text)';
+  sendBtn.querySelector('path').setAttribute('stroke', sent ? '#F5F5F5' : '#0B0B0C');
+
+  // push-in toward the chip (camera inside the grid region)
+  // target framing at full push-in: composer left edge sits on the region's inner margin,
+  // and the chip/menu group is vertically centered.
+  const zin = seg(t, 4.45, 1.1, easeInOut);
+  const zout = seg(t, 6.6, 0.9, easeInOut);
+  const k = zin * (1 - zout);
+  const z = lerp(1, C.zoom.composerScale, k);
+  const groupCy = chipRect.y + 26 - (12 + menuH) / 2;
+  const txTarget = (W - z * cw) / 2 - z * cx0, tyTarget = H / 2 - z * groupCy;
+  const tx = lerp(0, txTarget, k), ty = lerp(0, tyTarget, k);
+  compZoom.style.transformOrigin = '0 0';
+  compZoom.style.transform = `translate(${tx}px, ${ty}px) scale(${z})`;
+}
+function placeLockupInline(img, w) {
+  const scale = w / lockupBox.w;
+  img.style.width = px(lockupBox.W * scale); img.style.height = px(lockupBox.H * scale);
+  return { w, h: lockupBox.h * scale };
+}
+
+// ---------- Session scene ----------
+function layoutSession(t, W, H, shiftOut) {
+  const convW = spanW(3) + G.gutter / 2;          // conversation column ends at the gutter center after col 3
+  convo.style.width = px(convW - 1);
+  vline.style.left = px(convW - 1);
+  const pad = 20, liveH = 52;
+  const vx = convW + pad, vy = 61 + pad, vw = W - convW - pad * 2, vh = H - 61 - pad * 2 - liveH - pad;
+  viewer.style.left = px(vx); viewer.style.top = px(vy); viewer.style.width = px(vw); viewer.style.height = px(vh);
+  livebar.style.left = px(vx); livebar.style.width = px(vw); livebar.style.top = px(vy + vh + pad); livebar.style.height = px(liveH);
+
+  // conversation: bubble appears, statuses reveal one by one
+  const bIn = seg(t, S.session - 0.1, 0.6);
+  bubbleWrap.style.opacity = String(bIn); bubbleWrap.style.transform = `translateY(${(1 - bIn) * 12}px)`;
+  C.session.status.forEach((s, i) => {
+    const p = seg(t, s.at, 0.55);
+    const e = statusEls[i];
+    e.style.display = p > 0 ? 'flex' : 'none';
+    e.style.opacity = String(p); e.style.transform = `translateY(${(1 - p) * 12}px)`;
+  });
+  // working mark on the latest non-done status: subtle pulse
+  // (kept static for calm; pulse could be enabled here)
+
+  // iPad in the viewer: fit by height, then scale (device slides up in, then push-in)
+  const bezel = 26;
+  const fitH = vh - 2 * 18, fitW = Math.round((fitH - 2 * bezel) * (C.footage.width / C.footage.height)) + 2 * bezel;
+  const appear = seg(t, C.footage.startsAt, 0.9);
+  const push = seg(t, S.zoomIn, S.zoomHold - S.zoomIn, easeInOut);
+  const pull = seg(t, S.zoomOut, 1.2, easeInOut);
+  const k = push * (1 - pull);
+  const scale = lerp(C.zoom.deviceScaleFrom, 1, k);
+  // whole shell pushes in around the device center (device stays inside the Devin UI)
+  const devCy = vy + vh / 2;
+  const sh = lerp(1, C.zoom.shellScale, k);
+  region.style.transformOrigin = `${W / 2}px ${devCy}px`;
+  region.style.transform = `translateX(${shiftOut}px) scale(${sh})`;
+  ipad.style.display = appear > 0 ? 'block' : 'none';
+  ipad.style.width = px(fitW); ipad.style.height = px(fitH);
+  ipad.style.left = px(Math.round((vw - fitW) / 2)); ipad.style.top = px(Math.round((vh - fitH) / 2));
+  ipad.style.opacity = String(appear);
+  ipad.style.transform = `translateY(${(1 - appear) * 90}px) scale(${scale})`;
+  // footage frame
+  const fi = Math.max(0, Math.min(C.footage.frameCount - 1, Math.round((t - C.footage.startsAt) * C.fps)));
+  footImg.src = footFrames[fi];
+  // live progress: time position, a thin accent line
+  progFill.style.width = `${Math.round(100 * clamp01((t - S.session) / (S.end - S.session)))}%`;
+}
+
+window.setFrame = async (f) => {
+  await window.ready;
+  const t = f / C.fps;
+  layout(t);
+  const imgs = [...document.images].filter((i) => i.offsetParent !== null || i.style.display !== 'none');
+  await Promise.all(imgs.map((i) => (i.complete ? Promise.resolve() : new Promise((r) => { i.onload = r; i.onerror = r; }))));
+  await Promise.all(imgs.map((i) => i.decode().catch(() => {})));
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  return t;
+};
+// Preview: ?t=seconds
+const q = new URLSearchParams(location.search);
+if (q.has('t')) window.ready.then(() => layout(parseFloat(q.get('t'))));
+</script>
+</body>
+</html>
