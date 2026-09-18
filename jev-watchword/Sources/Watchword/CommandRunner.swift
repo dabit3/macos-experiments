@@ -113,14 +113,12 @@ enum CommandRunner {
 
   static func smoke(folder url: URL, raise: Bool) async throws {
     NativeAccess.requestPermission()
-    let targets = try NativeAccess.windows()
-    guard
-      let target = targets.first(where: {
-        $0.appName == "Terminal" && $0.title.contains("Watchword")
-      })
-    else {
+    let targets = try NativeAccess.windows().filter {
+      $0.appName == "Terminal" && $0.title.contains("Watchword")
+    }
+    guard targets.count == 1, let target = targets.first else {
       throw CommandError.failed(
-        "Open a Watchword fixture in Terminal, then start this command during its lead-in.")
+        "Open exactly one Watchword fixture in Terminal, then start during its lead-in.")
     }
     let action = ArmedAction(
       kind: raise ? .raise : .reveal, folder: try SelectedFolder(url: url), window: target)
@@ -154,12 +152,16 @@ enum CommandRunner {
           "\(engine.phase.rawValue): \(engine.reason)\nAX: \(current.text)\nP(yes): \(result.signals)"
         )
         if fired {
-          try await action.execute()
-          try await Task.sleep(for: .seconds(1))
-          sideEffectVerified =
-            raise
-            ? NativeAccess.isFocused(target)
-            : try finderSelection() == url.resolvingSymlinksInPath().path
+          do {
+            try await action.execute()
+            try await Task.sleep(for: .seconds(1))
+            sideEffectVerified =
+              raise
+              ? NativeAccess.isFocused(target)
+              : try finderSelection() == url.resolvingSymlinksInPath().path
+          } catch {
+            trace.append("Native action/readback error: \(error.localizedDescription)")
+          }
         }
       }
     }
@@ -188,7 +190,8 @@ enum CommandRunner {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
     process.arguments = [
-      "-e", "tell application \"Finder\" to get POSIX path of (item 1 of selection as alias)",
+      "-e",
+      "tell application \"Finder\" to get POSIX path of ((item 1 of (get selection)) as alias)",
     ]
     let pipe = Pipe()
     process.standardOutput = pipe

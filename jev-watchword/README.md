@@ -81,13 +81,23 @@ Signals are probabilities of yes, not “confidence in correctness.” The displ
 ```sh
 bash jev-watchword/check.sh
 
-# 24 held-out text cases, live Jev; prints JSON (no keys).
+# 24 regression text cases, live Jev; prints JSON (no keys).
+# The original corpus informed prompt refinement; see docs/VERIFICATION.md.
 # Covers paraphrases, negations, history, cancellation, partial output,
 # contradictory state, prompt-like window text, no-match, and other task domains.
 bash jev-watchword/run.sh --eval jev-watchword/Fixtures/eval-held-out.json
 
+# Additional 16 unseen cases evaluated after the prompt refinement.
+# One conservative false negative is retained and reported; this command
+# intentionally exits 1 when a live result disagrees with the expected label.
+bash jev-watchword/run.sh --eval jev-watchword/Fixtures/eval-validation.json
+
 # List actual accessible windows.
 bash jev-watchword/run.sh --list-windows
+
+# Read one explicitly matched window's AX text for diagnosis (JSON string).
+# Fails unless exactly one app/title match exists.
+jev-watchword/dist/Watchword.app/Contents/MacOS/Watchword --snapshot Terminal Watchword
 
 # Open a fresh successful fixture and run during its 25-second lead-in.
 open "jev-watchword/Fixtures/Successful export.command"
@@ -114,12 +124,14 @@ The live evaluation also runs the deterministic baseline `current.contains("Expo
 
 - A window must expose meaningful AX text. Canvas-only renderers, inaccessible controls and secure fields are unsupported. No OCR fallback is shipped.
 - AX traversal stops at 1,200 elements, 16,000 text characters or three seconds; oversized evidence fails closed instead of silently truncating context.
+- Repeated blank lines are collapsed to one blank line; nonblank text and chronological order are preserved. Some apps, including Terminal, expose scrollback as well as the currently visible viewport.
 - Some apps reuse the same AX content surface across documents/tabs. Watchword cannot prove task identity inside an app with no stable task identifier. Be specific about the task in your condition and do not switch documents in the selected window while armed. A changed surface is detected; reused surfaces are a documented boundary.
 - Failure is a terminal stop, even if the app might retry later. Re-arm when you want to observe the retry.
 - Ambiguous unchanged text stays pending until it changes or times out. It is not repeatedly sampled until the model happens to agree.
 - Notifications are submitted to macOS; Focus/notification settings may suppress their display. Finder reveal and raise report submission in the UI; the CLI separately verifies actual OS readback.
 - Window polling and API latency mean this is not a real-time safety system. Computer sleep, privacy revocation and unresponsive apps can prevent completion.
 - Model judgments can be wrong. Two confirmations reduce transient UI risk but do not prove correctness. Follow-ups are deliberately limited to reversible attention/navigation actions.
+- One of 16 additional validation cases was a false negative: a new delivery receipt after a historical success received only 80% satisfied / 10% unknown. Strict thresholds kept waiting. The corpus and mismatch are retained; thresholds were not relaxed to make it pass.
 
 ## API design sources
 
