@@ -3,10 +3,10 @@ import type { Store } from "../lib/store.ts";
 import { colToName } from "../engine/refs.ts";
 import { viewOf } from "./format.ts";
 
-export const ROW_H = 26;
-export const HEAD_H = 28;
-export const ROWHEAD_W = 52;
-export const DEFAULT_COL_W = 100;
+export const ROW_H = 36;
+export const HEAD_H = 34;
+export const ROWHEAD_W = 60;
+export const DEFAULT_COL_W = 120;
 
 export type Selection = { ar: number; ac: number; fr: number; fc: number };
 export type Editing = { row: number; col: number; text: string; caretEnd?: boolean } | null;
@@ -185,7 +185,7 @@ export function Grid({ store, sheet, sel, setSel, editing, setEditing, commitEdi
       cells.push(
         <div
           key={`${r}:${c}`}
-          className={`${view.className}${inSel ? " sel" : ""}${inFill ? " fillpreview" : ""}${isFormula ? " formula" : ""}`}
+          className={`${view.className}${inSel ? " sel" : ""}${inFill ? " fillpreview" : ""}${isFormula ? " formula" : ""}${r === 0 ? " headrow" : ""}`}
           style={{ ...view.style, top: r * ROW_H, left: widths.offs[c], width: widths.arr[c], height: ROW_H }}
           title={view.title}
         >

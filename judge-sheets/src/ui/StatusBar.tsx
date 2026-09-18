@@ -6,10 +6,23 @@ type Props = {
   totals: Totals;
   now: number;
   lastError: string | null;
+  flash: string | null;
   health: { mode: string; ok: boolean; concurrency: number };
 };
 
-export function StatusBar({ run, totals, now, lastError, health }: Props) {
+function Tile({ label, value, unit, className }: { label: string; value: string; unit?: string; className?: string }) {
+  return (
+    <div className={`tile${className ? ` ${className}` : ""}`}>
+      <div className="tilevalue">
+        {value}
+        {unit && <span className="tileunit">{unit}</span>}
+      </div>
+      <div className="tilelabel">{label}</div>
+    </div>
+  );
+}
+
+export function StatusBar({ run, totals, now, lastError, flash, health }: Props) {
   const elapsed = run.active ? now - run.startedAt : run.elapsedMs;
   const { p50, p95 } = summarize(run.latencies);
   const rate = elapsed > 0 ? run.cellsDone / (elapsed / 1000) : 0;
@@ -19,49 +32,42 @@ export function StatusBar({ run, totals, now, lastError, health }: Props) {
   const recent = run.latencies.slice(-80);
   const maxLat = Math.max(1, ...recent);
   const hasRun = run.requests > 0;
+  const dash = "—";
 
   return (
     <div className={`statusbar${run.active ? " running" : ""}`}>
       <div className="progress" style={{ width: `${(run.active ? progress : 0) * 100}%` }} />
-      <div className="stat headline">
-        {hasRun ? (
-          <>
-            <b>{run.cells}</b> cells · <b>{run.requests}</b> requests · <b>{fmtMs(elapsed)}</b> · p50{" "}
-            <b>{fmtMs(p50)}</b> · p95 <b>{fmtMs(p95)}</b>
-            {run.cacheHits > 0 && (
-              <>
-                {" "}
-                · <span className="dim">{run.cacheHits} cache hits</span>
-              </>
-            )}
-            {run.retries > 0 && <span className="dim"> · {run.retries} retries</span>}
-            {run.errors > 0 && <span className="err"> · {run.errors} errors</span>}
-          </>
-        ) : (
-          <span className="dim">idle — edit a JUDGE / PICK / RATE formula to start judging</span>
-        )}
+      <div className="hudtitle">
+        <div className="hudname">{run.active ? "Judging…" : hasRun ? "Last run" : "Ready"}</div>
+        <div className="hudsub">
+          {flash ?? (hasRun ? `${run.requests} requests · ${health.concurrency} in parallel` : "edit a rubric, then Fill column ↓")}
+        </div>
       </div>
-      {hasRun && (
-        <div className="stat rate">
-          <b>{rate.toFixed(0)}</b> cells/s
-        </div>
-      )}
-      {hasRun && (
-        <div className="stat baseline" title={`simulated per-cell LLM call at ${LLM_BASELINE_S_PER_CELL} s per cell, ${run.cells} cells`}>
-          per-cell LLM @ {LLM_BASELINE_S_PER_CELL} s: <b>{fmtDuration(baselineS)}</b>
-          {speedup > 1 && <span className="speedup"> {speedup >= 100 ? speedup.toFixed(0) : speedup.toFixed(1)}× faster</span>}
-        </div>
-      )}
+      <Tile label="cells re-judged" value={hasRun ? String(run.cellsDone) : dash} className="cells" />
+      <Tile label="total time" value={hasRun ? fmtMs(elapsed) : dash} className="time" />
+      <Tile label="median latency" value={hasRun ? fmtMs(p50) : dash} />
+      <Tile label="p95 latency" value={hasRun ? fmtMs(p95) : dash} />
+      <Tile label="cells / second" value={hasRun ? rate.toFixed(0) : dash} />
       <div className="spark" title="latency of the last requests (ms)">
         {recent.map((ms, i) => (
           <i key={i} style={{ height: `${Math.max(8, (ms / maxLat) * 100)}%` }} />
         ))}
       </div>
-      <div className="stat totals dim" title="cumulative for this page load">
-        session: {totals.cells} cells · {totals.requests} req
-        {health.ok && ` · ${health.concurrency} lanes`}
+      <div className="tile baseline" title={`simulated per-cell LLM call at ${LLM_BASELINE_S_PER_CELL} s per cell, ${run.cells} cells`}>
+        <div className="tilevalue">
+          {hasRun ? fmtDuration(baselineS) : dash}
+          {hasRun && speedup > 1 && (
+            <span className="speedup">{speedup >= 100 ? speedup.toFixed(0) : speedup.toFixed(1)}× faster</span>
+          )}
+        </div>
+        <div className="tilelabel">per-cell LLM @ {LLM_BASELINE_S_PER_CELL} s / cell</div>
       </div>
-      {lastError && <div className="stat err">{lastError}</div>}
+      <div className="totals dim" title="cumulative for this page load">
+        session {totals.cells} cells · {totals.requests} req
+        {run.retries > 0 && ` · ${run.retries} retries`}
+        {run.errors > 0 && <span className="err"> · {run.errors} errors</span>}
+        {lastError && <span className="err"> · {lastError}</span>}
+      </div>
     </div>
   );
 }

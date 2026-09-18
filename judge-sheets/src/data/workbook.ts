@@ -31,19 +31,19 @@ export function buildWorkbook(): Workbook {
 
   // ---------------------------------------------------------------- Reviews
   const reviews = wb.addSheet("Reviews", ROWS, COLS);
-  reviews.colWidths.set(0, 70);
-  reviews.colWidths.set(1, 190);
-  reviews.colWidths.set(2, 460);
-  reviews.colWidths.set(3, 110);
-  reviews.colWidths.set(4, 100);
-  reviews.colWidths.set(5, 90);
-  reviews.colWidths.set(6, 110);
-  reviews.colWidths.set(7, 30);
-  reviews.colWidths.set(8, 210);
-  reviews.colWidths.set(9, 80);
-  reviews.colWidths.set(10, 80);
+  reviews.colWidths.set(0, 80);
+  reviews.colWidths.set(1, 220);
+  reviews.colWidths.set(2, 520);
+  reviews.colWidths.set(3, 170);
+  reviews.colWidths.set(4, 130);
+  reviews.colWidths.set(5, 110);
+  reviews.colWidths.set(6, 130);
+  reviews.colWidths.set(7, 36);
+  reviews.colWidths.set(8, 250);
+  reviews.colWidths.set(9, 90);
+  reviews.colWidths.set(10, 90);
 
-  ["ID", "Product", "Review", "Sentiment 0-4", "Topic", "Defect?", "Recommend?"].forEach((h, c) =>
+  ["ID", "Product", "Review", "Sentiment", "Topic", "Defect?", "Recommend?"].forEach((h, c) =>
     wb.setCell("Reviews", 0, c, h),
   );
   generateReviews(REVIEW_COUNT).forEach((r, i) => {
@@ -61,32 +61,34 @@ export function buildWorkbook(): Workbook {
     wb.setCell("Reviews", row, 6, REVIEW_FORMULAS.recommend.replace("$C2", `$C${n}`));
   }
 
-  set(wb, "Reviews", "I1", "Summary (live)");
-  set(wb, "Reviews", "J1", "Value");
+  // helper flag column lives far right (Z) so the visible sheet stays simple
+  const FLAG = 25;
+  const flagCol = "Z";
+  set(wb, "Reviews", "I1", "Live summary");
+  set(wb, "Reviews", "J1", "Count");
   set(wb, "Reviews", "K1", "Share");
   set(wb, "Reviews", "I2", "Reviews judged");
   set(wb, "Reviews", "J2", `=COUNT(D2:D${last})`);
-  set(wb, "Reviews", "I3", "Average sentiment (0-4)");
+  set(wb, "Reviews", "I3", "Average score (0–4)");
   set(wb, "Reviews", "J3", `=ROUND(AVERAGE(D2:D${last}),2)`);
-  set(wb, "Reviews", "I4", "Negative reviews (< 1.5)");
+  set(wb, "Reviews", "I4", "Low score (< 1.5)");
   set(wb, "Reviews", "J4", `=COUNTIF(D2:D${last},"<1.5")`);
-  set(wb, "Reviews", "K4", "=IF(J2>0,J4/J2,0)");
-  set(wb, "Reviews", "I5", "Positive reviews (>= 2.5)");
+  set(wb, "Reviews", "K4", "=IF(J2>0,ROUND(100*J4/J2,0)&\"%\",\"\")");
+  set(wb, "Reviews", "I5", "High score (>= 2.5)");
   set(wb, "Reviews", "J5", `=COUNTIF(D2:D${last},">=2.5")`);
-  set(wb, "Reviews", "K5", "=IF(J2>0,J5/J2,0)");
-  set(wb, "Reviews", "I6", "Mention a defect (> 50%)");
+  set(wb, "Reviews", "K5", "=IF(J2>0,ROUND(100*J5/J2,0)&\"%\",\"\")");
+  set(wb, "Reviews", "I6", "Mention a defect");
   set(wb, "Reviews", "J6", `=COUNTIF(F2:F${last},">0.5")`);
-  set(wb, "Reviews", "K6", "=IF(J2>0,J6/J2,0)");
-  set(wb, "Reviews", "I7", "Would recommend (> 50%)");
+  set(wb, "Reviews", "K6", "=IF(J2>0,ROUND(100*J6/J2,0)&\"%\",\"\")");
+  set(wb, "Reviews", "I7", "Would recommend");
   set(wb, "Reviews", "J7", `=COUNTIF(G2:G${last},">0.5")`);
-  set(wb, "Reviews", "K7", "=IF(J2>0,J7/J2,0)");
-  set(wb, "Reviews", "I8", "Defect AND negative");
-  set(wb, "Reviews", "J8", `=SUMIF(F2:F${last},">0.5",L2:L${last})`);
+  set(wb, "Reviews", "K7", "=IF(J2>0,ROUND(100*J7/J2,0)&\"%\",\"\")");
+  set(wb, "Reviews", "I8", "Defect AND low score");
+  set(wb, "Reviews", "J8", `=SUMIF(F2:F${last},">0.5",${flagCol}2:${flagCol}${last})`);
   for (let row = 1; row <= REVIEW_COUNT; row++) {
-    wb.setCell("Reviews", row, 11, `=IF(AND(F${row + 1}>0.5,D${row + 1}<1.5),1,0)`);
+    wb.setCell("Reviews", row, FLAG, `=IF(AND(F${row + 1}>0.5,D${row + 1}<1.5),1,0)`);
   }
-  reviews.colWidths.set(11, 60);
-  wb.setCell("Reviews", 0, 11, "flag");
+  wb.setCell("Reviews", 0, FLAG, "flag");
 
   set(wb, "Reviews", "I10", "Topic");
   set(wb, "Reviews", "J10", "Count");
@@ -95,28 +97,23 @@ export function buildWorkbook(): Workbook {
     const r = 11 + i;
     set(wb, "Reviews", `I${r}`, t);
     set(wb, "Reviews", `J${r}`, `=COUNTIF(E2:E${last},"${t}")`);
-    set(wb, "Reviews", `K${r}`, `=IF(J$2>0,J${r}/J$2,0)`);
+    set(wb, "Reviews", `K${r}`, `=IF(J$2>0,ROUND(100*J${r}/J$2,0)&"%","")`);
   });
-
-  set(wb, "Reviews", "I18", "Try it:");
-  set(wb, "Reviews", "I19", "1. Click D2, change the rubric text in the formula bar, press Enter.");
-  set(wb, "Reviews", "I20", "2. Press Ctrl+Shift+D (Fill column) — 300 rows re-judge in seconds.");
-  set(wb, "Reviews", "I21", "3. Watch the summary block and the status bar update live.");
 
   // ------------------------------------------------------------------ Leads
   const leads = wb.addSheet("Leads", ROWS, COLS);
-  leads.colWidths.set(0, 70);
-  leads.colWidths.set(1, 170);
-  leads.colWidths.set(2, 90);
-  leads.colWidths.set(3, 520);
-  leads.colWidths.set(4, 120);
-  leads.colWidths.set(5, 120);
-  leads.colWidths.set(6, 60);
-  leads.colWidths.set(7, 30);
-  leads.colWidths.set(8, 190);
-  leads.colWidths.set(9, 80);
+  leads.colWidths.set(0, 80);
+  leads.colWidths.set(1, 200);
+  leads.colWidths.set(2, 100);
+  leads.colWidths.set(3, 560);
+  leads.colWidths.set(4, 130);
+  leads.colWidths.set(5, 180);
+  leads.colWidths.set(6, 80);
+  leads.colWidths.set(7, 36);
+  leads.colWidths.set(8, 240);
+  leads.colWidths.set(9, 90);
 
-  ["ID", "Company", "Channel", "Message", "Intent", "Buying intent 0-3", "Hot?"].forEach((h, c) =>
+  ["ID", "Company", "Channel", "Message", "Intent", "Buying intent", "Hot?"].forEach((h, c) =>
     wb.setCell("Leads", 0, c, h),
   );
   generateLeads(LEAD_COUNT).forEach((l, i) => {
@@ -133,8 +130,8 @@ export function buildWorkbook(): Workbook {
     wb.setCell("Leads", row, 5, LEAD_FORMULAS.buying.replace("$D2", `$D${n}`));
     wb.setCell("Leads", row, 6, LEAD_FORMULAS.hot.replace("F2", `F${n}`));
   }
-  set(wb, "Leads", "I1", "Summary (live)");
-  set(wb, "Leads", "J1", "Value");
+  set(wb, "Leads", "I1", "Live summary");
+  set(wb, "Leads", "J1", "Count");
   set(wb, "Leads", "I2", "Leads judged");
   set(wb, "Leads", "J2", `=COUNT(F2:F${lastLead})`);
   set(wb, "Leads", "I3", "HOT leads");
@@ -148,7 +145,6 @@ export function buildWorkbook(): Workbook {
     set(wb, "Leads", `I${r}`, t);
     set(wb, "Leads", `J${r}`, `=COUNTIF(E2:E${lastLead},"${t}")`);
   });
-  set(wb, "Leads", "I14", "Try it: edit G2 to =IF(F2>=2,\"HOT\",\"\") then Ctrl+Shift+D — free, no Jev calls.");
 
   return wb;
 }

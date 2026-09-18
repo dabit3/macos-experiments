@@ -11,11 +11,16 @@ store.fetchHealth();
 store.tick();
 Object.assign(window, { judgeSheets: store });
 
-const HELP = [
-  ["=JUDGE(text, \"yes/no question\")", "probability 0–100 % (noul) · heat cell"],
-  ["=PICK(text, \"instructions\", \"a|b|c\")", "one option (choice) · tint = confidence"],
-  ["=RATE(text, \"instructions\", \"lvl0|lvl1|lvl2\")", "ordinal score (score) · red→green"],
-  ["SUM AVERAGE COUNT COUNTIF SUMIF IF AND OR NOT LEN UPPER LOWER TRIM CONCAT ROUND ABS", ""],
+const HELP: [string, string][] = [
+  ['=JUDGE(text, "yes/no question")', "→ probability"],
+  ['=PICK(text, "instructions", "a|b|c")', "→ one option"],
+  ['=RATE(text, "instructions", "low|mid|high")', "→ score"],
+];
+
+const STEPS = [
+  ["1", "Click a formula cell", "e.g. D2 — its rubric shows in the formula bar"],
+  ["2", "Edit the rubric text", "change the question or the answer levels, press Enter"],
+  ["3", "Fill column ↓", "every row re-judges live — watch the numbers below"],
 ];
 
 export default function App() {
@@ -207,7 +212,7 @@ export default function App() {
       <header className="topbar">
         <div className="brand">
           <span className="logo">▦</span> Judge Sheets
-          <span className="tag">spreadsheets that think, at spreadsheet speed</span>
+          <span className="tag">formulas that read text — recalculated in seconds</span>
         </div>
         <nav className="tabs">
           {sheets.map((s) => (
@@ -225,15 +230,29 @@ export default function App() {
           ))}
         </nav>
         <div className="actions">
-          <button className="btn" onClick={fillColumn} title="Copy the selected cell's formula down the whole column (Ctrl+Shift+D)">
-            Fill column ↓ <kbd>Ctrl⇧D</kbd>
-          </button>
-          <button className="btn primary" onClick={rejudge} title="Drop the judgment cache for this sheet and re-ask Jev for every cell">
+          <button className="btn" onClick={rejudge} title="Drop the judgment cache for this sheet and re-ask Jev for every cell">
             Re-judge sheet ⟳
           </button>
           <span className={`mode ${modeBadge.cls}`}>{modeBadge.text}</span>
         </div>
       </header>
+
+      <div className="steps">
+        {STEPS.map(([num, title, sub]) => (
+          <div key={num} className="step">
+            <span className="stepnum">{num}</span>
+            <span className="steptitle">{title}</span>
+            <span className="stepsub">{sub}</span>
+          </div>
+        ))}
+        <div className="stepfns">
+          {HELP.map(([f, d]) => (
+            <span key={f}>
+              <code>{f}</code> <span className="dim">{d}</span>
+            </span>
+          ))}
+        </div>
+      </div>
 
       <div className="formulabar">
         <div className="namebox">{rangeName}</div>
@@ -255,7 +274,6 @@ export default function App() {
               else {
                 if (bar) store.setCell(bar.sheet, bar.row, bar.col, bar.text);
                 setBar(null);
-                move(1, 0);
               }
               (e.target as HTMLInputElement).blur();
             } else if (e.key === "Escape") {
@@ -268,6 +286,9 @@ export default function App() {
             commitBar();
           }}
         />
+        <button className="btn primary fill" onClick={fillColumn} title="Copy the selected cell's formula down the whole column (Ctrl+Shift+D)">
+          Fill column ↓ <kbd>Ctrl⇧D</kbd>
+        </button>
         <div className="cellinfo" title={view.title}>
           {isJev(value) ? (
             <>
@@ -304,17 +325,8 @@ export default function App() {
         version={version}
       />
 
-      <div className="help">
-        {HELP.map(([f, d]) => (
-          <span key={f}>
-            <code>{f}</code>
-            {d && <span className="dim"> {d}</span>}
-          </span>
-        ))}
-        {flash && <span className="flash">{flash}</span>}
-      </div>
-
       <StatusBar
+        flash={flash}
         run={store.runner.run}
         totals={store.runner.totals}
         now={now}

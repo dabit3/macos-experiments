@@ -52,7 +52,7 @@ export function viewOf(v: Value): CellView {
     const max = Math.max(1, (v.levels?.length ?? 2) - 1);
     const label = v.levels?.[Math.round(n)] ?? "";
     return {
-      text: formatNumber(n),
+      text: label ? `${label}  ${n.toFixed(1)}` : formatNumber(n),
       className: "cell jev rate",
       style: { background: diverging(n / max, 0.12 + v.confidence * 0.5) },
       title: `RATE → ${n} = ${label} (confidence ${Math.round(v.confidence * 100)}%)`,
