@@ -181,6 +181,13 @@ were correctly selected but blocked by independent role checks. The live gate
 can abstain on valid values; do not interpret exact-choice accuracy as write
 availability. Both runs used the same fixed approval thresholds and model version.
 
+The native smoke passed on this VM with Accessibility enabled: real fixture
+billing insertion/readback and undo, rejection after changing to the sales field,
+and selected-text insertion/readback and undo in **TextEdit**. Those two live
+requests took 258 ms and 102 ms respectively on `jev-1.13.0`. TextEdit startup is
+polled until the disposable document's identity and text are exposed through AX;
+no edit is attempted while a different document or startup dialog is focused.
+
 ## Research
 
 The implementation follows the live TypeSafe [state](https://docs.typesafe.ai/concepts/state.md),

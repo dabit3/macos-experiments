@@ -148,13 +148,22 @@ enum Commands {
     }
     let textEdit = try await NSWorkspace.shared.open(
       [document], withApplicationAt: textEditURL, configuration: configuration)
-    try await Task.sleep(for: .milliseconds(700))
     let textRoot = AXUIElementCreateApplication(textEdit.processIdentifier)
-    guard let window = AX.element(textRoot, kAXFocusedWindowAttribute),
-      let editor = AX.find(
-        window, matching: { AX.string($0, kAXRoleAttribute) == kAXTextAreaRole }),
-      AX.string(editor, kAXValueAttribute) == "Billing email: [replace me]\n"
-    else {
+    var loadedEditor: AXUIElement?
+    for _ in 0..<100 {
+      if let window = AX.element(textRoot, kAXFocusedWindowAttribute),
+        AX.string(window, kAXTitleAttribute).contains(
+          document.deletingPathExtension().lastPathComponent),
+        let editor = AX.find(
+          window, matching: { AX.string($0, kAXRoleAttribute) == kAXTextAreaRole }),
+        AX.string(editor, kAXValueAttribute) == "Billing email: [replace me]\n"
+      {
+        loadedEditor = editor
+        break
+      }
+      try await Task.sleep(for: .milliseconds(100))
+    }
+    guard let editor = loadedEditor else {
       throw PilotError.message(
         "Disposable TextEdit document was not the focused editor. No edit attempted.")
     }
