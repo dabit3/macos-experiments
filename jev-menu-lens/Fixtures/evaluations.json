@@ -1,0 +1,58 @@
+{
+  "pools": {
+    "TextEdit": [
+      {"id":"upper","path":["Edit","Transformations","Make Upper Case"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"lower","path":["Edit","Transformations","Make Lower Case"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"capitalize","path":["Edit","Transformations","Capitalize"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"bold","path":["Format","Font","Bold"],"enabled":true,"checked":false,"shortcut":"⌘B","permitted":true},
+      {"id":"italic","path":["Format","Font","Italic"],"enabled":true,"checked":false,"shortcut":"⌘I","permitted":true},
+      {"id":"underline","path":["Format","Font","Underline"],"enabled":true,"checked":false,"shortcut":"⌘U","permitted":true},
+      {"id":"center","path":["Format","Text","Center"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"right","path":["Format","Text","Align Right"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"left","path":["Format","Text","Align Left"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"justify","path":["Format","Text","Justify"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"ruler","path":["View","Show Ruler"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"zoom","path":["View","Zoom In"],"enabled":true,"checked":false,"shortcut":"","permitted":true}
+    ],
+    "Finder": [
+      {"id":"modified","path":["View","Sort By","Date Modified"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"opened","path":["View","Sort By","Date Last Opened"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"added","path":["View","Sort By","Date Added"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"created","path":["View","Sort By","Date Created"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"name","path":["View","Sort By","Name"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"size","path":["View","Sort By","Size"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"sidebar","path":["View","Show Sidebar"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"pathbar","path":["View","Show Path Bar"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"status","path":["View","Show Status Bar"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"columns","path":["View","as Columns"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"list","path":["View","as List"],"enabled":true,"checked":false,"shortcut":"","permitted":true},
+      {"id":"gallery","path":["View","as Gallery"],"enabled":true,"checked":false,"shortcut":"","permitted":true}
+    ]
+  },
+  "cases": [
+    {"name":"case conversion, no shared label words","pool":"TextEdit","goal":"make these words all caps","expected":"upper"},
+    {"name":"capitalization near miss","pool":"TextEdit","goal":"only the first letter of each word should be big","expected":"capitalize"},
+    {"name":"negated uppercase","pool":"TextEdit","goal":"stop the shouting: make every letter small, not uppercase","expected":"lower"},
+    {"name":"font weight not case","pool":"TextEdit","goal":"make the selected type heavier without changing letter case","expected":"bold"},
+    {"name":"slanted letters","pool":"TextEdit","goal":"slant the selected words","expected":"italic"},
+    {"name":"line under words","pool":"TextEdit","goal":"put a line under this phrase","expected":"underline"},
+    {"name":"paragraph geometry","pool":"TextEdit","goal":"place this paragraph halfway between the page margins","expected":"center"},
+    {"name":"right edge alignment","pool":"TextEdit","goal":"line up the text with the right margin","expected":"right"},
+    {"name":"disabled desired command","pool":"TextEdit","goal":"make these words all caps","disabled":["upper"],"expected":null},
+    {"name":"wrong app request","pool":"TextEdit","goal":"in Finder sort the files by size","expected":null},
+    {"name":"unavailable semantic operation","pool":"TextEdit","goal":"translate the selected paragraph to Japanese","expected":null},
+    {"name":"ambiguous improvement","pool":"TextEdit","goal":"make it better","expected":null},
+    {"name":"modification vs opened","pool":"Finder","goal":"sort these files by when they were last changed, not when opened","expected":"modified"},
+    {"name":"last access not edit","pool":"Finder","goal":"arrange by when I last looked at each file, not when its contents changed","expected":"opened"},
+    {"name":"creation vs added","pool":"Finder","goal":"order by when each file was originally created","expected":"created"},
+    {"name":"storage size","pool":"Finder","goal":"sort by how much disk space each file takes","expected":"size"},
+    {"name":"navigation column","pool":"Finder","goal":"show the navigation column with favorites and locations on the left","expected":"sidebar"},
+    {"name":"folder ancestry","pool":"Finder","goal":"show the trail of parent folders at the bottom","expected":"pathbar"},
+    {"name":"folder count","pool":"Finder","goal":"show the item count and available disk space at the bottom","expected":"status"},
+    {"name":"photo inspection","pool":"Finder","goal":"use a large image preview above a strip of thumbnails","expected":"gallery"},
+    {"name":"disabled view","pool":"Finder","goal":"show the navigation column with favorites on the left","disabled":["sidebar"],"expected":null},
+    {"name":"wrong app formatting","pool":"Finder","goal":"make the selected TextEdit words all caps","expected":null},
+    {"name":"destructive unsupported","pool":"Finder","goal":"erase every file here forever","expected":null},
+    {"name":"already satisfied sort","pool":"Finder","goal":"sort by file size","checked":["size"],"expected":null}
+  ]
+}
