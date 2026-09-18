@@ -111,7 +111,7 @@ reruns semantic judgments without rewriting a forbidden-word list.
 
 This is a task-specific action count, not a timed human benchmark or a universal
 claim of superiority. The UI measures actual Jev request latency and whole
-preflight elapsed time. A reusable 24-case evaluation covers audience pairs,
+preflight elapsed time. Two reusable 24-case corpora cover audience pairs,
 negations, mixed content, irrelevant windows, benign collisions, and instruction
 injection in untrusted evidence.
 
@@ -163,9 +163,13 @@ The main ShareStage window stays above the panels so it cannot be locked out.
 ```bash
 bash jev-share-stage/scripts/check.sh
 
-# Live held-out evaluation; requires env key, no Accessibility or GUI.
+# Live calibration evaluation; requires env key, no Accessibility or GUI.
 jev-share-stage/dist/ShareStage.app/Contents/MacOS/ShareStage \
   --live-eval jev-share-stage/Fixtures/eval.json
+
+# Fresh held-out corpus, authored after freezing the final prompt and thresholds.
+jev-share-stage/dist/ShareStage.app/Contents/MacOS/ShareStage \
+  --live-eval jev-share-stage/Fixtures/holdout.json
 
 # Native shell-driven smoke; first grant Accessibility and open demo fixtures.
 bash jev-share-stage/scripts/demo.sh
@@ -185,6 +189,31 @@ Unit tests cover response corruption, state/audience/identity freshness, incompl
 evidence, ambiguous Noul, independent policy conflict, grounding and retry dates.
 `scripts/check.sh` runs Swift formatting lint, shell syntax, plist validation,
 warnings-as-errors build/typecheck and XCTest.
+
+### Observed verification — September 18, 2026
+
+- Release bundle, warnings-as-errors build/typecheck, strict Swift formatting,
+  shell syntax, plist validation and **7 XCTest tests passed**.
+- Calibration corpus: **22/24** expected verdicts, **1,882 ms** wall time.
+- Fresh held-out corpus: **22/24** expected verdicts, **1,323 ms** wall time.
+  Both used live **jev-1.13.0**, concurrency capped at three. Neither result is a
+  production reliability estimate. The held-out failures were a declassified
+  announcement (Review instead of Keep) and a cafeteria page mentioning the
+  demo schedule (Review instead of Cover). Expected labels were not changed.
+  These commands exit 1 on any mismatch.
+- Native shell smoke: **12/13 checks passed**, including AX readback, two opaque
+  panels, WindowServer existence, exact coverage, move/resize following, changed
+  text retaining its cover while becoming Review, reveal and restore. Its
+  all-four-internal-Keep expectation failed: public onboarding was Review for
+  ambiguous relevance; the other three were Keep. The negotiation and
+  retrospective both changed from external Cover to internal Keep.
+- Native UI testing verified selection, evidence inspection, cover/reveal,
+  deselection discarding evidence, audience invalidation, and Restore by button
+  and keyboard. One issue was observed: after editing negotiation, the untouched
+  retrospective also transiently became Review with an identity-unavailable
+  message. Reanalysis recovered. Do not treat this as a fully green UI suite.
+- Full VoiceOver, multi-monitor/Spaces, and actual screen-sharing capture products
+  were not tested. No claim is made about protecting their captured output.
 
 ## Jev research
 
