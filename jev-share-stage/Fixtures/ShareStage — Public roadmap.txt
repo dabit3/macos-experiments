@@ -1,0 +1,15 @@
+ATLAS / THE PUBLIC ROADMAP
+
+Build a calmer workday.
+
+Available today
+• Shared workspaces for every project
+• Accessible navigation and keyboard shortcuts
+• One-click CSV export
+
+Next on our public roadmap
+• Calendar sync
+• A redesigned workflow editor
+
+This roadmap is published and approved for customer demos.
+All capabilities listed here may be discussed externally.

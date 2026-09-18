@@ -1,0 +1,14 @@
+ATLAS / PUBLIC ONBOARDING GUIDE
+
+Make your first workspace.
+
+1. Create a project.
+2. Invite your colleagues.
+3. Label a sample document “Confidential”.
+4. Try exporting a CSV.
+
+“Confidential” is a fictional label in this public tutorial,
+not a restriction on this page.
+
+This guide uses invented example data and is approved
+for all customers and product demonstrations.

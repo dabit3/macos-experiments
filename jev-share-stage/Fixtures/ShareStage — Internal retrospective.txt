@@ -1,0 +1,14 @@
+ATLAS / INTERNAL RETROSPECTIVE
+
+Internal engineering and account team discussion.
+Not approved for customers.
+
+What happened
+We skipped QA for the Atlas rehearsal and shipped a broken export.
+The account team was not told about the known failure.
+
+What changes
+Assign an owner to the export reliability check.
+Rehearse the demo with the account team before Monday.
+
+Use this note for internal Atlas planning only.
