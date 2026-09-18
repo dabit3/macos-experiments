@@ -65,7 +65,7 @@ This is action accounting for the documented fixture task, **not a timed human b
 ```sh
 bash jev-task-deck/scripts/check.sh
 
-# 24 held-out semantic cases, distinct from the desktop fixtures.
+# 40 semantic cases, distinct from the desktop fixtures.
 # Uses the same production rubric/selection policy and live API; exits nonzero on disagreement.
 bash jev-task-deck/run.sh --eval
 
@@ -74,7 +74,7 @@ bash jev-task-deck/run.sh --eval
 bash jev-task-deck/run.sh --native-smoke
 ```
 
-The live evaluation includes misleading titles, body-only matches, explicit exclusions, relative months, draft/executed confusion, unrelated and all-no-match cases, and an instruction embedded in window text. Labels are stored before evaluation in `Fixtures/held-out.json`. The date is fixed to September 18, 2026 for those cases; the GUI uses today's date. Evaluation is deliberately serial for reproducibility; the GUI fans out to four requests.
+The live evaluation includes misleading titles, body-only matches, explicit exclusions, relative months, draft/executed confusion, unrelated and all-no-match cases, and instructions embedded in window text. The original 24 cases in `Fixtures/held-out.json` became regression cases after revealing a concentration-gate mistake and an exclusion-rubric weakness. The 16 cases in `Fixtures/holdout-v2.json` were labeled after the final rubric revision, before their first API run; no rubric changes followed that run. The date is fixed to September 18, 2026 for these cases; the GUI uses today's date. Evaluation is deliberately serial for reproducibility; the GUI fans out to four requests. Selection and high-conflict classification (Noul ≥ 0.65) are measured separately; either disagreement produces a nonzero exit.
 
 `--native-smoke` opens the fixture documents, checks selection against the known Atlas set, minimizes one selected document, then verifies that Compose changes all selected frames and Undo restores each original frame plus the minimized state. It leaves that fixture minimized as evidence of restoration. It does not drive UI buttons and is not a UI end-to-end test.
 
@@ -97,7 +97,7 @@ Jev sees text, never screenshots. It returns typed decisions, never generated ex
 - **Relevance**: a consistent four-level Score, 0–3, judged independently for each window.
 - **Contradiction**: Noul's probability of explicit conflict with the task, such as the wrong period or excluded project. An unrelated topic alone is not a contradiction.
 - **Rank**: `(relevance / 3) × (1 − contradiction)`.
-- **Initial selection**: relevance ≥ 2.1, contradiction ≤ 0.25, Score concentration ≥ 0.45, then the top four.
+- **Initial selection**: relevance ≥ 2.1 and contradiction ≤ 0.25, then the top four. Score concentration is displayed but does not veto a useful window: adjacent acceptable score levels can produce a diffuse distribution.
 - **Uncertainty**: nonselected borderline cards remain available for review. Concentration is distribution concentration, **not correctness**. Noul 0.5 means uncertainty, not “medium conflict.”
 - **Requests**: `jev-latest`, strict typed/range/distribution validation, four concurrent calls, 15-second request and 25-second resource timeouts, up to three HTTP attempts for 429/5xx including 529. Retry-After seconds and HTTP dates are honored; waits over 20 seconds are surfaced instead of retried early.
 - **Efficiency**: 600 ms debounce, cancellation and generation checks, memory-only cache keyed by task/date/evidence version, capped at approximately 256 entries. Cached judgments count as zero new requests. Batch latency includes API scheduling; each judgment also carries measured request latency.
@@ -110,7 +110,7 @@ Each actionable window is pinned to its retained AX object, process ID, process 
 
 Layout converts the selected display's visible AppKit frame into AX coordinates, including negative display origins. Full-screen windows are skipped. Apps that reject frame writes may only be raised; their actual readback and Undo record are reported. A constrained minimum window size can prevent the requested tile size.
 
-Undo rechecks the same app/window/document identity and the last observed arranged frame/minimized state. Externally moved windows are skipped rather than overwritten. Partial restore failures retain their records for retry. Undo data is memory-only and does not survive quitting TaskDeck.
+Window actions wait for bounded, stable AX readback, including macOS minimize/restore animations. Undo rechecks the same app/window/document identity and the last observed arranged frame/minimized state. Externally moved windows are skipped rather than overwritten. Partial restore failures retain their records for retry. Undo data is memory-only and does not survive quitting TaskDeck.
 
 ### Limits
 

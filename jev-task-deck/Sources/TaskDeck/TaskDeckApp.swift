@@ -14,6 +14,7 @@ struct TaskDeckApp: App {
   var body: some Scene {
     WindowGroup("TaskDeck") {
       DeckView(model: model)
+        .disabled(model.acting)
         .frame(minWidth: 1000, minHeight: 710)
         .task {
           NSApplication.shared.setActivationPolicy(.regular)
@@ -44,6 +45,7 @@ final class DeckModel: ObservableObject {
   @Published var permitted: Set<String> = []
   @Published var apps: [NSRunningApplication] = []
   @Published var busy = false
+  @Published var acting = false
   @Published var status = "Choose apps to include, then find your task."
   @Published var activity: [String] = []
   @Published var elapsed = 0.0
@@ -94,6 +96,7 @@ final class DeckModel: ObservableObject {
     }
   }
   func search() {
+    guard !acting else { return }
     work?.cancel()
     let run = UUID()
     generation = run
@@ -182,19 +185,34 @@ final class DeckModel: ObservableObject {
     }
   }
   func compose() {
-    do {
-      activity = try native.arrange(ids: sorted.filter { selected.contains($0.id) }.map(\.id))
-      canUndo = native.canUndo
-      status = "Desktop composed. Undo restores the observed frames and minimized state."
-    } catch { status = error.localizedDescription }
+    guard !acting, !busy else { return }
+    acting = true
+    status = "Composing selected windows…"
+    let ids = sorted.filter { selected.contains($0.id) }.map(\.id)
+    Task {
+      defer {
+        acting = false
+        canUndo = native.canUndo
+      }
+      do {
+        activity = try await native.arrange(ids: ids)
+        status = "Window actions finished. Review activity; Undo restores the observed state."
+      } catch { status = error.localizedDescription }
+    }
   }
   func undo() {
-    activity = native.undo()
-    canUndo = native.canUndo
-    status =
-      canUndo
-      ? "Some windows could not restore; see activity and retry."
-      : "Undo finished. See per-window readback below."
+    guard !acting, native.canUndo else { return }
+    acting = true
+    status = "Restoring previous window state…"
+    Task {
+      activity = await native.undo()
+      canUndo = native.canUndo
+      acting = false
+      status =
+        canUndo
+        ? "Some windows could not restore; see activity and retry."
+        : "Undo finished. See per-window readback below."
+    }
   }
   func openDemo() async {
     do {

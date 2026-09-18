@@ -30,7 +30,9 @@ enum CommandRunner {
   }
   static func evaluate() async throws {
     let data = try Data(contentsOf: Fixtures.directory.appendingPathComponent("held-out.json"))
-    let cases = try JSONDecoder().decode([EvalCase].self, from: data)
+    let originalCases = try JSONDecoder().decode([EvalCase].self, from: data)
+    let holdout = try Data(contentsOf: Fixtures.directory.appendingPathComponent("holdout-v2.json"))
+    let cases = originalCases + (try JSONDecoder().decode([EvalCase].self, from: holdout))
     let client = JevClient()
     var correct = 0
     var conflictCorrect = 0
@@ -44,12 +46,14 @@ enum CommandRunner {
       timings.append(judgment.milliseconds)
       let pass = judgment.selected == item.expected
       if pass { correct += 1 }
+      var conflictPass = true
       if let conflict = item.conflict {
         conflictTotal += 1
-        if (judgment.contradiction >= 0.65) == conflict { conflictCorrect += 1 }
+        conflictPass = (judgment.contradiction >= 0.65) == conflict
+        if conflictPass { conflictCorrect += 1 }
       }
       print(
-        "\(pass ? "PASS" : "FAIL") \(item.id) selected=\(judgment.selected) expected=\(item.expected) score=\(String(format: "%.3f", judgment.relevance)) conflict=\(String(format: "%.3f", judgment.contradiction)) concentration=\(String(format: "%.3f", judgment.confidence)) ms=\(Int(judgment.milliseconds)) model=\(judgment.model)"
+        "\(pass && conflictPass ? "PASS" : "FAIL") \(item.id) selected=\(judgment.selected) expected=\(item.expected) score=\(String(format: "%.3f", judgment.relevance)) conflict=\(String(format: "%.3f", judgment.contradiction)) conflict_expected=\(item.conflict.map(String.init) ?? "unlabeled") conflict_pass=\(conflictPass) concentration=\(String(format: "%.3f", judgment.confidence)) ms=\(Int(judgment.milliseconds)) model=\(judgment.model)"
       )
     }
     timings.sort()
@@ -112,14 +116,14 @@ enum CommandRunner {
     guard native.readMinimized(id: ids[0]) == true else {
       throw DeckError.message("Could not prepare minimized fixture.")
     }
-    let actions = try native.arrange(ids: ids)
+    let actions = try await native.arrange(ids: ids)
     for action in actions { print(action) }
     try await Task.sleep(nanoseconds: 500_000_000)
     let changed = zip(ids, before).allSatisfy {
       guard let current = native.readFrame(id: $0.0) else { return false }
       return !current.approximatelyEquals($0.1)
     }
-    let report = native.undo()
+    let report = await native.undo()
     for line in report { print(line) }
     try await Task.sleep(nanoseconds: 500_000_000)
     let restored = zip(ids, before).allSatisfy {

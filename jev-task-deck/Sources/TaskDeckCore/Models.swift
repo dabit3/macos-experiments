@@ -102,7 +102,7 @@ public struct Judgment: Codable, Sendable {
   public let model: String
   public let milliseconds: Double
   public let requests: Int
-  public var selected: Bool { relevance >= 2.1 && contradiction <= 0.25 && confidence >= 0.45 }
+  public var selected: Bool { relevance >= 2.1 && contradiction <= 0.25 }
   public var rank: Double { relevance / 3 * (1 - contradiction) }
   public var label: String {
     if contradiction >= 0.65 { return "Conflicting evidence" }

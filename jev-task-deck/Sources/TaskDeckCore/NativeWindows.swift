@@ -19,6 +19,7 @@ public final class NativeWindows {
   private var handles: [UUID: Handle] = [:]
   private var undoEntries: [UndoEntry] = []
   private var previousApp: NSRunningApplication?
+  private var operating = false
   public private(set) var notices: [String] = []
   public var canUndo: Bool { !undoEntries.isEmpty }
   public var trusted: Bool { AXIsProcessTrusted() }
@@ -40,6 +41,9 @@ public final class NativeWindows {
   }
 
   public func capture(bundleIDs: Set<String>) throws -> [WindowEvidence] {
+    guard !operating else {
+      throw DeckError.message("Wait for the current window action to finish.")
+    }
     guard trusted else {
       throw DeckError.message(
         "Enable TaskDeck in System Settings → Privacy & Security → Accessibility, then scan again.")
@@ -72,7 +76,10 @@ public final class NativeWindows {
     return result
   }
 
-  public func arrange(ids: [UUID], screen: NSScreen? = nil) throws -> [String] {
+  public func arrange(ids: [UUID], screen: NSScreen? = nil) async throws -> [String] {
+    guard !operating else { throw DeckError.message("A window action is already running.") }
+    operating = true
+    defer { operating = false }
     guard !canUndo else {
       throw DeckError.message("Undo the current layout before composing another task.")
     }
@@ -115,10 +122,24 @@ public final class NativeWindows {
       undoEntries.append(entry)
       let index = undoEntries.count - 1
       let window = handle.element
-      if entry.minimized { setBool(window, kAXMinimizedAttribute, false) }
+      if entry.minimized {
+        setBool(window, kAXMinimizedAttribute, false)
+        let ready = await settle(window, minimized: false, minimumDelay: 0.7)
+        guard ready, alive(handle),
+          handle.evidence.isFresh(comparedTo: observe(handle.element, app: handle.app))
+        else {
+          entry.afterFrame = frame(window)
+          entry.afterMinimized = bool(window, kAXMinimizedAttribute)
+          undoEntries[index] = entry
+          report.append(
+            "Could not restore minimized window: \(handle.evidence.title); Undo retained.")
+          continue
+        }
+      }
       handle.app.activate(options: [])
       let raised = AXUIElementPerformAction(window, kAXRaiseAction as CFString) == .success
       let moved = setFrame(window, layout)
+      _ = await settle(window, minimized: false)
       entry.afterFrame = frame(window)
       entry.afterMinimized = bool(window, kAXMinimizedAttribute)
       undoEntries[index] = entry
@@ -133,7 +154,10 @@ public final class NativeWindows {
     return report
   }
 
-  public func undo() -> [String] {
+  public func undo() async -> [String] {
+    guard !operating else { return ["Wait for the current window action to finish."] }
+    operating = true
+    defer { operating = false }
     var report: [String] = []
     var remaining: [UndoEntry] = []
     for entry in undoEntries.reversed() {
@@ -150,7 +174,11 @@ public final class NativeWindows {
         continue
       }
       _ = setFrame(handle.element, entry.frame)
+      _ = await settle(handle.element, minimized: entry.afterMinimized ?? false)
       setBool(handle.element, kAXMinimizedAttribute, entry.minimized)
+      _ = await settle(
+        handle.element, minimized: entry.minimized,
+        minimumDelay: entry.minimized != entry.afterMinimized ? 0.7 : 0.3)
       if frame(handle.element)?.approximatelyEquals(entry.frame) == true,
         bool(handle.element, kAXMinimizedAttribute) == entry.minimized
       {
@@ -187,6 +215,28 @@ public final class NativeWindows {
     return exists && string(handle.element, kAXTitleAttribute) == handle.evidence.title
       && string(handle.element, kAXDocumentAttribute) == handle.evidence.document
       && !bool(handle.element, "AXFullScreen")
+  }
+
+  private func settle(
+    _ window: AXUIElement, minimized: Bool, minimumDelay: TimeInterval = 0.3
+  ) async -> Bool {
+    let start = Date()
+    var previous: Frame?
+    var stableSamples = 0
+    for _ in 0..<20 {
+      try? await Task.sleep(nanoseconds: 100_000_000)
+      guard let current = frame(window) else { return false }
+      if let previous, current.approximatelyEquals(previous),
+        bool(window, kAXMinimizedAttribute) == minimized
+      {
+        stableSamples += 1
+      } else {
+        stableSamples = 0
+      }
+      previous = current
+      if stableSamples >= 3, Date().timeIntervalSince(start) >= minimumDelay { return true }
+    }
+    return false
   }
 
   private func observe(_ window: AXUIElement, app: NSRunningApplication) -> WindowEvidence {
@@ -281,6 +331,7 @@ public final class NativeWindows {
     guard let position = AXValueCreate(.cgPoint, &point),
       let dimensions = AXValueCreate(.cgSize, &size)
     else { return false }
+    AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, position)
     let resized = AXUIElementSetAttributeValue(window, kAXSizeAttribute as CFString, dimensions)
     let moved = AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, position)
     return resized == .success && moved == .success

@@ -74,6 +74,12 @@ final class TaskDeckTests: XCTestCase {
     XCTAssertFalse(uncertain.selected)
     XCTAssertEqual(uncertain.label, "Needs review")
   }
+  func testDiffuseScoreDistributionDoesNotVetoUsefulEvidence() throws {
+    let result = try JevResponse.validated(
+      response(score: "2.4", concentration: "0.37", conflict: "0.11"),
+      milliseconds: 100, requests: 1)
+    XCTAssertTrue(result.selected)
+  }
   func testRejectsOutOfRangeAndWrongTypes() {
     for data in [
       response(score: "3.01"), response(score: "-1"), response(conflict: "1.1"),
