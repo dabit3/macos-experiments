@@ -1,0 +1,30 @@
+NORTHSTAR / NEW VENDOR HANDOFF
+The warehouse needs supplies this week. Please keep accounts and sales separate.
+
+Company: Northstar Atelier GmbH
+Billing contact name: Zoë Müller
+Billing email: invoices@northstar.example
+Billing phone: +49 030 555 0199
+Sales contact name: Luca Ortiz
+Sales email: luca@northstar.example
+Sales phone: +1 (415) 555-0182
+
+Billing address:
+Northstar Atelier GmbH
+18 Lindenstraße
+10115 Berlin, Germany
+
+Shipping address:
+Northstar Receiving — Dock 4
+72 Hafenweg
+20457 Hamburg, Germany
+
+Old billing email (retired; do not use): accounts-old@northstar.example
+Net amount before tax: €4,800.00
+VAT: €912.00
+Gross total payable: €5,712.00
+Deposit already paid: €1,000.00
+Purchase order: NS–2026–041
+
+There is no bank account, tax ID or tracking number in this brief.
+Do not ship to the billing office. Sales cannot receive invoice reminders.
