@@ -29,6 +29,17 @@ icons, Outfit, Fraunces and Pixelify Sans fonts are retained. Font licenses live
 beside the fonts in `apple/Resources/fonts/`. The original ink/navy, teal, gold
 and cream visual palette remains the default.
 
+## Quick start (macOS)
+
+```sh
+bash run.sh
+```
+
+This installs any missing prerequisites (Dart via Homebrew, the Metal
+Toolchain), builds the macOS client, starts the server on port 8787 and
+launches the app into a new room. `VH_NAME`, `VH_PORT` and `--no-build` are
+supported; quitting the app stops the server. The manual steps follow.
+
 ## Requirements
 
 - macOS with Xcode and its macOS/iOS SDKs, including the Metal toolchain.
