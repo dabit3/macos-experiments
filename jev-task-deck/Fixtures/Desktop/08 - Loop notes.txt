@@ -1,0 +1,11 @@
+HIRING / MAYA CHEN
+Platform engineering interview debrief
+
+Maya designed an idempotent job scheduler and explained backpressure well.
+The coding exercise covered retries and partial failure.
+
+Follow-up: ask about diagnosing a production queue stall.
+Panel: Ari, Noor, and Sam.
+Debrief decision is still open; bring the panel evidence to the hiring loop.
+
+This document has no connection to Atlas launch readiness or expense reporting.

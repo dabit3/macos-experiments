@@ -1,0 +1,14 @@
+ATLAS / RUN OF SHOW
+Current launch readiness checklist · 18 September 2026
+
+09:00 Priya: review customer rollout cohorts.
+09:10 Ravi: demonstrate migration rollback.
+09:20 Leila: approve the public announcement.
+09:30 Team: record the launch decision in the working notes.
+
+READINESS
+Support handoff: complete.
+Customer comms: approved.
+Rollback rehearsal: awaiting evidence.
+
+This checklist belongs to the Atlas launch review on 24 September.

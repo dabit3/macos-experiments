@@ -1,0 +1,11 @@
+ATLAS / RISK REVIEW
+Active risks for the September 24 customer launch
+
+R1: A failed migration could require restoring the old data pipeline.
+Owner: Ravi. Mitigation: rollback rehearsal before go/no-go.
+
+R2: Support volume could double in the first hour.
+Owner: Ellis. Mitigation: on-call coverage confirmed for launch morning.
+
+The launch review needs to resolve R1 before approving the release.
+This is the current risk register, not last quarter's retrospective.

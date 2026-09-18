@@ -1,0 +1,13 @@
+ATLAS / LAUNCH REVIEW
+Decision log · 18 September 2026
+
+The Atlas customer launch is scheduled for 24 September.
+This is the current review packet, owned by Priya.
+
+GO / NO-GO
+Canary rollout passed in all three regions.
+Legal approved the revised customer announcement.
+Remaining blocker: Ravi must confirm the migration rollback rehearsal.
+The review needs a decision on whether to hold the launch for the rehearsal.
+
+Bring this decision log, the launch checklist, and the risk review to the meeting.
