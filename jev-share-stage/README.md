@@ -82,7 +82,9 @@ opens your existing documents or alters their contents.
    window edges after temporarily revealing it, then cover it again.
 5. Click **Internal team**. All previous verdicts become Review immediately;
    existing covers deliberately remain until you reveal or restore them.
-6. Analyze again. The same four windows should now be Keep. **Restore all**.
+6. Analyze again. The negotiation and retrospective should now be Keep for their
+   authorized internal audience. Other windows may remain Review when their task
+   relevance is ambiguous. **Restore all**.
 
 This is a live model demo, not replay. Outcomes can vary. Errors and uncertainty
 remain visible; no keyword detector substitutes for Jev.
@@ -139,10 +141,10 @@ Current conservative decision rule:
 ```text
 unreadable / stale / absent result                 → Review
 P(audience mismatch) ≥ .80 or P(policy conflict) ≥ .80 → Cover
+relevance concentration ≥ .55 and relevance ≤ .40 / 2 → Cover (off topic)
 either P between .20 and .80                       → Review
 relevance concentration < .55                      → Review
 relevance ≥ 1.40 / 2                               → Keep
-relevance ≤  .40 / 2                               → Cover (off topic)
 otherwise                                         → Review
 ```
 

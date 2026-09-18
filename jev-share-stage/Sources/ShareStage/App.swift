@@ -3,19 +3,21 @@ import SwiftUI
 
 @main
 enum ShareStageMain {
-  static func main() async {
+  @MainActor
+  static func main() {
     if CommandLine.arguments.contains("--live-eval") {
-      await Evaluation.run()
-      return
+      Task.detached {
+        await Evaluation.run()
+        exit(0)
+      }
+      dispatchMain()
     }
-    await MainActor.run {
-      let application = NSApplication.shared
-      let delegate = AppDelegate()
-      application.delegate = delegate
-      application.setActivationPolicy(.regular)
-      application.run()
-      withExtendedLifetime(delegate) {}
-    }
+    let application = NSApplication.shared
+    let delegate = AppDelegate()
+    application.delegate = delegate
+    application.setActivationPolicy(.regular)
+    application.run()
+    withExtendedLifetime(delegate) {}
   }
 }
 

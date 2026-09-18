@@ -50,6 +50,18 @@ final class StageCoreTests: XCTestCase {
       XCTAssertThrowsError(try JevResponse.decode(Data(bad.utf8)))
     }
   }
+  func testConfidentNoMatchCanBeCoveredWithoutInventingAuthorization() throws {
+    let unrelated =
+      valid
+      .replacingOccurrences(of: "\"score\":1.9", with: "\"score\":0.1")
+      .replacingOccurrences(of: "\"noul\":0.02", with: "\"noul\":0.5")
+    let result = try judgment(unrelated)
+    XCTAssertEqual(result.verdict(for: evidence(), audience: "Customer"), .cover)
+    XCTAssertEqual(result.verdict(for: evidence("Changed"), audience: "Customer"), .review)
+    let uncertain = try judgment(
+      unrelated.replacingOccurrences(of: "\"confidence\":0.9", with: "\"confidence\":0.4"))
+    XCTAssertEqual(uncertain.verdict(for: evidence(), audience: "Customer"), .review)
+  }
   func testRequestReferencesStateAndDoesNotSerializeCredentials() throws {
     let body = String(
       decoding: try JevClient.requestBody(evidence: evidence(), audience: "Customer"), as: UTF8.self

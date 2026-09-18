@@ -22,7 +22,7 @@ final class StageModel: ObservableObject {
   static let externalAudience =
     "External Atlas customer demo. Show the public product roadmap and public onboarding materials. Pricing negotiation, internal retrospective and unreleased launch dates are not for this audience."
   static let internalAudience =
-    "Internal Atlas account team planning. This team is authorized to see the public roadmap, pricing negotiation and internal retrospective. Discuss the Atlas account plan and product demo. Unreleased launch dates may be discussed internally."
+    "Internal Atlas account team planning. This team is authorized to see the public roadmap, public onboarding materials, pricing negotiation and internal retrospective. Review the roadmap and onboarding demo, negotiate account pricing, and discuss the retrospective lessons. Unreleased launch dates may be discussed internally."
 
   @Published var audience = StageModel.externalAudience {
     didSet { if oldValue != audience { invalidateAudience() } }
@@ -144,7 +144,11 @@ final class StageModel: ObservableObject {
                 if let hit = cached[key] {
                   return EvaluationResult(id: id, judgment: hit, error: nil, cached: true)
                 }
-                let result = try await JevClient().evaluate(evidence, audience: context)
+                let result = try await JevClient().evaluate(evidence, audience: context) {
+                  await MainActor.run {
+                    if self.generation == token { self.requests += 1 }
+                  }
+                }
                 return EvaluationResult(id: id, judgment: result, error: nil, cached: false)
               } catch {
                 return EvaluationResult(
@@ -159,7 +163,6 @@ final class StageModel: ObservableObject {
             if let judgment = result.judgment {
               let fresh = AXReader.capture(rows[index].target)
               rows[index].evidence = fresh
-              requests += result.cached ? 0 : judgment.requests
               modelID = judgment.response.model
               if judgment.isFresh(fresh, audience: audience) {
                 rows[index].judgment = judgment
@@ -282,7 +285,7 @@ final class StageModel: ObservableObject {
   }
 }
 
-private struct EvaluationResult: @unchecked Sendable {
+private struct EvaluationResult: Sendable {
   let id: UUID
   let judgment: Judgment?
   let error: String?

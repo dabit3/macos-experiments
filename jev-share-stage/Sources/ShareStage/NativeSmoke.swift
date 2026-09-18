@@ -20,6 +20,7 @@ enum NativeSmoke {
     checks["externalTwoKeepTwoCover"] =
       model.keepCount == 2 && model.suggestedCount == 2 && model.reviewCount == 0
     model.stageSuggested()
+    try? await Task.sleep(nanoseconds: 200_000_000)
     checks["twoOpaqueVisibleNativePanels"] =
       model.overlays.panels.count == 2
       && model.overlays.panels.values.allSatisfy {
@@ -91,6 +92,14 @@ enum NativeSmoke {
     model.analyze()
     while model.busy { try? await Task.sleep(nanoseconds: 100_000_000) }
     checks["sameContentInternalAllKeep"] = model.keepCount == 4 && model.suggestedCount == 0
+    for row in model.selectedRows {
+      if let answer = row.judgment?.response.answers {
+        print(
+          "INTERNAL \(row.target.title): \(row.verdict(audience: model.audience).rawValue)"
+            + " relevance=\(answer.relevance.score) mismatch=\(answer.mismatch.noul)"
+            + " policyConflict=\(answer.policyConflict.noul)")
+      }
+    }
     model.audience = StageModel.externalAudience
     model.analyze()
     while model.busy { try? await Task.sleep(nanoseconds: 100_000_000) }

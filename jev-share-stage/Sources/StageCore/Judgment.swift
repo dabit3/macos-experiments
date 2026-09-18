@@ -93,10 +93,10 @@ public struct Judgment: Sendable {
     guard isFresh(evidence, audience: audience) else { return .review }
     let a = response.answers
     if a.mismatch.noul >= 0.8 || a.policyConflict.noul >= 0.8 { return .cover }
+    if a.relevance.confidence >= 0.55 && a.relevance.score <= 0.4 { return .cover }
     if a.mismatch.noul > 0.2 || a.policyConflict.noul > 0.2 { return .review }
     if a.relevance.confidence < 0.55 { return .review }
     if a.relevance.score >= 1.4 { return .keep }
-    if a.relevance.score <= 0.4 { return .cover }
     return .review
   }
 }
@@ -157,17 +157,20 @@ public struct JevClient: Sendable {
           "mismatch": Question(
             type: "noul",
             instructions: grounding
-              + "Would displaying the actual information in state.window.text be inappropriate for the audience in state.audienceAndPurpose? Consider who may see this information, not isolated words. Public educational uses of sensitive-sounding terms are not themselves restricted."
+              + "Is the audience in state.audienceAndPurpose NOT AUTHORIZED to see the actual information in state.window.text? Compare this specific audience's access rights with the content's intended recipients. Internal-only material is allowed for its authorized internal team; a ban on external disclosure does not ban internal discussion. Publicly released material is allowed for external audiences. Judge authorization only, not topic relevance or sensitive-sounding vocabulary."
           ),
           "policyConflict": Question(
             type: "noul",
             instructions: grounding
-              + "Does displaying the actual information in state.window.text conflict with an explicit sharing restriction in state.audienceAndPurpose or in the evidence itself? A quoted or negated restriction is not automatically an active restriction. Judge the actual disclosure."
+              + "Would showing state.window.text to the SPECIFIC audience in state.audienceAndPurpose violate an applicable explicit sharing rule? A restriction must actually exclude this audience to count as a violation. Internal-only content does not violate a rule when shown to its authorized internal recipients. Already public information does not violate a ban on unpublished information. Quoted teaching examples and negated restrictions are not active rules. Return yes only for an actual rule violation by this disclosure."
           ),
         ]))
   }
 
-  public func evaluate(_ evidence: Evidence, audience: String) async throws -> Judgment {
+  public func evaluate(
+    _ evidence: Evidence, audience: String,
+    onRequest: @Sendable () async -> Void = {}
+  ) async throws -> Judgment {
     guard !key.isEmpty else { throw StageError.missingKey }
     guard evidence.complete, !evidence.text.isEmpty else { throw StageError.unreadable }
     var request = URLRequest(url: URL(string: "https://api.typesafe.ai/v1/systemone")!)
@@ -179,6 +182,7 @@ public struct JevClient: Sendable {
     let start = Date()
     for attempt in 0..<3 {
       try Task.checkCancellation()
+      await onRequest()
       let (data, raw) = try await URLSession.shared.data(for: request)
       guard let http = raw as? HTTPURLResponse else { throw StageError.invalidResponse }
       if http.statusCode == 200 {
