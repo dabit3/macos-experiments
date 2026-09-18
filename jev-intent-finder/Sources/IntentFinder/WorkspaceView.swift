@@ -170,7 +170,7 @@ struct WorkspaceView: View {
         Picker("Ranking", selection: $store.baseline) {
           Text("Jev").tag(false)
           Text("Filename").tag(true)
-        }.pickerStyle(.segmented).frame(width: 160)
+        }.pickerStyle(.segmented).labelsHidden().frame(width: 160)
       }.padding(18)
       if store.results.isEmpty {
         VStack(alignment: .leading, spacing: 16) {
@@ -187,15 +187,27 @@ struct WorkspaceView: View {
             .font(.system(size: 10)).foregroundStyle(.secondary).padding(.horizontal, 18).padding(
               .bottom, 10)
         }
-        List(selection: $store.selection) {
-          ForEach(Array(store.displayed.enumerated()), id: \.element.id) { index, result in
-            row(result, index: index).tag(result.id)
-          }
-        }.listStyle(.plain).scrollContentBackground(.hidden)
-          .onKeyPress(.return) {
-            if store.actionable { store.act("reveal") }
-            return .handled
-          }
+        ScrollViewReader { reader in
+          List(selection: $store.selection) {
+            ForEach(Array(store.displayed.enumerated()), id: \.element.id) { index, result in
+              row(result, index: index).tag(result.id).id(result.id)
+            }
+          }.listStyle(.plain).scrollContentBackground(.hidden)
+            .onKeyPress(.return) {
+              if store.actionable { store.act("reveal") }
+              return .handled
+            }
+            .onChange(of: store.busy) {
+              if !store.busy, let first = store.displayed.first {
+                reader.scrollTo(first.id, anchor: .top)
+              }
+            }
+            .onChange(of: store.baseline) {
+              if let first = store.displayed.first {
+                reader.scrollTo(first.id, anchor: .top)
+              }
+            }
+        }
       }
       HStack {
         Image(systemName: "command")

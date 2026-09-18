@@ -165,6 +165,50 @@ Tests also cover typed response rejection, same-size/same-mtime content changes,
 missing files, stale query generations, all-or-nothing action validation, PDF/RTF
 extraction, scope caps, symlinks, partial text and Retry-After parsing.
 
+### Observed results — 18 September 2026
+
+Live model: **jev-1.13.0**. All requests used the same app client and policy.
+The eight Swift tests, Debug/Release builds, strict Swift formatting, shell syntax
+and plist lint passed.
+
+| 30-document task | Accepted / expected | Filename first correct rank | Jev first correct rank | Wall time |
+| --- | --- | ---: | ---: | ---: |
+| Executed agreement with no-cause exit | 1 / 1, exact set | 24 | 1 | 1.19 s |
+| Customer interviews with workarounds | 3 / 3, exact set | 8 | 1 | 0.94 s |
+| Equipment receipts, not subscriptions | 3 / 3, exact set | 3 | 1 | 0.94 s |
+| Lunar rover invoice, true no-match | 0 / 0, exact set | — | — | 1.20 s |
+
+Each query made 30 HTTP requests, four maximum concurrently. No service errors,
+false-positive accepted files or missed expected files occurred on this vault
+run. In the signature task, sequential inspection of the filename baseline would
+encounter 23 wrong documents before the correct one; Jev put it first.
+This is a rank-derived comparison on synthetic data, not a measured time saving
+or a Spotlight benchmark.
+
+The **held-out evaluation scored 21/24 (87.5%)**, with **zero false positives and
+three false negatives**. Its 24 requests took 0.94 s total; per-request p50 was
+111 ms and p95 was 200 ms. The missed positives were the customer CSV-workaround
+interview (requirements .74), screen-reader barrier report (.61), and nut-free
+recipe (.76); all fell below the unchanged .80 strong-match threshold. They
+remain inspectable as Needs review. The evaluation intentionally exits nonzero
+when labels and accepted decisions differ; do not interpret that exit as a
+network or build error. These examples were not used to retune the threshold.
+
+An additional arbitrary UI query, “office maintenance schedule for watering
+plants,” ranked `schedule.txt` first but marked it Needs review (requirements .59).
+This demonstrates a real recall limitation of the conservative acceptance
+policy. Users should inspect the ranked evidence rather than treat an empty
+strong-match set as proof a document does not exist.
+
+Native verification passed on disposable fixtures: single-file and two-file
+Finder selections were read back as exact URLs, and the current Finder folder
+matched the fixture directory. Recorded app interactions also verified live
+search, draft rejection, both three-file presets, Finder reveal/multiselection,
+Quick Look, Preview, Finder scope, query invalidation and the no-match outcome.
+A final focused UI regression confirmed the top row remains visible after
+search and ranking-mode changes. Automation permission was already granted;
+the first-run permission prompt was not exercised.
+
 ## Design sources
 
 Read before implementation:

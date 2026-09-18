@@ -64,7 +64,7 @@ struct IntentCoreTests {
     let scan = try Documents.scan(folder)
     #expect(scan.documents.count == 30)
     #expect(scan.notices.isEmpty)
-    #expect(scan.documents.allSatisfy(\.complete))
+    #expect(scan.documents.allSatisfy { $0.complete })
     let pdf = try Documents.extract(folder.appendingPathComponent("scan_0042.pdf"))
     #expect(pdf.text.contains("without cause"))
     #expect(pdf.text.contains("COMPLETED"))
