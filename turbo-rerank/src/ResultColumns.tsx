@@ -74,11 +74,13 @@ function JevHit({ r }: { r: RankedResult }) {
           <span className={`kind ${r.kind}`}>{r.kind}</span> {r.title}
           <RankDelta from={r.bm25Rank} to={r.jevRank} />
         </div>
-        <div className="relbar" title={`relevance ${r.relevance.toFixed(2)} / 3, confidence ${(r.confidence * 100).toFixed(0)}%`}>
-          <div className={`fill level-${r.level}`} style={{ width: `${pct}%` }} />
+        <div className="rel" title={`relevance ${r.relevance.toFixed(2)} / 3, confidence ${(r.confidence * 100).toFixed(0)}%`}>
           <span className="rellabel">
-            {RELEVANCE_LABELS[r.level]} · {r.relevance.toFixed(2)} · conf {(r.confidence * 100).toFixed(0)}%
+            <b>{RELEVANCE_LABELS[r.level]}</b> · {r.relevance.toFixed(2)} · conf {(r.confidence * 100).toFixed(0)}%
           </span>
+          <div className="track">
+            <div className={`fill level-${r.level}`} style={{ width: `${pct}%` }} />
+          </div>
         </div>
         <p>{r.text}</p>
         <div className="meta">was #{r.bm25Rank} in BM25 · {r.id}</div>
