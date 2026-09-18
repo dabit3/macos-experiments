@@ -246,12 +246,21 @@ final class StageModel: ObservableObject {
     ticks += 1
     for index in rows.indices where rows[index].selected {
       let row = rows[index]
-      if !AXReader.isCurrent(row.target) {
+      switch AXReader.identityStatus(row.target) {
+      case .unavailable(let error):
+        rows[index].judgment = nil
+        rows[index].note =
+          "Accessibility unavailable (AX \(error.rawValue)). Review required; retry Analyze."
+          + (row.covered ? " Existing cover held at last observed position." : "")
+        continue
+      case .missing:
         overlays.remove(row.id)
         rows[index].covered = false
         rows[index].judgment = nil
         rows[index].note = "Window closed or identity lost. Review required."
         continue
+      case .current:
+        break
       }
       if row.covered {
         if let frame = AXReader.frame(row.target) {

@@ -129,7 +129,9 @@ injection in untrusted evidence.
   Geometry follows every ~450ms; text is rechecked about every 2.25s while idle.
   Changed content, unreadable state and a changed audience invalidate verdicts.
   Already placed covers remain on changed text until explicitly revealed.
-  Closed/minimized/unavailable targets lose their panels.
+  Confirmed closed/minimized targets lose their panels. Failed AX window-list
+  queries invalidate judgments but retain existing panels at their last observed
+  rectangles; the UI shows the AX error and asks for explicit reanalysis.
 - Before staging a model suggestion, the same AX target and evidence fingerprint
   are re-read and compared to the exact audience and evaluated snapshot.
 - HTTP requests have a 20s timeout and at most two retries for 429/529/5xx.
@@ -174,6 +176,9 @@ jev-share-stage/dist/ShareStage.app/Contents/MacOS/ShareStage \
 # Native shell-driven smoke; first grant Accessibility and open demo fixtures.
 bash jev-share-stage/scripts/demo.sh
 bash jev-share-stage/run.sh --native-smoke
+
+# Focused identity timeout regression; requires exactly the four demo windows.
+bash jev-share-stage/run.sh --identity-smoke
 ```
 
 `--native-smoke` uses only the four disposable fixture windows. It checks AX
@@ -211,9 +216,46 @@ warnings-as-errors build/typecheck and XCTest.
   deselection discarding evidence, audience invalidation, and Restore by button
   and keyboard. One issue was observed: after editing negotiation, the untouched
   retrospective also transiently became Review with an identity-unavailable
-  message. Reanalysis recovered. Do not treat this as a fully green UI suite.
+  message. Reanalysis recovered. See the focused diagnostic below; no new UI test
+  was run after that fix.
 - Full VoiceOver, multi-monitor/Spaces, and actual screen-sharing capture products
   were not tested. No claim is made about protecting their captured output.
+
+### Focused AX identity investigation
+
+**Confirmed implementation bug:** `isCurrent` previously collapsed an AXWindows
+read failure to an empty list. A timeout therefore looked like a missing window:
+polling displayed “Window closed or identity lost” and removed a valid cover.
+
+100 successful AX edits of the negotiation fixture, with 408 identity samples
+across all four windows, produced no error, launch-date change or retained-element
+mismatch. A controlled temporary suspension of TextEdit reproduced
+`AXError.cannotComplete` (`-25204`) after 304–310 ms for all four still-open targets.
+The original implementation treated every one as missing. After resuming, all
+four original AX elements matched again and fixture text readback was unchanged.
+The original UI event did not log the raw AX error; this demonstrates a matching
+failure mechanism, not proof of that historical event's exact cause.
+
+Identity checks now distinguish **current**, **confirmed missing** and **AX
+unavailable**. Both missing and unavailable invalidate judgments. Unavailable
+never authorizes a new action; existing panels remain at their last observed
+positions. Confirmed missing targets still lose their covers. Recovery does not
+resurrect old verdicts automatically: click **Analyze selected** to recheck the
+exact target, text and audience. An unchanged snapshot may use the exact-state
+cache after that explicit action.
+
+`--identity-smoke` passed **13/13** native assertions, including the real timeout,
+retained panel identity/rectangle, rejected fresh action, error-code display,
+same-target recovery, missing-member detection, explicit reanalysis and restore.
+It requires exactly the four disposable TextEdit fixtures, briefly suspends only
+that TextEdit process with an automatic resume safeguard, and exits nonzero on
+failure. It uses real live judgments before the timeout; no semantic labels,
+thresholds or existing tests were changed.
+
+Temporary AX unavailability remains a legitimate Review condition. A retained
+panel cannot track a window while its geometry is unavailable; it is not capture
+protection. If availability does not recover, restore covers, check Accessibility
+permission and reopen/reselect the target.
 
 ## Jev research
 

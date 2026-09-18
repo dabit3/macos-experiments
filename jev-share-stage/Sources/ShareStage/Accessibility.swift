@@ -26,6 +26,12 @@ final class WindowTarget: Identifiable {
 }
 
 enum AXReader {
+  enum IdentityStatus: Equatable {
+    case current
+    case missing
+    case unavailable(AXError)
+  }
+
   static var trusted: Bool { AXIsProcessTrusted() }
 
   static func requestPermission() {
@@ -80,12 +86,20 @@ enum AXReader {
   }
 
   static func isCurrent(_ target: WindowTarget) -> Bool {
+    identityStatus(target) == .current
+  }
+
+  static func identityStatus(_ target: WindowTarget) -> IdentityStatus {
     guard let app = NSRunningApplication(processIdentifier: target.pid), !app.isTerminated,
       app.launchDate == target.launchDate
-    else { return false }
+    else { return .missing }
     let element = AXUIElementCreateApplication(target.pid)
     AXUIElementSetMessagingTimeout(element, 0.3)
-    return (elements(element, kAXWindowsAttribute) ?? []).contains { CFEqual($0, target.element) }
+    var value: CFTypeRef?
+    let error = AXUIElementCopyAttributeValue(element, kAXWindowsAttribute as CFString, &value)
+    guard error == .success else { return .unavailable(error) }
+    guard let windows = value as? [AXUIElement] else { return .unavailable(.failure) }
+    return windows.contains { CFEqual($0, target.element) } ? .current : .missing
   }
 
   static func frame(_ target: WindowTarget) -> CGRect? {

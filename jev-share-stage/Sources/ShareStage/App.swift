@@ -58,7 +58,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     NSApp.activate(ignoringOtherApps: true)
 
     if CommandLine.arguments.contains("--request-permission") { AXReader.requestPermission() }
-    if CommandLine.arguments.contains("--native-smoke") {
+    if CommandLine.arguments.contains("--identity-smoke") {
+      Task { await IdentitySmoke.run(model: model) }
+    } else if CommandLine.arguments.contains("--native-smoke") {
       Task { await NativeSmoke.run(model: model) }
     } else if CommandLine.arguments.contains("--showcase") {
       Task {
