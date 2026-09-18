@@ -220,7 +220,7 @@ progress::-webkit-progress-value { background: #ccc; border-radius: 2px; }
   .search-intro > p { font-size: 13px; }
   .composer { border-radius: 16px; padding-left: 14px; }
   .start .query-field input, .query-field input { font-size: 15px; }
-  .composer-footer { font-size: 10px; }
+  .composer-footer { font-size: 12px; }
   .composer-footer > span { gap: 5px; }
   .composer-footer > span > svg, .input-hint { display: none; }
   .example-list { grid-template-columns: 1fr; }
@@ -229,7 +229,7 @@ progress::-webkit-progress-value { background: #ccc; border-radius: 2px; }
   .measurement-lead { min-width: 92px; }
   .measurement-lead strong { font-size: 25px; }
   .measurement-stats { gap: 12px; }
-  dt { font-size: 10px; }
+  dt { font-size: 12px; }
   dd { font-size: 14px; }
   .columns { grid-template-columns: 1fr; }
   .result-column { padding: 0; }
@@ -242,7 +242,8 @@ progress::-webkit-progress-value { background: #ccc; border-radius: 2px; }
   .bench-progress { flex-wrap: wrap; }
   .chart { grid-template-columns: 1fr; }
   .benchmark-metrics { border-left: 0; padding: 0; }
-  .page-footer { padding: 32px 20px 20px; flex-direction: column; font-size: 10px; gap: 6px; }
+  .page-footer { padding: 32px 20px 20px; flex-direction: column; font-size: 12px; gap: 6px; }
+  .passage-source, .column-heading p, .column-count, .relevance, .read-more, .passage-id, .timing-details, .comparison-footer { font-size: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

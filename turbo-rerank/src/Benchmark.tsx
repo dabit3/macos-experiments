@@ -16,6 +16,7 @@ export function Benchmark({ mock }: { mock: boolean }) {
   const [rows, setRows] = useState<RowState[]>(() => BENCH_QUERIES.map(() => ({})));
   const [summary, setSummary] = useState<BenchSummary | null>(null);
   const [running, setRunning] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const stop = useRef<(() => void) | null>(null);
 
@@ -32,6 +33,7 @@ export function Benchmark({ mock }: { mock: boolean }) {
     stop.current?.();
     setRows(BENCH_QUERIES.map(() => ({})));
     setSummary(null);
+    setError(null);
     setElapsed(0);
     setRunning(true);
     stop.current = streamBench({
@@ -41,6 +43,10 @@ export function Benchmark({ mock }: { mock: boolean }) {
         setSummary(s);
       },
       onError: (i, _q, message) => setRows((r) => r.map((x, j) => (j === i ? { error: message } : x))),
+      onFailure: (message) => {
+        setError(message);
+        setRunning(false);
+      },
       onDone: (s) => {
         setSummary(s);
         setRunning(false);
@@ -61,12 +67,14 @@ export function Benchmark({ mock }: { mock: boolean }) {
         </div>
         <button className="primary" onClick={start} disabled={running}>
           {running && <span className="spinner" />}
-          {running ? "Running benchmark" : done ? "Run again" : "Run benchmark"}
+          {running ? "Running benchmark" : done || error ? "Run again" : "Run benchmark"}
           {!running && <Icon name="chevron" size={14} />}
         </button>
       </div>
+      {error && <div className="banner error" role="alert">{error}</div>}
       <div className="bench-progress">
         <span role="status">{running ? `Evaluating ${done} of ${BENCH_QUERIES.length} questions · ${(elapsed / 1000).toFixed(1)} s`
+          : error ? `Stopped · ${done} of ${BENCH_QUERIES.length} questions finished`
           : done ? `${done} of ${BENCH_QUERIES.length} questions finished${rows.some((r) => r.error) ? ` · ${rows.filter((r) => r.error).length} failed` : ""}`
             : "Ready to run · up to 50 candidates per question"}</span>
         <progress value={done} max={BENCH_QUERIES.length} aria-label="Benchmark progress" />
