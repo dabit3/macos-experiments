@@ -29,6 +29,17 @@ icons, Outfit, Fraunces and Pixelify Sans fonts are retained. Font licenses live
 beside the fonts in `apple/Resources/fonts/`. The original ink/navy, teal, gold
 and cream visual palette remains the default.
 
+## Quick start (macOS)
+
+```sh
+bash run.sh
+```
+
+This installs any missing prerequisites (Dart via Homebrew, the Metal
+Toolchain), builds the macOS client, starts the server on port 8787 and
+launches the app into a new room. `VH_NAME`, `VH_PORT` and `--no-build` are
+supported; quitting the app stops the server. The manual steps follow.
+
 ## Requirements
 
 - macOS with Xcode and its macOS/iOS SDKs, including the Metal toolchain.
@@ -36,6 +47,17 @@ and cream visual palette remains the default.
 - Dart 3.9 or later for the server and shared rules. Tested with Dart 3.13.0.
 - XcodeGen is optional: the generated Xcode project is checked in.
 - No external Swift package downloads, CocoaPods or Flutter SDK are needed.
+
+On a fresh machine, install the two pieces that do not ship with Xcode:
+
+```sh
+# Xcode 26 downloads the Metal compiler separately. Without it the build fails
+# with "cannot execute tool 'metal' due to missing Metal Toolchain".
+# The download is ~700 MB; retry if the catalog fetch fails the first time.
+xcodebuild -downloadComponent MetalToolchain
+
+brew install dart-sdk
+```
 
 ## Server
 
