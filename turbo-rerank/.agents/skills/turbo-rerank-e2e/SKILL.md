@@ -15,6 +15,6 @@ Maximize Chrome before recording. Search automatically runs after approximately 
 
 Use the parental-leave example to demonstrate rank movement, and the office-Wi-Fi question to demonstrate the no-good-answer banner. Record actual values, not fixed latency promises: cold connections and API variability can produce outliers. BM25 returns up to 50 positive-score matches, so some searches score fewer than 50 candidates.
 
-For an explicit offline indicator check, stop live dev, start `MOCK=1 npm run dev`, refresh the browser, and verify the red MOCK pill. Stop mock, restart normal dev, and refresh to verify the live pill. Keep mock evidence separate from live ranking/accuracy evidence.
+For an explicit offline indicator check, stop live dev, start `MOCK=1 npm run dev`, refresh the browser, and verify the MOCK indicator. Stop mock, restart normal dev, and refresh to verify the live indicator. Keep mock evidence separate from live ranking/accuracy evidence.
 
 Export screenshots before mode switches. Animated WebP can be generated using ffmpeg with `fps=8,scale=1280:-1`; use a real search-to-benchmark recording segment and check duration/file size. ImageMagick can verify frame delays and dimensions without Python image dependencies.
