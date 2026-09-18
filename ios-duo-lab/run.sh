@@ -52,4 +52,8 @@ xcrun simctl bootstatus "$udid" -b
 xcrun simctl install "$udid" DerivedData/Build/Products/Debug-iphonesimulator/DuoLab.app
 xcrun simctl launch --terminate-running-process "$udid" dev.dabit.duolab
 developer_dir="${DEVELOPER_DIR:-$(xcode-select -p)}"
-open -a "$developer_dir/Applications/Simulator.app" --args -CurrentDeviceUDID "$udid"
+simulator="$developer_dir/Applications/Simulator.app"
+if [[ ! -d "$simulator" ]]; then
+  simulator="Simulator"
+fi
+open -a "$simulator" --args -CurrentDeviceUDID "$udid"

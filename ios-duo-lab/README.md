@@ -37,6 +37,7 @@ export DEVELOPER_DIR=/Applications/Xcode-27.0-RC.app/Contents/Developer
 ```
 
 The script uses `xcrun xcodebuild` so `DEVELOPER_DIR` is respected even when `PATH` contains another Xcode's binaries.
+It opens the selected Xcode's Simulator app when present, otherwise the Simulator registered with macOS. This VM's Xcode 27.0 installation contains only the command-line toolchain, so the GUI comes from the other installed Xcode.
 
 ### Checks without launching Simulator
 
