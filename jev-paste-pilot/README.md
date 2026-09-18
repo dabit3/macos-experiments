@@ -163,6 +163,16 @@ It still requires reviewing every value and can abstain. No universal superiorit
 or competitor speed claim is made. Measured verification results are reported
 alongside the PR.
 
+### Measured live evaluation — September 18, 2026
+
+The first held-out run used `jev-1.13.0`, 20 requests, with **20/20 exact choices**,
+**19/20 expected write-gate outcomes**, and **0 false-positive permitted writes**.
+Median end-to-end request latency was **96 ms**, p95 **238 ms** on this VM.
+The one conservative abstention selected the correct accounts-payable email but
+its independent billing-role Noul was 0.27, below the 0.80 write threshold.
+The threshold was not relaxed to make this case pass. These are measured
+synthetic-workload results, not a general accuracy or human-speed guarantee.
+
 ## Research
 
 The implementation follows the live TypeSafe [state](https://docs.typesafe.ai/concepts/state.md),
