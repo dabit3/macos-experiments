@@ -126,6 +126,34 @@ near misses, negation, disabled actions, wrong-app intents, ambiguous requests,
 unsupported operations and already-satisfied checked state. Inspect its labels;
 they are task-specific expectations, not a general intelligence benchmark.
 
+### Observed results — 2026-09-18
+
+On the macOS ARM64 development machine, both debug and release builds passed,
+as did all 12 unit tests, strict Swift formatting lint and shell syntax checks.
+Live evaluation used `jev-1.13.0`: **22/24** expected routes, 41 requests,
+65–351 ms per goal (median 221.5 ms). The two failures abstained:
+
+| Goal | Expected command | Observed limitation |
+| --- | --- | --- |
+| order by when each file was originally created | Date Created | Top relevance 2.95/3, final Choice concentration 0.48 |
+| use a large image preview above a strip of thumbnails | as Gallery | Top relevance 2.89/3, final Choice concentration 0.21 |
+
+Both were below the unchanged 0.5 final-routing threshold. The evaluator exits 1
+when any expected route fails; these results are not presented as a fully passing
+model suite. No fixture labels or thresholds were changed after the run.
+
+Shell-driven native smokes passed with real menus and real Jev decisions:
+
+| Target | Live menu leaves | Jev requests / latency | Native readback |
+| --- | ---: | --- | --- |
+| TextEdit | 216 | 3 / 254 ms | Selected phrase became `MEET ME AT THE NORTHERN LIGHTHOUSE` |
+| Finder | 194 | 3 / 360 ms | `View → Sort By → Date Modified` became checked |
+
+Separately recorded native UI testing verified explicit preview/execution,
+TextEdit undo, Finder's Date Modified checkmark, blocked unsupported intents and
+stale-selection rejection. The PR includes full-desktop evidence. Safari has not
+been exercised. Latencies describe these runs, not a general performance claim.
+
 ## Architecture and guarantees
 
 - `Accessibility.swift`: bounded AX traversal, exact live paths, enabled/checked
