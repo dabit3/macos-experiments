@@ -15,6 +15,7 @@ server/.packages
 
 # Local server saves and scratch
 server/saves/
+server/data/
 *.log
 
 # Large binary evidence is attached to the PR, not committed

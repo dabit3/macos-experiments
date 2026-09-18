@@ -54,6 +54,20 @@ The server also exposes `/health` and `/rooms`. Add `--test-mode` only for
 explicit client diagnostics; regular play and the protocol integration test
 do not need it.
 
+## Quick start
+
+```sh
+bash scripts/run-mac.sh          # installs the Metal toolchain and Dart if
+                                 # missing, starts the server, builds and
+                                 # launches the macOS app
+bash scripts/run-mac.sh --doctor # prerequisite check only
+bash scripts/run-mac.sh --ios    # additionally build the iOS Simulator target
+```
+
+If `xcodebuild` reports `iOS 26.x is not installed` although `xcrun simctl
+list runtimes` shows the runtime, the installed Simulator runtime build differs
+from the one this Xcode expects; run `xcodebuild -downloadPlatform iOS`.
+
 ## Native builds
 
 Run these commands from this directory:
