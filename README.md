@@ -4,6 +4,10 @@ A collection of apps and games built with Devin.
 
 Open a project folder and follow its README for setup and usage.
 
+## Starter projects
+
+- [Duo Lab](ios-duo-lab/README.md): adaptive SwiftUI layout playground with persistent notes and live diagnostics. iPhone Duo simulator validation is pending the required Xcode/macOS setup.
+
 ## App gallery
 
 Every app in this collection, grouped by platform and genre. Click a name for its README.
