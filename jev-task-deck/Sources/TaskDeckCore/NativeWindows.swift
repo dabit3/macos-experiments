@@ -65,7 +65,11 @@ public final class NativeWindows {
           notices.append("\(app.localizedName ?? "App"): full-screen window skipped.")
           continue
         }
-        guard string(window, kAXSubroleAttribute) == kAXStandardWindowSubrole,
+        guard
+          WindowCapturePolicy.supports(
+            subrole: string(window, kAXSubroleAttribute),
+            minimized: bool(window, kAXMinimizedAttribute),
+            document: string(window, kAXDocumentAttribute)),
           frame(window) != nil
         else { continue }
         let evidence = observe(window, app: app)

@@ -80,6 +80,23 @@ final class TaskDeckTests: XCTestCase {
       milliseconds: 100, requests: 1)
     XCTAssertTrue(result.selected)
   }
+  func testMinimizedDocumentDialogsRemainDiscoverable() {
+    XCTAssertTrue(
+      WindowCapturePolicy.supports(
+        subrole: "AXDialog", minimized: true, document: "file:///fixture/Notes.txt"))
+    XCTAssertTrue(
+      WindowCapturePolicy.supports(
+        subrole: "AXStandardWindow", minimized: false, document: ""))
+    XCTAssertFalse(
+      WindowCapturePolicy.supports(
+        subrole: "AXDialog", minimized: false, document: "file:///fixture/Notes.txt"))
+    XCTAssertFalse(
+      WindowCapturePolicy.supports(
+        subrole: "AXDialog", minimized: true, document: ""))
+    XCTAssertFalse(
+      WindowCapturePolicy.supports(
+        subrole: "AXSheet", minimized: true, document: "file:///fixture/Notes.txt"))
+  }
   func testRejectsOutOfRangeAndWrongTypes() {
     for data in [
       response(score: "3.01"), response(score: "-1"), response(conflict: "1.1"),

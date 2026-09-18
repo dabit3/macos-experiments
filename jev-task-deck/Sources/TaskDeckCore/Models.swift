@@ -39,6 +39,13 @@ public struct WindowEvidence: Codable, Identifiable, Sendable {
   }
 }
 
+public enum WindowCapturePolicy {
+  public static func supports(subrole: String, minimized: Bool, document: String) -> Bool {
+    subrole == "AXStandardWindow"
+      || (subrole == "AXDialog" && minimized && URL(string: document)?.scheme != nil)
+  }
+}
+
 public struct Frame: Codable, Equatable, Sendable {
   public var x: Double
   public var y: Double

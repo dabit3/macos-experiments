@@ -135,6 +135,16 @@ enum CommandRunner {
     guard changed, restored, minimized else {
       throw DeckError.message("Native readback did not match the required side effects.")
     }
+    let recaptured = try native.capture(bundleIDs: ["com.apple.TextEdit"])
+    let documents = Set(windows.map(\.document))
+    let fixtureRecapture = recaptured.filter { documents.contains($0.document) }
+    guard fixtureRecapture.count == windows.count,
+      fixtureRecapture.allSatisfy({ !$0.text.isEmpty })
+    else {
+      throw DeckError.message(
+        "Fresh capture lost a restored/minimized fixture or its body evidence.")
+    }
+    print("RECAPTURE all_\(windows.count)_fixtures_with_body_text=true")
     print(
       "Baseline accounting: 8 fixture windows to inspect, 3 relevant windows to raise and arrange manually. TaskDeck: 1 search submission + 1 Compose action + optional 1 Undo; app scoping/setup excluded. Manual timing was not measured."
     )

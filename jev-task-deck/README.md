@@ -84,7 +84,7 @@ See [VERIFICATION.md](VERIFICATION.md) for the measured results from the impleme
 
 ```text
 NSWorkspace user-selected apps
-  → AXUIElement standard windows + bounded accessibility text
+  → AXUIElement document windows + bounded accessibility text
   → one Jev request per window, Score(relevance) + Noul(explicit contradiction)
   → deterministic ranking and reviewable selection
   → revalidate retained AX element / process launch / document / evidence
@@ -104,7 +104,7 @@ Jev sees text, never screenshots. It returns typed decisions, never generated ex
 
 ### Native bounds and freshness
 
-Capture is capped at 40 windows, 180 AX nodes and 4,000 characters per window, with an approximately 1.5-second per-window traversal budget and 300 ms AX messaging timeout. `AXVisibleCharacterRange` is preferred; when an app does not expose it, accessibility text values are used. This fallback may include offscreen document text. The displayed evidence is exactly the text submitted.
+Capture includes standard windows and minimized document-backed windows that macOS exposes as dialogs; ordinary dialogs and sheets are excluded. It is capped at 40 windows, 180 AX nodes and 4,000 characters per window, with an approximately 1.5-second per-window traversal budget and 300 ms AX messaging timeout. `AXVisibleCharacterRange` is preferred; when an app does not expose it, accessibility text values are used. This fallback may include offscreen document text. The displayed evidence is exactly the text submitted.
 
 Each actionable window is pinned to its retained AX object, process ID, process launch date, bundle identifier, document URL, and title. The evidence digest must still match immediately before arrangement and must be less than five minutes old. Closing/replacing a document, relaunching the app, editing observed text, or changing the visible excerpt invalidates the selection rather than acting on a different target.
 
