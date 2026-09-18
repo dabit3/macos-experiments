@@ -37,6 +37,17 @@ and cream visual palette remains the default.
 - XcodeGen is optional: the generated Xcode project is checked in.
 - No external Swift package downloads, CocoaPods or Flutter SDK are needed.
 
+On a fresh machine, install the two pieces that do not ship with Xcode:
+
+```sh
+# Xcode 26 downloads the Metal compiler separately. Without it the build fails
+# with "cannot execute tool 'metal' due to missing Metal Toolchain".
+# The download is ~700 MB; retry if the catalog fetch fails the first time.
+xcodebuild -downloadComponent MetalToolchain
+
+brew install dart-sdk
+```
+
 ## Server
 
 ```sh
