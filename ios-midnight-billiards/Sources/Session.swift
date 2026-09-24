@@ -66,7 +66,7 @@ final class GameSession: ObservableObject {
             if engine.turn == 0 {
                 angle = engine.bestShot().angle
                 if !engine.ballInHand && !engine.requiresCall && !engine.finished && engine.mode == .match {
-                    engine.detail = "Cue points at a suggested line · fine-tune with the wheel."
+                    engine.detail = "Suggested line set. Adjust or shoot."
                 }
             }
         }
