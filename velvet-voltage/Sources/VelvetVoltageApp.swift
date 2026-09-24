@@ -89,7 +89,7 @@ struct VoltageView: View {
       launchCue
       FlipperPad(left: false, held: game.rightHeld)
     }
-    .frame(height: 74)
+    .frame(height: 46)
     .animation(.easeOut(duration: 0.12), value: game.inFlight)
   }
 
@@ -99,16 +99,23 @@ struct VoltageView: View {
         Text(game.coaching ? "TOUCH\nA SIDE" : "FLIP")
           .foregroundStyle(Color(Ink.brass))
       } else {
-        Image(systemName: "arrow.down")
-          .font(.system(size: 15, weight: .bold))
-          .offset(y: game.plungerPull * 10)
-        Text(game.plungerPull > 0.05 ? "RELEASE" : "PULL")
+        GeometryReader { proxy in
+          ZStack(alignment: .leading) {
+            Capsule().fill(Color(Ink.cyan).opacity(0.18))
+            Capsule().fill(Color(Ink.cyan))
+              .frame(width: max(4, proxy.size.width * game.plungerPull))
+          }
+        }
+        .frame(height: 4)
+        .padding(.horizontal, 10)
+        Text(game.plungerPull > 0.05 ? "POWER \(Int(game.plungerPull * 100))" : "PULL ↓")
+          .contentTransition(.numericText())
       }
     }
     .font(.custom("AvenirNextCondensed-Bold", size: 11)).tracking(1.4)
     .multilineTextAlignment(.center)
     .foregroundStyle(game.inFlight ? Color(Ink.brass) : Color(Ink.cyan))
-    .frame(width: 66)
+    .frame(width: 84)
     .frame(maxHeight: .infinity)
     .background(
       RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(0.45))
@@ -257,35 +264,41 @@ struct VoltageView: View {
   }
 
   private var circuitStrip: some View {
-    HStack(spacing: 6) {
+    VStack(spacing: 4) {
+      Text(game.banner)
+        .font(.custom("AvenirNextCondensed-DemiBold", size: 14)).tracking(1.6)
+        .foregroundStyle(Color(Ink.cyan)).lineLimit(1).minimumScaleFactor(0.7)
+        .frame(maxWidth: .infinity)
+        .contentTransition(.opacity)
+        .accessibilityIdentifier("bannerText")
+      districtRow
+    }
+    .padding(.horizontal, 6)
+    .animation(.easeInOut(duration: 0.2), value: game.banner)
+    .accessibilityElement(children: .combine)
+  }
+
+  private var districtRow: some View {
+    HStack(spacing: 10) {
       ForEach(0..<3, id: \.self) { index in
         let lit = index < game.score.nextDistrict
         let next = index == game.score.nextDistrict && game.inFlight
         HStack(spacing: 5) {
           Circle()
             .fill(lit || next ? Color(Ink.cyan) : Color(Ink.brass).opacity(0.3))
-            .frame(width: 6, height: 6)
+            .frame(width: 7, height: 7)
             .shadow(color: Color(Ink.cyan).opacity(next ? 0.9 : 0), radius: 4)
           Text(["ARCADE", "SPIRE", "RIVIERA"][index])
-            .font(.custom("AvenirNextCondensed-DemiBold", size: 10)).tracking(1)
+            .font(.custom("AvenirNextCondensed-DemiBold", size: 12)).tracking(1.2)
             .foregroundStyle(
               next ? Color(Ink.cyan) : lit ? Color(Ink.cream) : Color(Ink.brass).opacity(0.7))
         }
         if index < 2 {
-          Image(systemName: "chevron.right").font(.system(size: 7, weight: .bold))
+          Image(systemName: "chevron.right").font(.system(size: 8, weight: .bold))
             .foregroundStyle(Color(Ink.brass).opacity(0.5))
         }
       }
-      Spacer(minLength: 8)
-      Text(game.banner)
-        .font(.custom("AvenirNextCondensed-DemiBold", size: 11)).tracking(1)
-        .foregroundStyle(Color(Ink.cyan)).lineLimit(1).minimumScaleFactor(0.6)
-        .contentTransition(.opacity)
-        .accessibilityIdentifier("bannerText")
     }
-    .padding(.horizontal, 6)
-    .animation(.easeInOut(duration: 0.2), value: game.banner)
-    .accessibilityElement(children: .combine)
   }
 
   // MARK: Tutorial
@@ -475,34 +488,23 @@ struct FlipperPad: View {
   let left: Bool
   let held: Bool
   var body: some View {
-    HStack(spacing: 8) {
-      if !left { Spacer(minLength: 0) }
-      Image(systemName: left ? "arrow.up.left" : "arrow.up.right")
-        .font(.system(size: 14, weight: .bold))
-      Text(left ? "LEFT" : "RIGHT")
-        .font(.custom("AvenirNextCondensed-Bold", size: 13)).tracking(1.6)
-      if left { Spacer(minLength: 0) }
+    VStack(spacing: 6) {
+      HStack(spacing: 6) {
+        if !left { Spacer(minLength: 0) }
+        Image(systemName: left ? "hand.point.up.left.fill" : "hand.point.up.right.fill")
+          .font(.system(size: 11, weight: .semibold))
+        Text(left ? "LEFT HALF · FLIP" : "FLIP · RIGHT HALF")
+          .font(.custom("AvenirNextCondensed-DemiBold", size: 11)).tracking(1.4)
+        if left { Spacer(minLength: 0) }
+      }
+      .foregroundStyle(held ? Color(Ink.coral) : Color(Ink.brass).opacity(0.8))
+      Capsule()
+        .fill(held ? Color(Ink.coral) : Color(Ink.brass).opacity(0.35))
+        .frame(height: held ? 4 : 2)
+        .shadow(color: Color(Ink.coral).opacity(held ? 0.9 : 0), radius: 6)
     }
-    .padding(.horizontal, 18)
+    .padding(.horizontal, 6)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .foregroundStyle(held ? Color(Ink.background) : Color(Ink.cream))
-    .background(
-      LinearGradient(
-        colors: held
-          ? [Color(Ink.coral), Color(Ink.coral).opacity(0.85)]
-          : [Color(Ink.panel), Color(Ink.background)],
-        startPoint: .top, endPoint: .bottom
-      ), in: RoundedRectangle(cornerRadius: 12)
-    )
-    .overlay(
-      RoundedRectangle(cornerRadius: 12).stroke(
-        held ? Color(Ink.cream).opacity(0.6) : Color(Ink.brass).opacity(0.6), lineWidth: 1)
-    )
-    .overlay(alignment: .bottom) {
-      Capsule().fill(held ? Color(Ink.background) : Color(Ink.coral)).frame(width: 34, height: 2)
-        .padding(.bottom, 7)
-    }
-    .scaleEffect(held ? 0.97 : 1)
     .animation(.easeOut(duration: 0.08), value: held)
     .accessibilityHidden(true)
   }

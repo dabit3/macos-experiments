@@ -336,7 +336,7 @@ final class VoltageScene: SKScene {
       let target: CGFloat = index < hits ? 1 : (session.screen == .home ? 0.35 : 0)
       lamp.alpha += (target - lamp.alpha) * min(1, dt * 4)
     }
-    let dim = session.screen == .playing ? max(0, 0.45 - 0.15 * Double(hits)) : 0.2
+    let dim = session.screen == .playing ? max(0, 0.5 - 0.17 * Double(hits)) : 0.2
     mural.colorBlendFactor += (dim - mural.colorBlendFactor) * min(1, dt * 3)
     progressLabel.text =
       engine.score.circuits > 0
