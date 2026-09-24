@@ -43,7 +43,8 @@ struct ResultsView: View {
                 }
                 Spacer()
                 VStack(spacing: 2) {
-                    Text(Theme.rank(for: me?.accuracy ?? 0)).font(Theme.display(40)).foregroundStyle(Theme.ink)
+                    Text(Theme.rank(for: me?.accuracy ?? 0)).font(Theme.display(36)).foregroundStyle(Theme.ink)
+                        .lineLimit(1).minimumScaleFactor(0.5).padding(.horizontal, 6)
                     Text("RANK").font(.system(size: 8, weight: .black)).foregroundStyle(Theme.ink.opacity(0.7))
                 }
                 .frame(width: 78, height: 78)
