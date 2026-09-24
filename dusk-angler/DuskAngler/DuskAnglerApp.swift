@@ -71,13 +71,23 @@ struct AnglerView: View {
           Text("Cast, hook and play the line\nbefore the light is gone.")
             .font(TypeStyle.body(15)).foregroundStyle(Palette.text.opacity(0.82))
         }
-        .shadow(color: Palette.night.opacity(0.5), radius: 10, y: 2)
+        .shadow(color: Palette.night.opacity(0.9), radius: 6, y: 1)
         Spacer()
         IconButton(systemImage: "gearshape", label: "Settings", identifier: "settings") {
           panel = .settings
         }
       }
       .padding(.top, 8)
+      .padding(.bottom, 44)
+      .padding(.horizontal, 20)
+      .background(
+        LinearGradient(
+          colors: [Palette.night.opacity(0.95), Palette.night.opacity(0.8), .clear],
+          startPoint: .top, endPoint: .bottom
+        )
+        .ignoresSafeArea(edges: .top)
+      )
+      .padding(.horizontal, -20)
       Spacer(minLength: 20)
       VStack(alignment: .leading, spacing: 16) {
         Text("Choose your water").font(TypeStyle.label(13)).foregroundStyle(Palette.muted)
@@ -174,7 +184,7 @@ struct AnglerView: View {
       if store.phase == .duel {
         duelStage.frame(height: height * 0.24).offset(y: height * 0.16)
       } else {
-        castingStage.frame(height: height * 0.3).offset(y: height * 0.26)
+        castingStage.frame(height: height * 0.24).offset(y: height * 0.41)
       }
       VStack(spacing: 14) {
         HStack(alignment: .center) {
@@ -196,7 +206,11 @@ struct AnglerView: View {
       .padding(.bottom, 28)
       .background(
         LinearGradient(
-          colors: [Palette.night.opacity(0.75), .clear], startPoint: .top, endPoint: .bottom
+          stops: [
+            .init(color: Palette.night.opacity(0.92), location: 0),
+            .init(color: Palette.night.opacity(0.7), location: 0.65),
+            .init(color: .clear, location: 1),
+          ], startPoint: .top, endPoint: .bottom
         )
         .ignoresSafeArea(edges: .top))
       VStack {
