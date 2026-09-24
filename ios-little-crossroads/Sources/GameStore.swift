@@ -18,9 +18,15 @@ final class GameStore: NSObject, ObservableObject {
         didSet { defaults.set(sound, forKey: "sound") }
     }
 
+    @Published var controlPad: Bool {
+        didSet { defaults.set(controlPad, forKey: "controlPad") }
+    }
+
     @Published var showWardrobe = false
     @Published var showGuide = false
     @Published private(set) var newBest = false
+    @Published private(set) var toast: String?
+    @Published private(set) var runs: Int
     @Published private(set) var unlockedNames: [String] = []
     @Published private(set) var showResults = false
     let world = ToyWorld()
@@ -29,6 +35,8 @@ final class GameStore: NSObject, ObservableObject {
     private var displayLink: CADisplayLink?
     private var lastTick: CFTimeInterval = 0
     private var finishElapsed = 0.0
+    private var toastElapsed = 0.0
+    private var startBest = 0
     private let audio = ToyAudio()
     private let telemetry = Telemetry()
     var reducedMotion = false
@@ -39,6 +47,8 @@ final class GameStore: NSObject, ObservableObject {
         bank = defaults.integer(forKey: "coins")
         selected = Plumage(rawValue: defaults.integer(forKey: "plumage")) ?? .sunshine
         sound = defaults.object(forKey: "sound") as? Bool ?? true
+        controlPad = defaults.bool(forKey: "controlPad")
+        runs = defaults.integer(forKey: "runs")
         game = GameRules(seed: UInt64.random(in: 1 ... UInt64.max))
         super.init()
         world.update(game, plumage: selected, delta: 1, reducedMotion: reducedMotion)
@@ -51,11 +61,26 @@ final class GameStore: NSObject, ObservableObject {
         game.endReason
     }
 
+    /// The cheapest companion still locked, with the remaining coins and hops it needs.
+    var nextUnlock: (name: String, coins: Int, hops: Int)? {
+        Plumage.allCases.first { !$0.unlocked(coins: bank, best: best) }.map {
+            ($0.name.uppercased(), max(0, $0.price - bank), max(0, $0.milestone - best))
+        }
+    }
+
+    var showHints: Bool {
+        runs <= 2 && score < 4
+    }
+
     func start() {
         game = GameRules(seed: UInt64.random(in: 1 ... UInt64.max))
         score = 0
         runCoins = 0
         newBest = false
+        toast = nil
+        startBest = best
+        runs += 1
+        defaults.set(runs, forKey: "runs")
         unlockedNames = []
         showResults = false
         finishElapsed = 0
@@ -95,12 +120,28 @@ final class GameStore: NSObject, ObservableObject {
         lastTick = 0
     }
 
+    private func show(_ text: String) {
+        toast = text
+        toastElapsed = 0
+    }
+
     @objc private func tick(_ link: CADisplayLink) {
         let dt = lastTick == 0 ? 1.0 / 60 : min(link.timestamp - lastTick, 1.0 / 30)
         lastTick = link.timestamp
         game.step(dt)
         if score != game.furthest {
             score = game.furthest
+            if startBest > 0, score == startBest + 1 {
+                show("NEW BEST!")
+            } else if score > 0, score % 50 == 0 {
+                show("\(score) HOPS!")
+            }
+        }
+        if toast != nil {
+            toastElapsed += dt
+            if toastElapsed > 1.4 {
+                toast = nil
+            }
         }
         if runCoins != game.coins {
             let added = game.coins - runCoins
