@@ -6,7 +6,7 @@ A self-contained flowchart editor built with hand-rolled SVG (no React Flow). Dr
 palette onto an infinite canvas, wire them together by dragging from one node's port to another,
 rename things inline, and export the result as SVG or JSON.
 
-**Recording:** https://app.devin.ai/attachments/8af4abce-c254-4217-ba74-1fd53c2b95da/flowchart-enterprise-showcase-edited.mp4
+**Recording:** https://app.devin.ai/attachments/a6c1fd19-2355-437a-9daf-95e32a749222/flowchart-design-pass-showcase-edited.mp4
 
 ## Features
 
@@ -57,6 +57,6 @@ Scenario: draw a 7-node flowchart for "Devin fixes a CI failure".
 | 6 | Marquee-select three nodes by dragging a rectangle over empty canvas around them, then drag one of them | The three nodes highlight together, the selection chip at the bottom of the canvas says `3 nodes + 2 edges selected` (the edges between them are picked up too), and all three move as a group. |
 | 7 | Click a single node and press `Ctrl+D`, then press `Delete` | A duplicate appears offset by one grid step and is selected ("Duplicated 1 node"); `Delete` removes it and the count returns to `7 nodes`. |
 | 8 | Click **Auto layout** | Nodes are arranged into layers top-to-bottom, the loop-back edge goes around the right side, and the view fits the diagram. |
-| 9 | Scroll the wheel down over the canvas, then back up | The zoom percentage in the bottom-left zoom control drops and rises again; the minimap viewport rectangle grows and shrinks. |
+| 9 | Scroll the wheel down over the canvas, then back up | The zoom percentage in the bottom-left zoom control drops and rises again; the minimap re-frames to show the new visible area relative to the nodes. |
 | 10 | Click **Export SVG** | Chrome downloads `flowchart.svg` to `~/Downloads`; a toast confirms the download. |
 | 11 | In a shell, parse the file and count labels | The file parses as XML with an `svg` root and contains all seven node labels. |
