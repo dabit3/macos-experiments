@@ -125,8 +125,8 @@ struct LibraryView: View {
       Button(action: action) {
         HStack(spacing: 14) {
           VStack(alignment: .leading, spacing: 6) {
+            Text(pattern.name).font(.headline).lineLimit(2)
             HStack(spacing: 8) {
-              Text(pattern.name).font(.headline).lineLimit(1)
               if onDeck {
                 Text("On deck")
                   .font(.caption.weight(.semibold))
@@ -135,12 +135,12 @@ struct LibraryView: View {
                   .padding(.vertical, 2)
                   .background(Deck.red, in: Capsule())
               }
+              Text("\(Int(pattern.tempo)) BPM · \(Int((pattern.swing * 100).rounded()))% swing")
+                .font(.subheadline)
+                .foregroundStyle(Deck.muted)
+                .monospacedDigit()
+                .lineLimit(1)
             }
-            Text("\(Int(pattern.tempo)) BPM · \(Int((pattern.swing * 100).rounded()))% swing")
-              .font(.subheadline)
-              .foregroundStyle(Deck.muted)
-              .monospacedDigit()
-              .lineLimit(1)
           }
           Spacer(minLength: 12)
           PatternPreview(pattern: pattern, height: 6)
