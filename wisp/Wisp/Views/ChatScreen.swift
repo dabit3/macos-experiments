@@ -87,7 +87,7 @@ struct ChatScreen: View {
 
     private func startNewChat() {
         if app.current.isEmpty { return }
-        if app.isKept || chat.isStreaming {
+        if app.isKept {
             chat.stop()
             app.newChat()
         } else {

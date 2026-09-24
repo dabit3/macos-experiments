@@ -113,7 +113,6 @@ struct MessageRow: View {
                             HStack(alignment: .bottom, spacing: 0) {
                                 Text(Markdown.inline(text))
                                     .font(.body)
-                                    .textSelection(.enabled)
                                 if isLast && message.isStreaming { Cursor().padding(.leading, 2) }
                             }
                         case .code(let lang, let body):
