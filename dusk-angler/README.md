@@ -46,15 +46,17 @@ spending and pause timing.
 
 - Tap a fish silhouette to aim; tapping empty water changes the cast position.
   Cast within the visible reticle's reach of a fish.
-- Wait about 1.5 seconds, then tap **HOOK** in the 2.5-second bite window.
-- **Hold the circular reel**, release to soften the line. Its radial scale and
-  numeric readout show tension; brass warnings announce approaching surges.
-  Surges begin at 4.5 seconds in a 7-second behavior cycle.
+- Wait about 1.5 seconds, then tap **Hook** while the bite bar drains (2.5 s).
+- **Hold the reel pad**, release to soften the line. The zoned tension bar
+  (slack / safe / snap) shows line tension, and the surge forecast strip scrolls
+  the next nine seconds so red surges are visible before they arrive. Surges
+  begin at 4.5 seconds in a 7-second behavior cycle.
 - Bring the landed meter to 100%. Reaching 100% tension snaps; five seconds below
   10% tension loses the fish; each duel has a 45-second limit.
 - Each catch earns a length, score, and 1 glow bait (2 for rare fish). Spend two
   bait to attract a rare fish to the selected target. Rare silhouettes can
   always be targeted without bait.
+- Choose Amber Lake or Violet Reach directly on the home screen.
 - Catch three fish to open Violet Reach and its Glassfin char. The journal
   retains the latest 100 catches; lifetime count and best score remain.
 - Share exports a native illustrated catch image and text through the iOS share
@@ -62,15 +64,15 @@ spending and pause timing.
 
 Pause freezes gameplay. Backgrounding automatically pauses an active cast or
 duel. Relaunch returns to shore with saved catches and settings. Reduce Motion
-disables fish oscillation, reel rotation, press scaling and the arrival spring. VoiceOver users can target fish
+disables fish oscillation, reel spin, press scaling and the arrival spring. VoiceOver users can target fish
 buttons and activate Reel to toggle reeling. Sound/haptics can be disabled.
 
 ## Art and limitations
 
 Original generated gouache lake and four natural-history fish illustrations;
-custom SwiftUI instrument dial, sunset seal, measurement ruler and water ripples.
-The interface uses native Avenir Next typography with specimen names in
-Baskerville. No font downloads or runtime asset services are required.
+custom SwiftUI tension bar, surge forecast, reel pad and water ripples.
+The interface uses only the system San Francisco sans-serif (expanded width for
+display and numbers). No font downloads or runtime asset services are required.
 Locally synthesized soft sound effects. The fish and
 scientific names are fictional. No daily or online modes, purchases, or analytics.
 Violet Reach shares the lake composition with a blue-hour treatment.

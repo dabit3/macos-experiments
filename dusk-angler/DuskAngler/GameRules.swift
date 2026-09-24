@@ -98,6 +98,14 @@ struct Duel {
   var cycle: Double { elapsed.truncatingRemainder(dividingBy: 7) }
   var surging: Bool { cycle >= 4.5 && cycle < 6.5 }
   var warning: Bool { cycle >= 3.2 && cycle < 4.5 }
+  var secondsToSurge: Double {
+    surging ? 0 : cycle < 4.5 ? 4.5 - cycle : 11.5 - cycle
+  }
+  var surgeRemaining: Double { surging ? 6.5 - cycle : 0 }
+  static func surges(at time: Double) -> Bool {
+    let cycle = time.truncatingRemainder(dividingBy: 7)
+    return cycle >= 4.5 && cycle < 6.5
+  }
 
   mutating func step(seconds: Double, reeling: Bool) {
     guard outcome == .active, seconds > 0 else { return }

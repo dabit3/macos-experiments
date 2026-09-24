@@ -48,6 +48,20 @@ final class GameRulesTests: XCTestCase {
     XCTAssertEqual(duel.tension, tension)
   }
 
+  func testSurgeForecastCountsDownToEachSurge() {
+    var duel = Duel(species: .ribbonTrout)
+    duel.elapsed = 1.5
+    XCTAssertEqual(duel.secondsToSurge, 3, accuracy: 0.001)
+    XCTAssertEqual(duel.surgeRemaining, 0)
+    duel.elapsed = 5.0
+    XCTAssertEqual(duel.secondsToSurge, 0)
+    XCTAssertEqual(duel.surgeRemaining, 1.5, accuracy: 0.001)
+    duel.elapsed = 6.8
+    XCTAssertEqual(duel.secondsToSurge, 4.7, accuracy: 0.001)
+    XCTAssertTrue(Duel.surges(at: 11.6))
+    XCTAssertFalse(Duel.surges(at: 13.6))
+  }
+
   func testProgressUnlocksLakeAndPreservesBestAcrossEncoding() throws {
     var progress = Progress()
     for score in [1200, 600, 900] {

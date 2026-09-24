@@ -8,6 +8,7 @@ enum GamePhase {
 
 @MainActor
 final class GameStore: ObservableObject {
+  static let biteWindow = 2.5
   @Published var phase = GamePhase.home
   @Published var progress: Progress
   @Published var lake = Lake.amber
@@ -105,7 +106,7 @@ final class GameStore: ObservableObject {
         feedback(strong: true)
       }
     case .bite:
-      if phaseTime > 2.5 {
+      if phaseTime > Self.biteWindow {
         fail(
           "A missed moment", detail: "The fish slipped away. Tap HOOK as soon as the float dips.")
       }
