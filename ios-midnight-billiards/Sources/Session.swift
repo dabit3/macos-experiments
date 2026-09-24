@@ -126,10 +126,14 @@ final class GameSession: ObservableObject {
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
     }
 
+    private var placementStart: Vector?
+
     func touchTable(_ point: Vector, start: Vector) {
         guard var engine = game, canAim else { return }
         showSpin = false
-        if engine.ballInHand && (start - engine.table.cue.position).length < 30 {
+        let placing = placementStart.map { ($0 - start).length < 0.5 } ?? false
+        if engine.ballInHand && (placing || (start - engine.table.cue.position).length < 30) {
+            placementStart = start
             if engine.table.canPlace(point, kitchen: engine.kitchen) {
                 engine.table.placeCue(point)
                 game = engine
