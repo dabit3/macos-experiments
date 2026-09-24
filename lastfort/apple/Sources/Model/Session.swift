@@ -11,6 +11,9 @@ import OSLog
   @Published var latency = 0
   @Published var token = ""
   @Published var autopilot = false
+  /// Host's chosen lobby size; lives here so it survives the lobby view
+  /// being replaced by the match and results screens.
+  @Published var lobbySize = 16
   @Published var testPaused = false
   let profile: Profile
   let options: LaunchOptions

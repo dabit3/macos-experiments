@@ -401,41 +401,45 @@ struct ResultsView: View {
             Text("\(summary.teams) teams · \(summary.players.count) players").font(.lfLabel(12))
               .foregroundStyle(Color.lfMuted)
           }
+          let compact = sizeClass == .compact
+          let column: CGFloat = compact ? 44 : 56
+          let gap: CGFloat = compact ? 8 : 12
           VStack(spacing: 0) {
-            HStack(spacing: 12) {
-              Text("#").frame(width: 36, alignment: .leading)
+            HStack(spacing: gap) {
+              Text("#").frame(width: compact ? 28 : 36, alignment: .leading)
               Text("Player").frame(maxWidth: .infinity, alignment: .leading)
-              Text("Elims").frame(width: 56, alignment: .trailing)
-              Text("Dmg").frame(width: 56, alignment: .trailing)
-              Text("XP").frame(width: 56, alignment: .trailing)
+              Text("Elims").frame(width: column, alignment: .trailing)
+              if !compact { Text("Dmg").frame(width: column, alignment: .trailing) }
+              Text("XP").frame(width: column, alignment: .trailing)
             }
             .font(.lfLabel(12)).foregroundStyle(Color.lfMuted)
             .padding(.horizontal, 14).padding(.vertical, 8)
             ForEach(standings) { player in
               let you = player.id == playerID
-              HStack(spacing: 12) {
+              HStack(spacing: gap) {
                 Text(player.placement > 0 ? "\(player.placement)" : "—")
                   .font(.lfDigits(15, weight: .semibold))
                   .foregroundStyle(
                     player.placement == 1 ? Color.lfGold : you ? Color.lfText : Color.lfMuted
                   )
-                  .frame(width: 36, alignment: .leading)
+                  .frame(width: compact ? 28 : 36, alignment: .leading)
                 HStack(spacing: 8) {
                   Text(player.name).font(.lfBody(15, weight: you ? .semibold : .regular))
-                    .foregroundStyle(Color.lfText).lineLimit(1)
-                  if you { Pill(text: "You", color: .lfAccent) }
+                    .foregroundStyle(Color.lfText).lineLimit(1).truncationMode(.tail)
+                  if you { Pill(text: "You", color: .lfAccent).fixedSize() }
                   if player.bot {
-                    Text("Bot").font(.lfLabel(11)).foregroundStyle(Color.lfMuted)
+                    Text("Bot").font(.lfLabel(11)).foregroundStyle(Color.lfMuted).fixedSize()
                   } else {
                     PlatformIcon(platform: player.platform).foregroundStyle(Color.lfMuted)
                   }
                   if summary.mode != .solo {
                     Text("T\(player.team + 1)").font(.lfLabel(11)).foregroundStyle(Color.lfMuted)
+                      .fixedSize()
                   }
                 }.frame(maxWidth: .infinity, alignment: .leading)
-                Text("\(player.kills)").frame(width: 56, alignment: .trailing)
-                Text("\(player.damage)").frame(width: 56, alignment: .trailing)
-                Text("\(player.xp)").frame(width: 56, alignment: .trailing)
+                Text("\(player.kills)").frame(width: column, alignment: .trailing)
+                if !compact { Text("\(player.damage)").frame(width: column, alignment: .trailing) }
+                Text("\(player.xp)").frame(width: column, alignment: .trailing)
               }
               .font(.lfDigits(15, weight: .medium)).foregroundStyle(Color.lfText)
               .padding(.horizontal, 14).padding(.vertical, 10)

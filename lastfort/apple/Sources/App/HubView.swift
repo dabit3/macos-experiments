@@ -165,9 +165,9 @@ struct LobbyView: View {
   @State private var code = ""
   @State private var seed = ""
   @State private var fast = false
-  @State private var fill = 16
   @StateObject private var preview = IslandPreview(seed: 2026)
   private var compact: Bool { sizeClass == .compact }
+  private var fill: Int { session.lobbySize }
 
   var body: some View {
     Group {
@@ -381,8 +381,11 @@ struct LobbyView: View {
               .font(.lfLabel(12)).foregroundStyle(Color.lfMuted).monospacedDigit()
           }
           Spacer()
-          Stepper("Lobby size", value: $fill, in: max(2, room.players.count)...room.maxPlayers)
-            .labelsHidden()
+          Stepper(
+            "Lobby size", value: $session.lobbySize,
+            in: max(2, room.players.count)...room.maxPlayers
+          )
+          .labelsHidden()
         }.padding(12).inset(radius: 10)
       }
     } else {

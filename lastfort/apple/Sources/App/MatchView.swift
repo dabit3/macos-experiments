@@ -144,10 +144,10 @@ struct MatchView: View {
     return HStack(spacing: 6) {
       Image(systemName: "location.north.fill").font(.system(size: size - 3, weight: .bold))
         .rotationEffect(.degrees(angle))
-      Text(directions[Int((angle + 22.5) / 45) % 8]).font(.lfDigits(size))
-        .frame(width: size * 1.7, alignment: .leading)
-      Text("\(Int(angle))°").font(.lfDigits(size, weight: .medium))
-        .foregroundStyle(.white.opacity(0.7)).frame(width: size * 2.6, alignment: .trailing)
+      Text(directions[Int((angle + 22.5) / 45) % 8]).font(.lfDigits(size)).lineLimit(1)
+        .frame(width: size * 2.2, alignment: .leading)
+      Text("\(Int(angle))°").font(.lfDigits(size, weight: .medium)).lineLimit(1)
+        .foregroundStyle(.white.opacity(0.7)).frame(width: size * 2.8, alignment: .trailing)
     }.hud().accessibilityLabel("Heading \(Int(angle)) degrees")
   }
   private func stormView(_ storm: Storm, compact: Bool) -> some View {
