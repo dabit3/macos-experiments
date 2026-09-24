@@ -14,6 +14,8 @@ final class ChatController {
         guard !prompt.isEmpty, !isStreaming, let client = app.client else { return }
 
         lastError = nil
+        app.burnedWhileAway = false
+        let conversationID = app.current.id
         app.current.messages.append(ChatMessage(role: .user, content: prompt))
         var reply = ChatMessage(role: .assistant, content: "", modelID: app.current.modelID, isStreaming: true)
         let replyID = reply.id
@@ -45,20 +47,21 @@ final class ChatController {
                 }
                 reply.isStreaming = false
                 app.update(messageID: replyID) { $0 = reply }
-            } catch is CancellationError {
-                reply.isStreaming = false
-                if reply.content.isEmpty && reply.reasoning.isEmpty {
-                    app.current.messages.removeAll { $0.id == replyID }
-                } else {
-                    app.update(messageID: replyID) { $0 = reply }
-                }
             } catch {
                 reply.isStreaming = false
-                reply.error = error.localizedDescription
-                lastError = error.localizedDescription
-                app.update(messageID: replyID) { $0 = reply }
+                if Task.isCancelled || error is CancellationError || (error as? URLError)?.code == .cancelled {
+                    if reply.content.isEmpty && reply.reasoning.isEmpty {
+                        app.current.messages.removeAll { $0.id == replyID }
+                    } else {
+                        app.update(messageID: replyID) { $0 = reply }
+                    }
+                } else {
+                    reply.error = error.localizedDescription
+                    lastError = error.localizedDescription
+                    app.update(messageID: replyID) { $0 = reply }
+                }
             }
-            app.persistCurrentIfKept()
+            if app.current.id == conversationID { app.persistCurrentIfKept() }
         }
     }
 

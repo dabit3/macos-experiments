@@ -71,6 +71,7 @@ struct ChatScreen: View {
             .alert("This chat is ephemeral.", isPresented: $confirmDiscard) {
                 Button("Let it go") { burnAndReset() }
                 Button("Keep it, then start new") {
+                    chat.stop()
                     app.setKept(true)
                     app.newChat()
                 }
@@ -78,6 +79,9 @@ struct ChatScreen: View {
             } message: {
                 Text("Start a new one and this transcript is gone for good.")
             }
+            .onChange(of: app.current.id) { chat.stop() }
+            .sensoryFeedback(.selection, trigger: app.isKept)
+            .sensoryFeedback(.impact(weight: .light), trigger: app.current.messages.count) { old, new in new > old }
         }
     }
 
@@ -119,7 +123,7 @@ private struct StatusStrip: View {
             Text(app.isKept ? "KEPT" : "EPHEMERAL")
                 .accessibilityIdentifier("persistenceLabel")
             if !app.isKept {
-                Text("· gone when you leave")
+                Text("· \(app.settings.burnAfterLeaving.statusText)")
                     .foregroundStyle(Color.ink.opacity(0.45))
             }
             Spacer()
