@@ -14,7 +14,7 @@ export interface SneakerModel {
   /** Every mesh that belongs to a configurable part, grouped by part. */
   partMeshes: Record<PartId, THREE.Mesh[]>
   /** One shared material per part. */
-  materials: Record<PartId, THREE.MeshStandardMaterial>
+  materials: Record<PartId, THREE.MeshPhysicalMaterial>
   /** The decal skin on the heel label that carries the engraving texture. */
   engravingMaterial: THREE.MeshStandardMaterial
 }
@@ -85,12 +85,12 @@ const HEIGHT = profile([
   [-0.3, 0.7],
   [0.0, 0.61],
   [0.3, 0.53],
-  [0.6, 0.45],
-  [0.9, 0.37],
-  [1.15, 0.29],
-  [1.3, 0.23],
-  [1.4, 0.15],
-  [1.44, 0.08],
+  [0.6, 0.44],
+  [0.9, 0.345],
+  [1.15, 0.26],
+  [1.3, 0.2],
+  [1.4, 0.13],
+  [1.44, 0.07],
   [1.45, 0.03],
 ])
 
@@ -454,6 +454,39 @@ function footprint(x: number, margin: number): number {
   return THREE.MathUtils.lerp(THREE.MathUtils.lerp(w, wh, sstep(xh + 0.16, xh, x)), wt, sstep(xt - 0.16, xt, x))
 }
 
+/** Closed footprint outline as (x, z) points, heel → toe → heel. */
+export function footprintOutline(margin: number, n = 120): THREE.Vector2[] {
+  const out: THREE.Vector2[] = []
+  const xmin = X0 - margin
+  const xmax = X1 + margin
+  for (let i = 0; i <= n; i++) {
+    const x = xmin + ((xmax - xmin) * (1 - Math.cos(Math.PI * (i / n)))) / 2
+    out.push(new THREE.Vector2(x, footprint(x, margin)))
+  }
+  for (let i = n - 1; i > 0; i--) out.push(new THREE.Vector2(out[i].x, -out[i].y))
+  return out
+}
+
+/** "AIR" moulded into the midsole wall. */
+function airTexture(): THREE.CanvasTexture {
+  const c = document.createElement('canvas')
+  c.width = 512
+  c.height = 128
+  const ctx = c.getContext('2d')!
+  ctx.font = 'italic 800 104px "Futura", "Helvetica Neue", Arial, "Liberation Sans", sans-serif'
+  ctx.letterSpacing = '6px'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillStyle = 'rgba(255,255,255,0.55)'
+  ctx.fillText('AIR', 258, 70)
+  ctx.fillStyle = 'rgba(0,0,0,0.2)'
+  ctx.fillText('AIR', 256, 66)
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  tex.anisotropy = 8
+  return tex
+}
+
 interface SoleSpec {
   margin: number
   /** Bottom of the shell (before toe spring). */
@@ -642,24 +675,24 @@ function heelCounter(): THREE.BufferGeometry {
 function swoosh(side: 1 | -1): THREE.BufferGeometry {
   // Centre line in (x, height-fraction): blunt nose low over the mudguard, sweeping back and up.
   const centre = new THREE.CubicBezierCurve(
-    new THREE.Vector2(0.72, 0.4),
-    new THREE.Vector2(0.42, 0.14),
-    new THREE.Vector2(-0.15, 0.26),
-    new THREE.Vector2(-0.98, 0.74),
+    new THREE.Vector2(0.66, 0.37),
+    new THREE.Vector2(0.4, 0.07),
+    new THREE.Vector2(-0.4, 0.24),
+    new THREE.Vector2(-1.04, 0.8),
   )
   const halfWidth = (s: number): number => {
-    const cap = s < 0.16 ? Math.sqrt(1 - (1 - s / 0.16) ** 2) : 1
-    return 0.15 * cap * (1 - s) ** 0.9
+    const cap = s < 0.12 ? Math.sqrt(1 - (1 - s / 0.12) ** 2) : 1
+    return 0.2 * cap * (1 - s) ** 1.3
   }
   return patch({
-    n: 64,
-    m: 10,
-    base: 0.01,
-    raise: 0.022,
-    sink: 0.012,
-    bevel: [0.04, 0.08, 0.3, 0.3],
+    n: 72,
+    m: 12,
+    base: 0.024,
+    raise: 0.016,
+    sink: 0.03,
+    bevel: [0.04, 0.08, 0.25, 0.25],
     domain: (s0, t) => {
-      const s = s0 ** 1.6
+      const s = s0 ** 1.3
       const c = centre.getPoint(s)
       const f = Math.max(0.04, c.y + (2 * t - 1) * halfWidth(s))
       const u = uAt(c.x)
@@ -673,16 +706,21 @@ function swoosh(side: 1 | -1): THREE.BufferGeometry {
  * seam (u = 0) to the +z side; t runs up the back between two height fractions.
  */
 const HEEL_LABEL: PatchSpec = {
-  n: 64,
-  m: 24,
+  n: 80,
+  m: 40,
   base: 0.022,
-  raise: 0.012,
+  raise: 0.016,
   sink: 0.004,
-  bevel: [0.06, 0.06, 0.12, 0.12],
-  domain: (s, t) => {
+  bevel: [0.07, 0.07, 0.13, 0.13],
+  domain: (s0, t) => {
+    // Rounded corners: pull the side edges in near the top and bottom.
+    const d = Math.min(t, 1 - t)
+    const r = 0.24
+    const squeeze = d < r ? 0.26 * (1 - Math.sqrt(1 - (1 - d / r) ** 2)) : 0
+    const s = 0.5 + (s0 - 0.5) * (1 - squeeze)
     const side: 1 | -1 = s >= 0.5 ? 1 : -1
-    const fraction = THREE.MathUtils.lerp(0.49, 0.83, t)
-    const z = Math.abs(2 * s - 1) * 0.225
+    const fraction = THREE.MathUtils.lerp(0.47, 0.85, t)
+    const z = Math.abs(2 * s - 1) * 0.235
     let lo = X0
     let hi = -1.1
     for (let i = 0; i < 24; i++) {
@@ -742,14 +780,15 @@ function stitching(path: THREE.Vector3[], radius = 0.002): THREE.BufferGeometry 
 export function buildSneaker(): SneakerModel {
   const root = new THREE.Group()
   const partMeshes = {} as Record<PartId, THREE.Mesh[]>
-  const materials = {} as Record<PartId, THREE.MeshStandardMaterial>
+  const materials = {} as Record<PartId, THREE.MeshPhysicalMaterial>
   const leather = grainTexture(false)
   const textile = grainTexture(true)
   for (const id of PART_IDS) {
     partMeshes[id] = []
-    materials[id] = new THREE.MeshStandardMaterial({ roughness: 0.6, metalness: 0 })
+    materials[id] = new THREE.MeshPhysicalMaterial({ roughness: 0.6, metalness: 0 })
     materials[id].bumpMap = id === 'laces' || id === 'tongue' ? textile : leather
     materials[id].bumpScale = id === 'sole' || id === 'outsole' ? 0.001 : 0.0025
+    materials[id].userData.bumpBase = materials[id].bumpScale
   }
 
   const trim = new THREE.MeshStandardMaterial({ color: 0x15161a, roughness: 0.75, metalness: 0 })
@@ -775,6 +814,34 @@ export function buildSneaker(): SneakerModel {
     'sole',
     soleShell({ margin: 0.085, y0: 0.06, height: 0.17, rBottom: 0.012, rTop: 0.045, taper: 0.012, belly: 0.01 }),
   )
+  // Moulded rib around the middle of the cupsole wall.
+  const rib = footprintOutline(0.085, 90).map((p) => {
+    const n = new THREE.Vector2(p.x - THREE.MathUtils.clamp(p.x, X0 + 0.34, X1 - 0.26), p.y).normalize()
+    const q = p.clone().addScaledVector(n, 0.003)
+    return new THREE.Vector3(q.x, 0.1 + lift(THREE.MathUtils.clamp(q.x, X0, X1)), q.y)
+  })
+  add('sole', new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rib, true), 360, 0.0065, 8, true))
+  const airMaterial = new THREE.MeshStandardMaterial({
+    map: airTexture(),
+    transparent: true,
+    depthWrite: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -2,
+    roughness: 0.8,
+  })
+  for (const side of [1, -1] as const) {
+    const x = -0.78
+    const slope = (footprint(x + 0.01, 0.085) - footprint(x - 0.01, 0.085)) / 0.02
+    const air = new THREE.Mesh(new THREE.PlaneGeometry(0.17, 0.0425), airMaterial)
+    air.position.set(x, 0.143, side * (footprint(x, 0.085) + 0.0024))
+    air.rotation.y = Math.atan2(-slope * side, side)
+    air.userData.partId = 'sole'
+    air.userData.decal = true
+    partMeshes.sole.push(air)
+    root.add(air)
+  }
+
   // Foxing lip: the cupsole wraps up over the bottom edge of the upper.
   add('sole', soleShell({ margin: 0.052, y0: BASE_Y - 0.06, height: 0.092, rBottom: 0.004, rTop: 0.014 }))
 
@@ -892,7 +959,7 @@ export function buildSneaker(): SneakerModel {
 
   // --- Laces ------------------------------------------------------------------
   const laceWidth = 0.062
-  const laceThick = 0.012
+  const laceThick = 0.015
   const tongueTopAt = (x: number): number =>
     tongue.position.y + (x - tongue.position.x) * Math.tan(tongueTilt) + tongueThick / 2 / Math.cos(tongueTilt)
   const lace = (

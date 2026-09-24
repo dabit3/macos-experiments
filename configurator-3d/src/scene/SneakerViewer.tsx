@@ -3,13 +3,24 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
-import { PART_IDS, type Finish, type PartId, type SneakerConfig, type ViewId } from '../config'
-import { makeEngravingTexture } from './engraving'
-import { buildSneaker, type SneakerModel } from './sneaker'
+import {
+  PART_IDS,
+  PART_LABELS,
+  inkColor,
+  type Finish,
+  type LabelStyle,
+  type PartId,
+  type SneakerConfig,
+  type ViewId,
+} from '../config'
+import { makeLabelTextures } from './engraving'
+import { buildSneaker, footprintOutline, type SneakerModel } from './sneaker'
 
 export interface ViewerApi {
   /** Fly the camera to one of the preset views. */
   setView: (view: ViewId, animate?: boolean) => void
+  /** Fly the camera to the angle that best shows one part. */
+  focusPart: (part: PartId) => void
   /** Render a clean full-resolution frame (no outlines) and return it as a PNG data URL. */
   snapshot: () => string
 }
@@ -35,6 +46,17 @@ const VIEW_POSITIONS: Record<ViewId, THREE.Vector3> = {
   top: new THREE.Vector3(0.05, 4.8, 0.5),
 }
 
+const PART_SHOTS: Record<PartId, THREE.Vector3> = {
+  upper: new THREE.Vector3(1.3, 1.25, 4.6),
+  overlays: new THREE.Vector3(3.6, 1.5, 3.0),
+  stripe: new THREE.Vector3(0.35, 0.75, 4.85),
+  laces: new THREE.Vector3(2.4, 3.8, 1.9),
+  tongue: new THREE.Vector3(3.3, 2.9, 1.5),
+  heel: new THREE.Vector3(-5.1, 0.7, 0),
+  sole: new THREE.Vector3(1.0, 0.3, 4.85),
+  outsole: new THREE.Vector3(3.0, 0.08, 3.8),
+}
+
 // Software/low-end GPUs: draw at reduced resolution while the camera moves,
 // then settle on a crisp full-resolution frame once everything is still.
 const MOTION_SCALE = 0.5
@@ -58,35 +80,59 @@ interface Rig {
   tween: { from: THREE.Vector3; to: THREE.Vector3; start: number; duration: number } | null
   /** Set when something changed and a frame must be drawn. */
   dirty: boolean
+  /** Colour each part material is easing towards. */
+  targets: Record<PartId, THREE.Color>
   /** Current render scale (pixel ratio); dropped while the camera moves. */
   scale: number
   dispose: () => void
 }
 
 /**
- * Matte reads as full-grain leather: a broad, dim environment sheen. Gloss is patent leather;
- * metallic is a brushed foil with the environment doing most of the work.
+ * Matte is full-grain leather with a soft sheen; suede is napped and velvety; gloss is patent
+ * leather under a clear coat; metallic is a brushed foil with the environment doing the work.
  */
-function applyFinish(mat: THREE.MeshStandardMaterial, color: string, finish: Finish, env: THREE.Texture): void {
-  mat.color.set(color)
+function applyFinish(mat: THREE.MeshPhysicalMaterial, finish: Finish, env: THREE.Texture): void {
   mat.envMap = env
+  mat.clearcoat = 0
+  mat.clearcoatRoughness = 0
+  mat.sheen = 0
+  mat.metalness = 0
   switch (finish) {
     case 'matte':
-      mat.roughness = 0.78
-      mat.metalness = 0
-      mat.envMapIntensity = 0.3
+      mat.roughness = 0.62
+      mat.envMapIntensity = 0.45
+      mat.sheen = 0.35
+      mat.sheenRoughness = 0.6
+      mat.sheenColor.set(0xffffff)
+      break
+    case 'suede':
+      mat.roughness = 1
+      mat.envMapIntensity = 0.2
+      mat.sheen = 1
+      mat.sheenRoughness = 0.35
+      mat.sheenColor.set(0xd9d4c8)
       break
     case 'gloss':
-      mat.roughness = 0.2
-      mat.metalness = 0
-      mat.envMapIntensity = 0.55
+      mat.roughness = 0.3
+      mat.envMapIntensity = 0.3
+      mat.clearcoat = 0.7
+      mat.clearcoatRoughness = 0.1
       break
     case 'metallic':
-      mat.roughness = 0.34
-      mat.metalness = 0.9
-      mat.envMapIntensity = 1.1
+      mat.roughness = 0.3
+      mat.metalness = 0.92
+      mat.envMapIntensity = 1.15
       break
   }
+  mat.bumpScale = finish === 'suede' ? 0.006 : mat.userData.bumpBase
+  mat.needsUpdate = true
+}
+
+function applyLabelStyle(mat: THREE.MeshStandardMaterial, style: LabelStyle, env: THREE.Texture): void {
+  mat.envMap = env
+  mat.metalness = style === 'foil' ? 1 : 0
+  mat.roughness = style === 'foil' ? 0.26 : style === 'embroidered' ? 0.55 : 0.7
+  mat.envMapIntensity = style === 'foil' ? 1.4 : 0.5
   mat.needsUpdate = true
 }
 
@@ -102,27 +148,50 @@ function pickPart(hits: THREE.Intersection[]): PartId | null {
   return null
 }
 
-/** Soft radial shadow blob so the shoe sits on the stage without a shadow-map pass. */
-function makeBlobShadow(): THREE.Mesh {
-  const size = 256
+/**
+ * Contact shadow baked from the sole footprint: a tight dark core under the sole and a wide
+ * soft penumbra, so the shoe sits on the stage without a shadow-map pass.
+ */
+function makeContactShadow(): THREE.Mesh {
+  const W = 1024
+  const H = 512
+  const spanX = 4.4
+  const spanZ = 2.2
   const canvas = document.createElement('canvas')
-  canvas.width = canvas.height = size
+  canvas.width = W
+  canvas.height = H
   const ctx = canvas.getContext('2d')
+  const outline = footprintOutline(0.08)
+  const trace = (grow: number) => {
+    if (!ctx) return
+    ctx.beginPath()
+    outline.forEach((p, i) => {
+      const x = ((p.x + spanX / 2) / spanX) * W
+      const y = ((p.y * (1 + grow) + spanZ / 2) / spanZ) * H
+      if (i === 0) ctx.moveTo(x, y)
+      else ctx.lineTo(x, y)
+    })
+    ctx.closePath()
+    ctx.fill()
+  }
   if (ctx) {
-    const g = ctx.createRadialGradient(size / 2, size / 2, size * 0.1, size / 2, size / 2, size / 2)
-    g.addColorStop(0, 'rgba(0,0,0,0.34)')
-    g.addColorStop(0.55, 'rgba(0,0,0,0.12)')
-    g.addColorStop(1, 'rgba(0,0,0,0)')
-    ctx.fillStyle = g
-    ctx.fillRect(0, 0, size, size)
+    ctx.fillStyle = 'rgba(20,22,18,0.16)'
+    ctx.filter = 'blur(38px)'
+    trace(0.35)
+    ctx.fillStyle = 'rgba(20,22,18,0.3)'
+    ctx.filter = 'blur(14px)'
+    trace(0.08)
+    ctx.fillStyle = 'rgba(10,10,8,0.45)'
+    ctx.filter = 'blur(5px)'
+    trace(-0.04)
   }
   const tex = new THREE.CanvasTexture(canvas)
   const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(4.6, 2.2),
+    new THREE.PlaneGeometry(spanX, spanZ),
     new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }),
   )
   mesh.rotation.x = -Math.PI / 2
-  mesh.position.set(0.05, -0.615, 0)
+  mesh.position.set(0, -0.618, 0)
   mesh.renderOrder = -1
   return mesh
 }
@@ -136,7 +205,7 @@ function makeHullMaterial(): THREE.MeshBasicMaterial {
   mat.onBeforeCompile = (shader) => {
     shader.vertexShader = shader.vertexShader.replace(
       '#include <begin_vertex>',
-      'vec3 transformed = position + normal * 0.018;',
+      'vec3 transformed = position + normal * 0.012;',
     )
   }
   return mat
@@ -180,8 +249,8 @@ function refreshHulls(rig: Rig): void {
 function createRig(container: HTMLDivElement): Rig {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
   renderer.setClearColor(0x000000, 0)
-  renderer.toneMapping = THREE.ACESFilmicToneMapping
-  renderer.toneMappingExposure = 0.95
+  renderer.toneMapping = THREE.NeutralToneMapping
+  renderer.toneMappingExposure = 0.92
   container.appendChild(renderer.domElement)
 
   const scene = new THREE.Scene()
@@ -219,7 +288,7 @@ function createRig(container: HTMLDivElement): Rig {
   scene.add(top)
   scene.add(new THREE.HemisphereLight(0xffffff, 0xb8b3a5, 0.8))
 
-  scene.add(makeBlobShadow())
+  scene.add(makeContactShadow())
 
   const model = buildSneaker()
   scene.add(model.root)
@@ -262,6 +331,10 @@ function createRig(container: HTMLDivElement): Rig {
     selected: null,
     tween: null,
     dirty: true,
+    targets: Object.fromEntries(PART_IDS.map((id) => [id, model.materials[id].color.clone()])) as Record<
+      PartId,
+      THREE.Color
+    >,
     scale: IDLE_SCALE,
     dispose,
   }
@@ -269,6 +342,7 @@ function createRig(container: HTMLDivElement): Rig {
 
 export function SneakerViewer({ config, selected, onSelect, onHover, onOrbit, onReady, apiRef }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const tipRef = useRef<HTMLDivElement>(null)
   const rigRef = useRef<Rig | null>(null)
   const callbacks = useRef({ onSelect, onHover, onOrbit, onReady })
   useEffect(() => {
@@ -332,7 +406,16 @@ export function SneakerViewer({ config, selected, onSelect, onHover, onOrbit, on
       down = { x: e.clientX, y: e.clientY, t: performance.now() }
       el.style.cursor = 'grabbing'
     }
+    const moveTip = (e: PointerEvent) => {
+      const tip = tipRef.current
+      if (!tip) return
+      const rect = container.getBoundingClientRect()
+      tip.style.transform = `translate(${e.clientX - rect.left + 16}px, ${e.clientY - rect.top + 18}px)`
+      tip.textContent = rig.hovered ? PART_LABELS[rig.hovered] : ''
+      tip.classList.toggle('is-visible', rig.hovered !== null && rig.hovered !== rig.selected && !down)
+    }
     const onPointerMove = (e: PointerEvent) => {
+      moveTip(e)
       if (down) {
         if (Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) {
           rig.tween = null
@@ -342,6 +425,7 @@ export function SneakerViewer({ config, selected, onSelect, onHover, onOrbit, on
         return
       }
       setHovered(castAt(e))
+      moveTip(e)
     }
     const onPointerUp = (e: PointerEvent) => {
       if (!down) return
@@ -351,7 +435,10 @@ export function SneakerViewer({ config, selected, onSelect, onHover, onOrbit, on
       el.style.cursor = rig.hovered ? 'pointer' : 'grab'
       if (moved <= 6 && elapsed < 600) callbacks.current.onSelect(castAt(e))
     }
-    const onPointerLeave = () => setHovered(null)
+    const onPointerLeave = () => {
+      setHovered(null)
+      tipRef.current?.classList.remove('is-visible')
+    }
     el.addEventListener('pointerdown', onPointerDown)
     el.addEventListener('pointermove', onPointerMove)
     el.addEventListener('pointerup', onPointerUp)
@@ -378,6 +465,14 @@ export function SneakerViewer({ config, selected, onSelect, onHover, onOrbit, on
         lastCameraMove = now
       }
       rig.controls.update()
+      for (const id of PART_IDS) {
+        const c = rig.model.materials[id].color
+        const target = rig.targets[id]
+        if (c.equals(target)) continue
+        c.lerp(target, 0.2)
+        if (Math.abs(c.r - target.r) + Math.abs(c.g - target.g) + Math.abs(c.b - target.b) < 0.004) c.copy(target)
+        rig.dirty = true
+      }
       const moving = rig.tween !== null || rig.controls.autoRotate || now - lastCameraMove < 160
       if (moving) {
         setScale(MOTION_SCALE)
@@ -406,6 +501,11 @@ export function SneakerViewer({ config, selected, onSelect, onHover, onOrbit, on
           return
         }
         rig.tween = { from: rig.camera.position.clone(), to, start: performance.now(), duration: 750 }
+      },
+      focusPart: (part) => {
+        const to = PART_SHOTS[part]
+        if (rig.camera.position.distanceTo(to) < 0.05) return
+        rig.tween = { from: rig.camera.position.clone(), to, start: performance.now(), duration: 850 }
       },
       snapshot: () => {
         const shown = (Object.values(rig.hull) as THREE.Mesh[][]).flat().filter((h) => h.visible)
@@ -439,22 +539,32 @@ export function SneakerViewer({ config, selected, onSelect, onHover, onOrbit, on
     if (!rig) return
     for (const id of PART_IDS) {
       const { color, finish } = config.parts[id]
-      applyFinish(rig.model.materials[id], color, finish, rig.environment)
+      rig.targets[id].set(color)
+      applyFinish(rig.model.materials[id], finish, rig.environment)
     }
     rig.dirty = true
   }, [config.parts])
 
-  // Engraving texture.
+  // Heel label artwork: colour layer on the decal, relief on the label leather itself.
+  const tabColor = config.parts.heel.color
   useEffect(() => {
     const rig = rigRef.current
     if (!rig) return
-    const tex = makeEngravingTexture(config.text, config.parts.heel.color)
-    const old = rig.model.engravingMaterial.map
-    rig.model.engravingMaterial.map = tex
-    rig.model.engravingMaterial.needsUpdate = true
-    old?.dispose()
+    const { map, bump } = makeLabelTextures(config.text, inkColor(config.ink, tabColor), config.label)
+    map.userData.label = true
+    bump.userData.label = true
+    const decal = rig.model.engravingMaterial
+    const leather = rig.model.materials.heel
+    const old = [decal.map, leather.bumpMap]
+    decal.map = map
+    applyLabelStyle(decal, config.label, rig.environment)
+    leather.bumpMap = bump
+    leather.userData.bumpBase = 0.012
+    leather.bumpScale = 0.012
+    leather.needsUpdate = true
+    old.forEach((t) => t?.userData.label && t.dispose())
     rig.dirty = true
-  }, [config.text, config.parts.heel.color])
+  }, [config.text, config.ink, config.label, tabColor])
 
   // Autorotate.
   useEffect(() => {
@@ -472,5 +582,9 @@ export function SneakerViewer({ config, selected, onSelect, onHover, onOrbit, on
     refreshHulls(rig)
   }, [selected])
 
-  return <div ref={containerRef} className="viewer-canvas" />
+  return (
+    <div ref={containerRef} className="viewer-canvas">
+      <div ref={tipRef} className="part-tip" aria-hidden="true" />
+    </div>
+  )
 }
