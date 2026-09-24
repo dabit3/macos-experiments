@@ -586,9 +586,13 @@ final class RaceWorld {
         node.eulerAngles.y = Float(p.heading)
         let tag = nameTag(p.name.uppercased(), color: colors[min(2, max(0, p.racer))])
         tag.position = SCNVector3(0, 5.4, 0)
+        tag.name = "tag"
         tag.isHidden = p.id == playerID
         node.addChildNode(tag)
       }
+      let gap = hypot(p.x - me.x, p.z - me.z)
+      node.childNode(withName: "tag", recursively: false)?.opacity = CGFloat(
+        min(1, max(0, (gap - 7) / 8)))
       let factor: Float = 0.42
       node.position.x += (Float(p.x) - node.position.x) * factor
       node.position.z += (Float(p.z) - node.position.z) * factor
