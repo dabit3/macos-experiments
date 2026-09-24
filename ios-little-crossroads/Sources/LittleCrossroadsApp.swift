@@ -160,10 +160,15 @@ struct CrossroadsView: View {
                 .accessibilityIdentifier("openGuide")
             }
             if let next = store.nextUnlock {
-                PixelText("NEXT: \(next.name) IN \(next.coins) COINS", scale: 2, color: Palette.gray, shadow: nil)
-                    .padding(.horizontal, 10).padding(.vertical, 6)
-                    .background(Palette.glass)
-                    .padding(.top, 2)
+                PixelText(
+                    "NEXT: \(next.name) IN \(next.coins) \(next.coins == 1 ? "COIN" : "COINS")",
+                    scale: 2,
+                    color: Palette.gray,
+                    shadow: nil
+                )
+                .padding(.horizontal, 10).padding(.vertical, 6)
+                .background(Palette.glass)
+                .padding(.top, 2)
             }
         }
         .padding(.bottom, compact ? 2 : 10)
@@ -316,67 +321,72 @@ struct CrossroadsView: View {
 
     private var resultCard: some View {
         modal {
-            VStack(spacing: 14) {
+            resultCardContent
+        }
+        .allowsHitTesting(store.resultsArmed)
+    }
+
+    private var resultCardContent: some View {
+        VStack(spacing: 14) {
+            PixelText(
+                headline(store.reason),
+                scale: 3,
+                color: Palette.coral,
+                shadow: Palette.brick,
+                alignment: .center
+            )
+            HStack(alignment: .bottom, spacing: 16) {
+                DuckSpriteView(plumage: ToyColor.duck(store.selected))
+                    .frame(width: 56, height: 56)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 4) {
+                    PixelText(store.newBest ? "NEW BEST!" : "HOPS", scale: 2, color: Palette.yellow)
+                    PixelText(pad(store.score), scale: 7)
+                        .accessibilityIdentifier("resultScore")
+                }
+            }
+            HStack {
                 PixelText(
-                    headline(store.reason),
-                    scale: 3,
-                    color: Palette.coral,
-                    shadow: Palette.brick,
-                    alignment: .center
+                    "BEST \(pad(store.best))",
+                    scale: 2,
+                    color: store.newBest ? Palette.yellow : Palette.white
                 )
-                HStack(alignment: .bottom, spacing: 16) {
-                    DuckSpriteView(plumage: ToyColor.duck(store.selected))
-                        .frame(width: 56, height: 56)
-                        .accessibilityHidden(true)
-                    VStack(alignment: .leading, spacing: 4) {
-                        PixelText(store.newBest ? "NEW BEST!" : "HOPS", scale: 2, color: Palette.yellow)
-                        PixelText(pad(store.score), scale: 7)
-                            .accessibilityIdentifier("resultScore")
-                    }
+                Spacer()
+                HStack(spacing: 6) {
+                    CoinMark()
+                    PixelText("+\(pad(store.runCoins, 2))", scale: 2, color: Palette.yellow)
                 }
-                HStack {
+            }
+            if !store.unlockedNames.isEmpty {
+                Blink(reducedMotion: reducedMotion) {
                     PixelText(
-                        "BEST \(pad(store.best))",
-                        scale: 2,
-                        color: store.newBest ? Palette.yellow : Palette.white
+                        store.unlockedNames.count == 1
+                            ? "\(store.unlockedNames[0].uppercased()) JOINED!"
+                            : "\(store.unlockedNames.count) NEW DUCKS JOINED!",
+                        scale: 2, color: Palette.mint
                     )
-                    Spacer()
-                    HStack(spacing: 6) {
-                        CoinMark()
-                        PixelText("+\(pad(store.runCoins, 2))", scale: 2, color: Palette.yellow)
-                    }
                 }
-                if !store.unlockedNames.isEmpty {
-                    Blink(reducedMotion: reducedMotion) {
-                        PixelText(
-                            store.unlockedNames.count == 1
-                                ? "\(store.unlockedNames[0].uppercased()) JOINED!"
-                                : "\(store.unlockedNames.count) NEW DUCKS JOINED!",
-                            scale: 2, color: Palette.mint
-                        )
-                    }
-                    .frame(height: 20)
-                } else if let next = store.nextUnlock {
-                    unlockMeter(next)
+                .frame(height: 20)
+            } else if let next = store.nextUnlock {
+                unlockMeter(next)
+            }
+            Button { store.start() } label: {
+                PixelText("> PLAY AGAIN", scale: 3, color: Palette.ink, shadow: nil, alignment: .center)
+                    .frame(maxWidth: .infinity).frame(height: 58)
+            }
+            .buttonStyle(BlockPress(fill: Palette.yellow, shade: Palette.honey))
+            .accessibilityIdentifier("retryGame")
+            HStack(spacing: 10) {
+                smallButton("HOME") { store.home() }
+                    .accessibilityIdentifier("goHome")
+                ShareLink(
+                    item: "I hopped \(store.score) rows in Little Crossroads! My personal best is \(store.best). Small hops. Big adventures."
+                ) {
+                    PixelText("SHARE", scale: 2, shadow: nil, alignment: .center)
+                        .frame(maxWidth: .infinity).frame(height: 44)
                 }
-                Button { store.start() } label: {
-                    PixelText("> PLAY AGAIN", scale: 3, color: Palette.ink, shadow: nil, alignment: .center)
-                        .frame(maxWidth: .infinity).frame(height: 58)
-                }
-                .buttonStyle(BlockPress(fill: Palette.yellow, shade: Palette.honey))
-                .accessibilityIdentifier("retryGame")
-                HStack(spacing: 10) {
-                    smallButton("HOME") { store.home() }
-                        .accessibilityIdentifier("goHome")
-                    ShareLink(
-                        item: "I hopped \(store.score) rows in Little Crossroads! My personal best is \(store.best). Small hops. Big adventures."
-                    ) {
-                        PixelText("SHARE", scale: 2, shadow: nil, alignment: .center)
-                            .frame(maxWidth: .infinity).frame(height: 44)
-                    }
-                    .buttonStyle(BlockPress(fill: Palette.royal, shade: Palette.navy, depth: 4))
-                    smallButton("FLOCK") { store.showWardrobe = true }
-                }
+                .buttonStyle(BlockPress(fill: Palette.royal, shade: Palette.navy, depth: 4))
+                smallButton("FLOCK") { store.showWardrobe = true }
             }
         }
     }
@@ -388,7 +398,7 @@ struct CrossroadsView: View {
             HStack {
                 PixelText("NEXT: \(next.name)", scale: 2, color: Palette.gray)
                 Spacer()
-                PixelText("\(next.coins) COINS", scale: 2, color: Palette.yellow)
+                PixelText("\(next.coins) \(next.coins == 1 ? "COIN" : "COINS")", scale: 2, color: Palette.yellow)
             }
             Meter(progress: progress).frame(height: 10)
         }

@@ -29,6 +29,7 @@ final class GameStore: NSObject, ObservableObject {
     @Published private(set) var runs: Int
     @Published private(set) var unlockedNames: [String] = []
     @Published private(set) var showResults = false
+    @Published private(set) var resultsArmed = false
     let world = ToyWorld()
     private(set) var game: GameRules
     private let defaults: UserDefaults
@@ -83,6 +84,7 @@ final class GameStore: NSObject, ObservableObject {
         defaults.set(runs, forKey: "runs")
         unlockedNames = []
         showResults = false
+        resultsArmed = false
         finishElapsed = 0
         game.start()
         state = game.state
@@ -97,6 +99,7 @@ final class GameStore: NSObject, ObservableObject {
         score = 0
         runCoins = 0
         showResults = false
+        resultsArmed = false
     }
 
     func move(_ direction: Direction) {
@@ -168,11 +171,10 @@ final class GameStore: NSObject, ObservableObject {
             }
             state = game.state
         }
-        if state == .finished, !showResults {
+        if state == .finished, !resultsArmed {
             finishElapsed += dt
-            if finishElapsed >= 0.6 {
-                showResults = true
-            }
+            showResults = finishElapsed >= 0.6
+            resultsArmed = finishElapsed >= 1.1
         }
         world.update(game, plumage: selected, delta: dt, reducedMotion: reducedMotion)
         telemetry?.send(game)
