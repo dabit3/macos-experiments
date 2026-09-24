@@ -17,6 +17,12 @@ import Foundation
   private var sequence = 0
   private var pending: [InputFrame] = []
   var me: Player? { players[localID] }
+  /// Snapshots only carry players inside the local interest radius, so names
+  /// fall back to the full roster sent at match start.
+  func name(_ id: Int?) -> String? {
+    guard let id else { return nil }
+    return players[id]?.n ?? start.players.first { $0.id == id }?.n
+  }
   var target: Player? {
     guard let me else { return nil }
     return me.s == .eliminated ? players[me.spec ?? 0] ?? me : me
@@ -52,11 +58,11 @@ import Foundation
     for event in snapshot.ev {
       effects.append((event, Date()))
       if event.e == "eliminated" {
-        let victim = players[event.p ?? 0]?.n ?? "#\(event.p ?? 0)"
-        let killer = players[event.by ?? 0]?.n ?? "Storm"
+        let victim = name(event.p) ?? "#\(event.p ?? 0)"
+        let killer = name(event.by) ?? "Storm"
         feed.insert("\(killer) eliminated \(victim)", at: 0)
       } else if event.e == "thanked" {
-        feed.insert("\(players[event.p ?? 0]?.n ?? "Player") thanked the driver", at: 0)
+        feed.insert("\(name(event.p) ?? "Player") thanked the driver", at: 0)
       }
     }
     feed = Array(feed.prefix(5))

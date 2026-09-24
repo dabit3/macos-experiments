@@ -6,7 +6,6 @@ struct LastfortApp: App {
   @StateObject private var session: Session
   private let catalogue: Result<Catalogue, Error>
   init() {
-    registerFonts()
     let options = LaunchOptions()
     let defaults =
       options["TEST"].flatMap { UserDefaults(suiteName: "com.lastfort.test.\($0)") } ?? .standard
@@ -45,15 +44,19 @@ struct RootView: View {
   var body: some View {
     VStack(spacing: 0) {
       if let error = session.error ?? profile.persistenceError {
-        HStack {
-          Image(systemName: "exclamationmark.triangle.fill")
-          Text(error).font(.custom("Rajdhani-Medium", size: 16)).frame(
-            maxWidth: .infinity, alignment: .leading)
+        HStack(spacing: 12) {
+          Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Color.lfDanger)
+          Text(error).font(.lfBody(14, weight: .medium)).foregroundStyle(Color.lfText)
+            .frame(maxWidth: .infinity, alignment: .leading)
           Button("Dismiss") {
             session.error = nil
             profile.persistenceError = nil
-          }
-        }.padding(10).foregroundStyle(.white).background(Color.fortDanger.opacity(0.8))
+          }.buttonStyle(LFButtonStyle(role: .neutral, size: .compact))
+        }
+        .padding(.horizontal, 14).padding(.vertical, 10)
+        .background(Color.lfPanel)
+        .overlay(alignment: .bottom) { Color.lfLine.frame(height: 1) }
+        .transition(.move(edge: .top).combined(with: .opacity))
       }
       if let match = session.match {
         MatchFlow(match: match, catalogue: catalogue).id(ObjectIdentifier(match))
@@ -61,7 +64,12 @@ struct RootView: View {
         HubView(catalogue: catalogue)
       }
     }
-    .font(.custom("Rajdhani-Medium", size: 18)).tint(.fortTeal)
+    .font(.lfBody())
+    .tint(.lfAccent)
+    .background(Color.lfBackground.ignoresSafeArea())
+    .animation(
+      .easeOut(duration: 0.2), value: session.error == nil && profile.persistenceError == nil
+    )
     .task { session.connect() }
     .onChange(of: scenePhase) { _, phase in
       #if os(iOS)

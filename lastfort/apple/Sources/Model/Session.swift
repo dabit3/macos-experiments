@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import OSLog
 
 @MainActor final class Session: ObservableObject {
   enum Connection: String { case offline, connecting, connected, reconnecting }
@@ -171,7 +172,8 @@ import Foundation
       error = nil
       token = welcome.token
       do { try ResumeToken.save(token, server: tokenAccount) } catch {
-        self.error = "Resume token could not be saved securely: \(error.localizedDescription)"
+        Logger(subsystem: "com.lastfort", category: "session")
+          .error("Resume token not persisted: \(error.localizedDescription, privacy: .public)")
       }
       connection = .connected
       if let warning = welcome.warning { error = warning }

@@ -1,6 +1,7 @@
 import Combine
 import CryptoKit
 import Foundation
+import OSLog
 import Security
 
 struct Cosmetic: Codable, Identifiable {
@@ -36,7 +37,14 @@ struct Career: Codable {
   var matches = 0, wins = 0, kills = 0, damage = 0, harvested = 0, built = 0, bestPlacement = 0
 }
 struct ProfileData: Codable {
-  var name = "SwiftWarden"
+  var name = ProfileData.defaultName
+  static var defaultName: String {
+    #if os(macOS)
+      "Warden"
+    #else
+      "Ranger"
+    #endif
+  }
   var server = "ws://localhost:8787/ws"
   var loadout = Loadout()
   var xp = 0
@@ -95,7 +103,8 @@ struct ProfileData: Codable {
         try ResumeToken.save(token, server: data.server)
         defaults.removeObject(forKey: "flutter.token")
       } catch {
-        persistenceError = "Cannot migrate resume token to Keychain: \(error.localizedDescription)"
+        Logger(subsystem: "com.lastfort", category: "profile")
+          .error("Resume token not migrated: \(error.localizedDescription, privacy: .public)")
       }
     }
     save()

@@ -7,42 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		066874FD129B7CC40A4152D7 /* Rajdhani-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 591CCE42AC84B40F67AF9945 /* Rajdhani-Medium.ttf */; };
 		07180524EAE4600DB47FA00A /* LastfortApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495B2D0B67DF26072EE6EF59 /* LastfortApp.swift */; };
 		09AC6C333D94D16F362F38FA /* HubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F212AC03D5DD433C5EE70B /* HubView.swift */; };
 		0D5D005AE8082537251DB008 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = E638663C568110044120AA36 /* Session.swift */; };
-		2990FCAF10A9026F24B2779F /* Rajdhani-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF7813E93D0DB625E94A2EE2 /* Rajdhani-Bold.ttf */; };
-		2D002CB9B8071DB4943550D0 /* Rajdhani-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C9B57E6C1D5D1C058AB744D1 /* Rajdhani-SemiBold.ttf */; };
 		2F86C6463EA3386FF841FB6B /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA9128B65538840A37CB82C /* Profile.swift */; };
 		376FFE15E2B12148EC59BC5E /* Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6277702A693FAEC3CBDD27 /* Controls.swift */; };
 		465AF27C7079D52E3849EECC /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = E638663C568110044120AA36 /* Session.swift */; };
-		47599381C028271A99EDB21E /* Rajdhani-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C9B57E6C1D5D1C058AB744D1 /* Rajdhani-SemiBold.ttf */; };
 		4FD8251718ED365A36D30AB4 /* Artwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7011C2D810BB68DFC726282F /* Artwork.swift */; };
 		5BCED1AC3DC1AADDD3CB424C /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA9128B65538840A37CB82C /* Profile.swift */; };
 		5E43A4D09E5972B9F833395C /* Artwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7011C2D810BB68DFC726282F /* Artwork.swift */; };
 		6955B7671592EED97F6D0481 /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7005D55BB8EA73E70EEBE584 /* MatchView.swift */; };
-		6E0D3318014241CE61BFFD95 /* Rajdhani-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2A1D8A0BE023F2DFBD5BDC17 /* Rajdhani-Regular.ttf */; };
 		71490A1773E1DA7A50C47BA3 /* Island.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD253C44527A7B837E501DB2 /* Island.swift */; };
 		71FB55FED7A17D888D3F15CA /* HubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F212AC03D5DD433C5EE70B /* HubView.swift */; };
+		78E3D2ACC2D96BFF86958655 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257606670F3B4AD6E53EE1DD /* Theme.swift */; };
 		79FEC98588AA2D27A7871CE6 /* catalogue.json in Resources */ = {isa = PBXBuildFile; fileRef = DD3BEAA3A763E16F7B70CC73 /* catalogue.json */; };
 		7AD0A53752BB6D0CF53E503F /* MatchReplica.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A480CD47222C56059CED4A8 /* MatchReplica.swift */; };
-		87F47F441EB135DC0831654C /* Rajdhani-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 591CCE42AC84B40F67AF9945 /* Rajdhani-Medium.ttf */; };
-		8F7F83FF83B92D8D2E70C96D /* OFL-Rajdhani.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8AFD702254ADF5A0D258CFB1 /* OFL-Rajdhani.txt */; };
 		90845B281D2F43D5742527D2 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DAB2C391CDE7A03541E48F /* Protocol.swift */; };
 		9CE9C87685E0298817770414 /* Island.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD253C44527A7B837E501DB2 /* Island.swift */; };
 		A464424D6233F492A8E9AFEA /* MatchReplica.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A480CD47222C56059CED4A8 /* MatchReplica.swift */; };
 		A9571051922DEBE56A1171B1 /* Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6277702A693FAEC3CBDD27 /* Controls.swift */; };
-		B3440E3124C54816DC15CD99 /* Rajdhani-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AF7813E93D0DB625E94A2EE2 /* Rajdhani-Bold.ttf */; };
 		B6E00E8A3DE6206AD9F0DC19 /* GameCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A86BB4E6B7D54600C45505 /* GameCanvas.swift */; };
-		BD4B43699A3CFCFB88BF6B69 /* Rajdhani-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2A1D8A0BE023F2DFBD5BDC17 /* Rajdhani-Regular.ttf */; };
 		BE08C71FB3670FE4DFE812BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 223A4F550F9AAAA1E0236931 /* Assets.xcassets */; };
 		CF37F445FC425D2E5830A1B1 /* catalogue.json in Resources */ = {isa = PBXBuildFile; fileRef = DD3BEAA3A763E16F7B70CC73 /* catalogue.json */; };
 		CFDD8C74278AF12D729215DE /* LastfortApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495B2D0B67DF26072EE6EF59 /* LastfortApp.swift */; };
+		DB0FADA479AB4123DD09774D /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257606670F3B4AD6E53EE1DD /* Theme.swift */; };
 		DE0C105C48A77BCC8858C61F /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DAB2C391CDE7A03541E48F /* Protocol.swift */; };
 		E5FD8A154F02F7FC38FA18DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 223A4F550F9AAAA1E0236931 /* Assets.xcassets */; };
 		EF8789EB5F8DC963E276D23C /* GameCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A86BB4E6B7D54600C45505 /* GameCanvas.swift */; };
 		F143004E9DD50D31D6A2381C /* ProfileViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BE3C9A0E157C7207BB88E7 /* ProfileViews.swift */; };
-		F236BDC7BC4D293F935B0856 /* OFL-Rajdhani.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8AFD702254ADF5A0D258CFB1 /* OFL-Rajdhani.txt */; };
 		F744BE84448E1DA99E73ABB2 /* ProfileViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BE3C9A0E157C7207BB88E7 /* ProfileViews.swift */; };
 		FF3BC777E45E04889D20D208 /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7005D55BB8EA73E70EEBE584 /* MatchView.swift */; };
 /* End PBXBuildFile section */
@@ -51,19 +43,15 @@
 		1BA9128B65538840A37CB82C /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		223A4F550F9AAAA1E0236931 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22F212AC03D5DD433C5EE70B /* HubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubView.swift; sourceTree = "<group>"; };
-		2A1D8A0BE023F2DFBD5BDC17 /* Rajdhani-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Rajdhani-Regular.ttf"; sourceTree = "<group>"; };
+		257606670F3B4AD6E53EE1DD /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		3A480CD47222C56059CED4A8 /* MatchReplica.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchReplica.swift; sourceTree = "<group>"; };
 		4248E17E93180CDBCB723338 /* Lastfort-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Lastfort-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		495B2D0B67DF26072EE6EF59 /* LastfortApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastfortApp.swift; sourceTree = "<group>"; };
 		5481EE27745378774286A07D /* Lastfort-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Lastfort-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		591CCE42AC84B40F67AF9945 /* Rajdhani-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Rajdhani-Medium.ttf"; sourceTree = "<group>"; };
 		7005D55BB8EA73E70EEBE584 /* MatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchView.swift; sourceTree = "<group>"; };
 		7011C2D810BB68DFC726282F /* Artwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Artwork.swift; sourceTree = "<group>"; };
-		8AFD702254ADF5A0D258CFB1 /* OFL-Rajdhani.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-Rajdhani.txt"; sourceTree = "<group>"; };
 		AB6277702A693FAEC3CBDD27 /* Controls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls.swift; sourceTree = "<group>"; };
-		AF7813E93D0DB625E94A2EE2 /* Rajdhani-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Rajdhani-Bold.ttf"; sourceTree = "<group>"; };
 		B5DAB2C391CDE7A03541E48F /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
-		C9B57E6C1D5D1C058AB744D1 /* Rajdhani-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Rajdhani-SemiBold.ttf"; sourceTree = "<group>"; };
 		D9A86BB4E6B7D54600C45505 /* GameCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCanvas.swift; sourceTree = "<group>"; };
 		DD3BEAA3A763E16F7B70CC73 /* catalogue.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalogue.json; sourceTree = "<group>"; };
 		E0BE3C9A0E157C7207BB88E7 /* ProfileViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViews.swift; sourceTree = "<group>"; };
@@ -95,7 +83,6 @@
 			children = (
 				223A4F550F9AAAA1E0236931 /* Assets.xcassets */,
 				DD3BEAA3A763E16F7B70CC73 /* catalogue.json */,
-				D134C39B579A72B1360B300F /* fonts */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -110,18 +97,6 @@
 				E638663C568110044120AA36 /* Session.swift */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		D134C39B579A72B1360B300F /* fonts */ = {
-			isa = PBXGroup;
-			children = (
-				8AFD702254ADF5A0D258CFB1 /* OFL-Rajdhani.txt */,
-				AF7813E93D0DB625E94A2EE2 /* Rajdhani-Bold.ttf */,
-				591CCE42AC84B40F67AF9945 /* Rajdhani-Medium.ttf */,
-				2A1D8A0BE023F2DFBD5BDC17 /* Rajdhani-Regular.ttf */,
-				C9B57E6C1D5D1C058AB744D1 /* Rajdhani-SemiBold.ttf */,
-			);
-			path = fonts;
 			sourceTree = "<group>";
 		};
 		DD9BB1563893D0F09FFEDC79 = {
@@ -143,6 +118,7 @@
 				495B2D0B67DF26072EE6EF59 /* LastfortApp.swift */,
 				7005D55BB8EA73E70EEBE584 /* MatchView.swift */,
 				E0BE3C9A0E157C7207BB88E7 /* ProfileViews.swift */,
+				257606670F3B4AD6E53EE1DD /* Theme.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -229,11 +205,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E5FD8A154F02F7FC38FA18DA /* Assets.xcassets in Resources */,
-				F236BDC7BC4D293F935B0856 /* OFL-Rajdhani.txt in Resources */,
-				B3440E3124C54816DC15CD99 /* Rajdhani-Bold.ttf in Resources */,
-				87F47F441EB135DC0831654C /* Rajdhani-Medium.ttf in Resources */,
-				6E0D3318014241CE61BFFD95 /* Rajdhani-Regular.ttf in Resources */,
-				2D002CB9B8071DB4943550D0 /* Rajdhani-SemiBold.ttf in Resources */,
 				79FEC98588AA2D27A7871CE6 /* catalogue.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -243,11 +214,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE08C71FB3670FE4DFE812BF /* Assets.xcassets in Resources */,
-				8F7F83FF83B92D8D2E70C96D /* OFL-Rajdhani.txt in Resources */,
-				2990FCAF10A9026F24B2779F /* Rajdhani-Bold.ttf in Resources */,
-				066874FD129B7CC40A4152D7 /* Rajdhani-Medium.ttf in Resources */,
-				BD4B43699A3CFCFB88BF6B69 /* Rajdhani-Regular.ttf in Resources */,
-				47599381C028271A99EDB21E /* Rajdhani-SemiBold.ttf in Resources */,
 				CF37F445FC425D2E5830A1B1 /* catalogue.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -271,6 +237,7 @@
 				F744BE84448E1DA99E73ABB2 /* ProfileViews.swift in Sources */,
 				DE0C105C48A77BCC8858C61F /* Protocol.swift in Sources */,
 				0D5D005AE8082537251DB008 /* Session.swift in Sources */,
+				DB0FADA479AB4123DD09774D /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,6 +257,7 @@
 				F143004E9DD50D31D6A2381C /* ProfileViews.swift in Sources */,
 				90845B281D2F43D5742527D2 /* Protocol.swift in Sources */,
 				465AF27C7079D52E3849EECC /* Session.swift in Sources */,
+				78E3D2ACC2D96BFF86958655 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
