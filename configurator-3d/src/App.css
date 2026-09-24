@@ -704,7 +704,7 @@
   display: grid;
   gap: 10px;
 }
-.label-preview img {
+.label-preview canvas {
   width: 100%;
   aspect-ratio: 1024 / 560;
   display: block;

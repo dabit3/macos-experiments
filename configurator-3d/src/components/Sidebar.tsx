@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   FINISHES,
   FINISH_LABELS,
@@ -46,14 +46,13 @@ const FINISH_HINTS = { matte: 'Soft leather', suede: 'Napped velvet', gloss: 'Pa
 const LABEL_HINTS = { embroidered: 'Satin thread', debossed: 'Pressed leather', foil: 'Hot-stamped' }
 
 /** The heel label as it renders on the shoe, flattened onto the tab colour. */
-function useLabelPreview(text: string, ink: string, style: LabelStyle, tab: string): string {
-  return useMemo(() => {
+function useLabelPreview(text: string, ink: string, style: LabelStyle, tab: string) {
+  const ref = useRef<HTMLCanvasElement>(null)
+  useEffect(() => {
+    const ctx = ref.current?.getContext('2d')
+    if (!ctx) return
     const art = drawLabel(text, inkColor(ink, tab), style)
-    const c = document.createElement('canvas')
-    c.width = LABEL_W
-    c.height = LABEL_H
-    const ctx = c.getContext('2d')
-    if (!ctx) return ''
+    ctx.clearRect(0, 0, LABEL_W, LABEL_H)
     ctx.fillStyle = tab
     ctx.beginPath()
     ctx.roundRect(0, 0, LABEL_W, LABEL_H, 70)
@@ -65,8 +64,8 @@ function useLabelPreview(text: string, ink: string, style: LabelStyle, tab: stri
     ctx.fillStyle = sheen
     ctx.fill()
     ctx.drawImage(art.color, 0, 0)
-    return c.toDataURL('image/png')
   }, [text, ink, style, tab])
+  return ref
 }
 
 export function Sidebar({
@@ -300,7 +299,13 @@ export function Sidebar({
             <h3>Leave your mark.</h3>
             <p>A name, a number, a reminder — finished on the heel tab by hand.</p>
             <figure className="label-preview" data-testid="label-preview">
-              <img src={labelPreview} alt={`Heel label preview: ${config.text || 'brand mark'}`} />
+              <canvas
+                ref={labelPreview}
+                width={LABEL_W}
+                height={LABEL_H}
+                role="img"
+                aria-label={`Heel label preview: ${config.text || 'brand mark'}`}
+              />
               <figcaption>
                 {LABEL_STYLE_LABELS[config.label]} · {config.text || 'Brand mark'}
               </figcaption>
