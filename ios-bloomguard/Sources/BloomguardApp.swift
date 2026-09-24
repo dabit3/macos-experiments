@@ -304,7 +304,7 @@ struct BloomguardView: View {
           }.padding(.top, 4)
         }.padding(12)
       }
-      .background(Color.cream.opacity(open ? 1 : 0.75), in: RoundedRectangle(cornerRadius: 20))
+      .background(Color.cream.opacity(open ? 1 : 0.92), in: RoundedRectangle(cornerRadius: 20))
       .shadow(color: .ink.opacity(open ? 0.18 : 0.06), radius: 12, y: 6)
     }.buttonStyle(.plain).disabled(!open)
   }
@@ -411,7 +411,8 @@ struct BloomguardView: View {
             ? "Plant your first guardians"
             : store.garden.endless && store.garden.wave >= 4 && !store.garden.schedule.isEmpty
               ? "Next: lane \((store.garden.schedule.first?.lane ?? 0) + 1)"
-              : "\(store.garden.pests.count) pests on the path"
+              : store.garden.pests.count == 1
+                ? "1 pest on the path" : "\(store.garden.pests.count) pests on the path"
       )
       .font(.system(size: 11, weight: .semibold))
       .foregroundStyle(Color.cream.opacity(0.85))
