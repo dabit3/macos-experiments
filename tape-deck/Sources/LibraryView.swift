@@ -15,81 +15,58 @@ struct LibraryView: View {
   var body: some View {
     NavigationStack {
       ScrollView {
-        VStack(alignment: .leading, spacing: 24) {
-          VStack(alignment: .leading, spacing: 5) {
-            Micro(text: "THE COLLECTION")
-            Text("Good things\ncome on tape.")
-              .font(.system(.largeTitle, design: .rounded).weight(.bold))
-              .tracking(-1)
-            Text("Original grooves. Yours to make your own.")
-              .font(.subheadline).foregroundStyle(Deck.muted)
-          }
-          VStack(alignment: .leading, spacing: 12) {
-            Micro(text: "FACTORY TAPES / 04")
-            ForEach(Array(Pattern.presets.enumerated()), id: \.offset) { index, pattern in
-              tapeRow(pattern, index: index + 1, factory: true) { requestLoad(pattern) }
-            }
-          }
-          VStack(alignment: .leading, spacing: 12) {
-            HStack {
-              Micro(text: "YOUR TAPES / \(String(format: "%02d", store.archive.tapes.count))")
-              Spacer()
-              Button {
-                showingSave = true
-              } label: {
-                Image(systemName: "plus").frame(width: 44, height: 44)
-              }.accessibilityLabel("Save current pattern")
-            }
+        VStack(alignment: .leading, spacing: 28) {
+          section("Your tapes", count: store.archive.tapes.count) {
             if store.archive.tapes.isEmpty {
-              VStack(alignment: .leading, spacing: 10) {
-                Text("Your next side A.")
-                  .font(.system(.title2, design: .rounded).weight(.bold))
-                Text("Make a groove, give it a name, keep it here.")
-                  .font(.subheadline).foregroundStyle(Deck.muted)
-                Button("Save this pattern") { showingSave = true }
-                  .font(.subheadline.weight(.semibold)).frame(minHeight: 44)
+              VStack(alignment: .leading, spacing: 6) {
+                Text("Nothing saved yet")
+                  .font(.headline)
+                Text("Save the pattern on the deck to keep a copy here.")
+                  .font(.subheadline)
+                  .foregroundStyle(Deck.muted)
+                Button("Save current pattern") { showingSave = true }
+                  .font(.subheadline.weight(.semibold))
+                  .frame(minHeight: 44)
               }
               .frame(maxWidth: .infinity, alignment: .leading)
-              .padding(20)
-              .background(Deck.paper, in: RoundedRectangle(cornerRadius: 14))
-              .overlay(RoundedRectangle(cornerRadius: 14).stroke(Deck.line))
+              .padding(18)
+              .background(Deck.paper, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
-            ForEach(Array(store.archive.tapes.enumerated()), id: \.element.id) { index, tape in
-              HStack(spacing: 6) {
-                tapeRow(tape.pattern, index: index + 1, factory: false) {
-                  requestLoad(tape.pattern)
-                }
-                Button {
-                  pendingDelete = tape
-                } label: {
-                  Image(systemName: "trash").frame(width: 44, height: 60)
-                }
-                .accessibilityLabel("Delete \(tape.pattern.name)")
+            ForEach(store.archive.tapes) { tape in
+              tapeRow(tape.pattern, factory: false, onDelete: { pendingDelete = tape }) {
+                requestLoad(tape.pattern)
               }
             }
           }
-          Text(
-            "Everything stays on this device. Loading a tape replaces the working pattern; saved copies stay in your collection."
-          )
-          .font(.footnote).foregroundStyle(Deck.muted)
+          section("Factory patterns", count: Pattern.presets.count) {
+            ForEach(Array(Pattern.presets.enumerated()), id: \.offset) { _, pattern in
+              tapeRow(pattern, factory: true) { requestLoad(pattern) }
+            }
+          }
+          Text("Loading a tape replaces the pattern on the deck. Everything stays on this iPhone.")
+            .font(.footnote)
+            .foregroundStyle(Deck.muted)
         }
-        .padding(22)
+        .padding(20)
       }
       .background(Deck.bone)
       .foregroundStyle(Deck.ink)
-      .navigationTitle("Tape library")
-      .navigationBarTitleDisplayMode(.inline)
+      .navigationTitle("Library")
+      .navigationBarTitleDisplayMode(.large)
       .toolbar {
+        ToolbarItem(placement: .topBarLeading) {
+          Button("Save current") { showingSave = true }
+        }
         ToolbarItem(placement: .topBarTrailing) { Button("Done") { dismiss() } }
       }
       .sheet(isPresented: $showingSave) { SaveTapeView() }
       .alert(
-        "Replace your working pattern?",
+        "Replace the pattern on the deck?",
         isPresented: Binding(
           get: { pendingLoad != nil }, set: { if !$0 { pendingLoad = nil } }
         )
       ) {
-        Button("Load tape", role: .destructive) {
+        Button("Load", role: .destructive) {
           if let pattern = pendingLoad {
             store.load(pattern)
             dismiss()
@@ -97,10 +74,10 @@ struct LibraryView: View {
         }
         Button("Cancel", role: .cancel) { pendingLoad = nil }
       } message: {
-        Text("Save a copy first if you want to keep your edits.")
+        Text("Your current edits aren't saved. Save a copy first if you want to keep them.")
       }
       .alert(
-        "Delete this tape?",
+        "Delete \(pendingDelete?.pattern.name ?? "this tape")?",
         isPresented: Binding(
           get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }
         )
@@ -111,8 +88,22 @@ struct LibraryView: View {
         }
         Button("Cancel", role: .cancel) { pendingDelete = nil }
       } message: {
-        Text("This removes the saved copy. Your working pattern will stay on the deck.")
+        Text("The pattern on the deck is not affected.")
       }
+    }
+  }
+
+  private func section<Content: View>(
+    _ title: String, count: Int, @ViewBuilder content: () -> Content
+  ) -> some View {
+    VStack(alignment: .leading, spacing: 10) {
+      HStack(alignment: .firstTextBaseline) {
+        Text(title).font(.headline)
+        Text("\(count)").font(.subheadline.monospacedDigit()).foregroundStyle(Deck.muted)
+      }
+      .accessibilityElement(children: .combine)
+      .accessibilityAddTraits(.isHeader)
+      content()
     }
   }
 
@@ -126,45 +117,61 @@ struct LibraryView: View {
   }
 
   private func tapeRow(
-    _ pattern: Pattern, index: Int, factory: Bool,
+    _ pattern: Pattern, factory: Bool, onDelete: (() -> Void)? = nil,
     action: @escaping () -> Void
   ) -> some View {
-    Button(action: action) {
-      HStack(spacing: 14) {
-        ZStack {
-          RoundedRectangle(cornerRadius: 7).fill(Deck.ink)
-          VStack(spacing: 4) {
-            RoundedRectangle(cornerRadius: 2).fill(factory ? Deck.amber : Deck.bone)
-              .frame(height: 10)
-            HStack {
-              Circle().stroke(Deck.bone, lineWidth: 3).frame(width: 13, height: 13)
-              Spacer()
-              Circle().stroke(Deck.bone, lineWidth: 3).frame(width: 13, height: 13)
+    let onDeck = store.pattern == pattern
+    return HStack(spacing: 0) {
+      Button(action: action) {
+        HStack(spacing: 14) {
+          VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 8) {
+              Text(pattern.name).font(.headline).lineLimit(1)
+              if onDeck {
+                Text("On deck")
+                  .font(.caption.weight(.semibold))
+                  .foregroundStyle(Deck.paper)
+                  .padding(.horizontal, 7)
+                  .padding(.vertical, 2)
+                  .background(Deck.red, in: Capsule())
+              }
             }
-          }.padding(8)
-        }.frame(width: 63, height: 46).accessibilityHidden(true)
-        VStack(alignment: .leading, spacing: 4) {
-          if store.pattern == pattern {
-            Micro(text: "ON DECK", color: Deck.red)
+            Text("\(Int(pattern.tempo)) BPM · \(Int((pattern.swing * 100).rounded()))% swing")
+              .font(.subheadline)
+              .foregroundStyle(Deck.muted)
+              .monospacedDigit()
+              .lineLimit(1)
           }
-          Text(pattern.name).font(.system(.headline, design: .rounded))
-          Micro(text: "\(Int(pattern.tempo)) BPM · \(Int((pattern.swing * 100).rounded()))% SWING")
+          Spacer(minLength: 12)
+          PatternPreview(pattern: pattern, height: 6)
+            .frame(width: 84)
         }
-        Spacer(minLength: 0)
-        Image(systemName: store.pattern == pattern ? "checkmark" : "arrow.up.right")
-          .font(.caption.weight(.semibold))
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
-      .foregroundStyle(Deck.ink)
-      .padding(14)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .background(Deck.paper, in: RoundedRectangle(cornerRadius: 12))
-      .overlay(RoundedRectangle(cornerRadius: 12).stroke(Deck.line))
+      .accessibilityLabel(
+        "\(pattern.name), \(Int(pattern.tempo)) beats per minute, \(factory ? "factory pattern" : "saved tape")"
+      )
+      .accessibilityValue(onDeck ? "On deck" : "")
+      .accessibilityHint("Loads this pattern onto the deck")
+      if let onDelete {
+        Button(action: onDelete) {
+          Image(systemName: "trash")
+            .font(.body)
+            .foregroundStyle(Deck.muted)
+            .frame(width: 44, height: 44)
+        }
+        .padding(.trailing, 6)
+        .accessibilityLabel("Delete \(pattern.name)")
+      }
     }
+    .foregroundStyle(Deck.ink)
     .buttonStyle(HardwareButtonStyle())
-    .accessibilityLabel(
-      "Load \(pattern.name), \(Int(pattern.tempo)) beats per minute, \(factory ? "factory preset" : "saved tape")"
-    )
-    .accessibilityValue(store.pattern == pattern ? "On deck" : "")
+    .background(Deck.paper, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    .overlay(
+      RoundedRectangle(cornerRadius: 14, style: .continuous)
+        .stroke(onDeck ? Deck.red.opacity(0.6) : Deck.line))
   }
 }
 
@@ -180,17 +187,15 @@ struct SaveTapeView: View {
     NavigationStack {
       ScrollView {
         VStack(alignment: .leading, spacing: 24) {
+          Text("Keeps all four tracks, tempo, swing and the mixer as they are right now.")
+            .font(.subheadline)
+            .foregroundStyle(Deck.muted)
           VStack(alignment: .leading, spacing: 8) {
-            Micro(text: "MAKE IT A KEEPER")
-            Text("Name your tape.")
-              .font(.system(.largeTitle, design: .rounded).weight(.bold))
-            Text("A fresh copy of all 16 steps, four voices, tempo, swing and mixer settings.")
-              .font(.subheadline).foregroundStyle(Deck.muted)
-          }
-          VStack(alignment: .leading, spacing: 12) {
-            Micro(text: "SIDE A / TITLE")
-            TextField("e.g. Sunday kitchen", text: $name)
-              .font(.system(.title2, design: .rounded).weight(.semibold))
+            Text("Name")
+              .font(.caption.weight(.medium))
+              .foregroundStyle(Deck.muted)
+            TextField("Tape name", text: $name)
+              .font(.title2.weight(.semibold))
               .focused($focused)
               .submitLabel(.done)
               .onSubmit { save() }
@@ -198,29 +203,43 @@ struct SaveTapeView: View {
               .onChange(of: name) { _, value in
                 if value.count > 40 { name = String(value.prefix(40)) }
               }
-            Rectangle().fill(Deck.ink).frame(height: 1)
-            HStack {
-              Micro(text: "\(Int(store.pattern.tempo)) BPM / FOUR VOICES")
-              Spacer()
-              Text("\(name.count)/40").font(.caption.monospacedDigit()).foregroundStyle(Deck.muted)
-            }
-            HStack(spacing: 70) {
-              Reel(angle: 15).frame(width: 65, height: 65)
-              Reel(angle: 15).frame(width: 65, height: 65)
-            }.frame(maxWidth: .infinity).padding(.top, 10)
+              .padding(.horizontal, 16)
+              .frame(minHeight: 56)
+              .background(Deck.paper, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+              .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                  .stroke(focused ? Deck.ink : Deck.line))
+            Text("\(name.count)/40")
+              .font(.caption.monospacedDigit())
+              .foregroundStyle(Deck.muted)
           }
-          .padding(22)
-          .background(Deck.amber.opacity(0.72), in: RoundedRectangle(cornerRadius: 16))
+          VStack(alignment: .leading, spacing: 10) {
+            HStack {
+              Text("\(Int(store.pattern.tempo)) BPM")
+              Text("·")
+              Text("\(Int((store.pattern.swing * 100).rounded()))% swing")
+            }
+            .font(.subheadline.weight(.medium))
+            .monospacedDigit()
+            .foregroundStyle(Deck.muted)
+            PatternPreview(pattern: store.pattern, height: 10)
+          }
+          .padding(16)
+          .background(Deck.paper, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+          .accessibilityHidden(true)
           Button(action: save) {
-            Text("Save tape").font(.headline)
+            Text("Save tape")
+              .font(.headline)
               .frame(maxWidth: .infinity, minHeight: 54)
               .foregroundStyle(Deck.paper)
-              .background(valid ? Deck.red : Deck.muted, in: RoundedRectangle(cornerRadius: 12))
+              .background(
+                valid ? Deck.red : Deck.muted,
+                in: RoundedRectangle(cornerRadius: 14, style: .continuous))
           }
+          .buttonStyle(HardwareButtonStyle())
           .disabled(!valid)
-          Text("Saved only on this iPhone. No account. No cloud.")
-            .font(.footnote).foregroundStyle(Deck.muted)
-        }.padding(22)
+        }
+        .padding(20)
       }
       .background(Deck.bone)
       .foregroundStyle(Deck.ink)
@@ -229,7 +248,10 @@ struct SaveTapeView: View {
       .toolbar {
         ToolbarItem(placement: .topBarLeading) { Button("Cancel") { dismiss() } }
       }
-      .onAppear { name = store.pattern.name }
+      .onAppear {
+        name = store.pattern.name
+        focused = true
+      }
     }
   }
 
@@ -243,18 +265,12 @@ struct SaveTapeView: View {
 struct ParameterView: View {
   @EnvironmentObject private var store: TapeStore
   @Environment(\.dismiss) private var dismiss
+  @State private var tapHint = "Tap on the beat"
 
   var body: some View {
     NavigationStack {
       ScrollView {
-        VStack(alignment: .leading, spacing: 30) {
-          VStack(alignment: .leading, spacing: 8) {
-            Micro(text: "FIND THE POCKET")
-            Text("A little push.\nA little pull.")
-              .font(.system(.largeTitle, design: .rounded).weight(.bold))
-            Text("Changes are live. The groove keeps rolling.")
-              .font(.subheadline).foregroundStyle(Deck.muted)
-          }
+        VStack(alignment: .leading, spacing: 24) {
           control(title: "Tempo", value: "\(Int(store.pattern.tempo))", unit: "BPM") {
             Slider(
               value: Binding(
@@ -264,11 +280,21 @@ struct ParameterView: View {
             )
             .accessibilityLabel("Tempo")
             .accessibilityValue("\(Int(store.pattern.tempo)) beats per minute")
-            HStack {
-              Micro(text: "60 / SLOW")
-              Spacer()
-              Micro(text: "180 / FAST")
+            Button {
+              tapHint = store.tapTempo() ? "\(Int(store.pattern.tempo)) BPM" : "Keep tapping"
+              UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+            } label: {
+              HStack {
+                Text("Tap tempo").font(.subheadline.weight(.semibold))
+                Spacer()
+                Text(tapHint).font(.subheadline).foregroundStyle(Deck.muted).monospacedDigit()
+              }
+              .padding(.horizontal, 16)
+              .frame(minHeight: 48)
+              .background(Deck.bone, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
+            .buttonStyle(HardwareButtonStyle())
+            .accessibilityHint("Tap repeatedly on the beat to set the tempo")
           }
           control(title: "Swing", value: "\(Int((store.pattern.swing * 100).rounded()))", unit: "%")
           {
@@ -280,22 +306,20 @@ struct ParameterView: View {
             )
             .accessibilityLabel("Swing")
             .accessibilityValue("\(Int((store.pattern.swing * 100).rounded())) percent")
-            HStack {
-              Micro(text: "STRAIGHT")
-              Spacer()
-              Micro(text: "LAID BACK")
-            }
+            Text("Delays every second sixteenth. 0% is straight; around 15–30% is a light shuffle.")
+              .font(.footnote)
+              .foregroundStyle(Deck.muted)
           }
-          Text("Swing delays every second sixteenth note without changing the length of the bar.")
-            .font(.subheadline).foregroundStyle(Deck.muted)
-          Button("Reset to 96 BPM · 0% swing") {
+          Button("Reset to 96 BPM, 0% swing") {
             store.edit {
               $0.tempo = 96
               $0.swing = 0
             }
           }
-          .font(.subheadline.weight(.semibold)).frame(minHeight: 44)
-        }.padding(22)
+          .font(.subheadline.weight(.semibold))
+          .frame(minHeight: 44)
+        }
+        .padding(20)
       }
       .background(Deck.bone)
       .foregroundStyle(Deck.ink)
@@ -309,18 +333,17 @@ struct ParameterView: View {
     title: String, value: String, unit: String,
     @ViewBuilder content: () -> Content
   ) -> some View {
-    VStack(alignment: .leading, spacing: 14) {
+    VStack(alignment: .leading, spacing: 12) {
       HStack(alignment: .firstTextBaseline) {
         Text(title).font(.headline)
         Spacer()
-        Text(value).font(.system(.largeTitle, design: .monospaced).weight(.bold)).monospacedDigit()
-        Micro(text: unit)
+        Text(value).font(.largeTitle.weight(.semibold)).monospacedDigit()
+        Text(unit).font(.subheadline).foregroundStyle(Deck.muted)
       }
       content()
     }
-    .padding(20)
-    .background(Deck.paper, in: RoundedRectangle(cornerRadius: 14))
-    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Deck.line))
+    .padding(18)
+    .background(Deck.paper, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
   }
 }
 
@@ -330,44 +353,52 @@ struct GuideView: View {
   var body: some View {
     NavigationStack {
       ScrollView {
-        VStack(alignment: .leading, spacing: 25) {
-          Micro(text: "TD—01 / QUICK START")
-          Text("Small machine.\nBig pocket.")
-            .font(.system(.largeTitle, design: .rounded).weight(.bold))
+        VStack(alignment: .leading, spacing: 22) {
           guide(
-            "01", "Press play.",
-            "The factory tape is ready to go. Turn up your iPhone’s media volume to hear it.")
+            "play.fill", "Play",
+            "Starts the loop from step 1. Turn up the media volume to hear it.")
           guide(
-            "02", "Make your mark.",
-            "Choose Kick, Snare, Hat or Clap. Amber pads play; dark pads rest. Each row is one beat, read left to right."
+            "square.grid.2x2.fill", "Steps",
+            "Pick a track, then tap pads to place hits. Each row of pads is one beat. Amber is on, charcoal is off, and the red outline is the playhead."
           )
           guide(
-            "03", "Find the feel.",
-            "Tap either knob for tempo and swing. MUTE silences the selected voice; SOLO isolates it. Mute wins if both are on. HELD means another track is soloed."
+            "speaker.slash.fill", "Mute and solo",
+            "M silences a track. S lets only soloed tracks play. Mute wins if both are on.")
+          guide(
+            "metronome.fill", "Tempo and swing",
+            "Use the steppers on the deck, or tap a value for sliders and tap tempo. Changes apply while playing."
           )
           guide(
-            "04", "Keep a side A.",
-            "Save creates a named snapshot. Your working pattern also saves automatically, including mute and solo."
+            "square.and.arrow.down.fill", "Save",
+            "Save keeps a named copy in the library. The pattern on the deck also saves itself as you go."
           )
           Text(
-            "Four original synthesized sounds. No samples, network, tracking or accounts. Playback stops when you leave the app or disconnect your audio output."
+            "Four original synthesized sounds. No samples, network, tracking or accounts. Playback stops when you leave the app or your audio output disconnects."
           )
-          .font(.footnote).foregroundStyle(Deck.muted)
-        }.padding(22)
+          .font(.footnote)
+          .foregroundStyle(Deck.muted)
+        }
+        .padding(20)
       }
-      .background(Deck.bone).foregroundStyle(Deck.ink)
-      .navigationTitle("Field notes")
+      .background(Deck.bone)
+      .foregroundStyle(Deck.ink)
+      .navigationTitle("How it works")
       .navigationBarTitleDisplayMode(.inline)
       .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Done") { dismiss() } } }
     }
   }
 
-  private func guide(_ number: String, _ title: String, _ text: String) -> some View {
-    HStack(alignment: .top, spacing: 16) {
-      Micro(text: number, color: Deck.red).padding(.top, 5)
-      VStack(alignment: .leading, spacing: 7) {
-        Text(title).font(.system(.title3, design: .rounded).weight(.bold))
-        Text(text).font(.body).foregroundStyle(Deck.muted)
+  private func guide(_ symbol: String, _ title: String, _ text: String) -> some View {
+    HStack(alignment: .top, spacing: 14) {
+      Image(systemName: symbol)
+        .font(.body.weight(.semibold))
+        .foregroundStyle(Deck.paper)
+        .frame(width: 36, height: 36)
+        .background(Deck.ink, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+        .accessibilityHidden(true)
+      VStack(alignment: .leading, spacing: 4) {
+        Text(title).font(.headline)
+        Text(text).font(.subheadline).foregroundStyle(Deck.muted)
       }
     }
   }

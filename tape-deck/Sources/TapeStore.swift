@@ -13,6 +13,7 @@ final class TapeStore: ObservableObject {
   private let repository: TapeRepository
   let audio = TapeAudio()
   private var noticeTask: Task<Void, Never>?
+  private var tapTimes: [Date] = []
 
   var pattern: Pattern { archive.current }
 
@@ -96,6 +97,26 @@ final class TapeStore: ObservableObject {
   func clearTrack() {
     edit { $0.steps[selectedDrum.rawValue] = Array(repeating: false, count: 16) }
     announce("\(selectedDrum.name) cleared")
+  }
+
+  func nudgeTempo(_ delta: Double) {
+    edit { $0.tempo += delta }
+  }
+
+  func nudgeSwing(_ delta: Double) {
+    edit { $0.swing = (($0.swing + delta) * 100).rounded() / 100 }
+  }
+
+  /// Averages the last few taps into a tempo. Returns false if more taps are needed.
+  @discardableResult
+  func tapTempo(at time: Date = .now) -> Bool {
+    if let last = tapTimes.last, time.timeIntervalSince(last) > 2 { tapTimes.removeAll() }
+    tapTimes.append(time)
+    tapTimes = tapTimes.suffix(5)
+    guard tapTimes.count >= 2 else { return false }
+    let interval = tapTimes.last!.timeIntervalSince(tapTimes.first!) / Double(tapTimes.count - 1)
+    edit { $0.tempo = 60 / interval }
+    return true
   }
 
   func announce(_ message: String) {

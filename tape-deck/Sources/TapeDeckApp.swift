@@ -35,36 +35,39 @@ struct TapeDeckApp: App {
 
 struct DeckView: View {
   @EnvironmentObject private var store: TapeStore
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @State private var showingLibrary = false
   @State private var showingSave = false
   @State private var showingControls = false
   @State private var showingGuide = false
   @State private var confirmingClear = false
-  @ScaledMetric(relativeTo: .body) private var padHeight = 48
+  @ScaledMetric(relativeTo: .body) private var padHeight = 44
   private let timer = Timer.publish(every: 1 / 30, on: .main, in: .common).autoconnect()
 
   var body: some View {
     VStack(spacing: 0) {
       ScrollView {
-        VStack(spacing: 10) {
+        VStack(spacing: 14) {
           header
-          CassetteView(playing: store.isPlaying, step: store.currentStep, level: store.level)
-          patternTitle
-          parameterControls
-          sequencer
-          deckStatus
+          display
+          parameters
+          tracks
+          pads
         }
-        .padding(.horizontal, 22)
-        .padding(.top, 4)
-        .padding(.bottom, 12)
+        .padding(.horizontal, 18)
+        .padding(.top, 6)
+        .padding(.bottom, 16)
       }
+      .overlay(alignment: .bottom) { notice }
       transport
     }
     .background(Deck.bone)
     .onReceive(timer) { _ in store.tick() }
     .sheet(isPresented: $showingLibrary) { LibraryView() }
     .sheet(isPresented: $showingSave) { SaveTapeView() }
-    .sheet(isPresented: $showingControls) { ParameterView() }
+    .sheet(isPresented: $showingControls) {
+      ParameterView().presentationDetents([.medium, .large])
+    }
     .sheet(isPresented: $showingGuide) { GuideView() }
     .alert(
       "Clear all \(store.selectedDrum.name.lowercased()) steps?",
@@ -86,193 +89,217 @@ struct DeckView: View {
     }
   }
 
+  // MARK: Header
+
   private var header: some View {
-    HStack(alignment: .center) {
-      HStack(spacing: 9) {
-        VStack(spacing: 3) {
-          ForEach(0..<3) { _ in Rectangle().fill(Deck.red).frame(width: 19, height: 4) }
-        }
-        Text("TAPE DECK")
-          .font(.system(.title2, design: .rounded).weight(.black))
-          .tracking(-0.8)
-      }
-      .accessibilityElement(children: .combine)
+    HStack(spacing: 8) {
+      Text("Tape Deck")
+        .font(.title3.weight(.bold))
+        .foregroundStyle(Deck.ink)
       Spacer(minLength: 8)
       Button {
         showingGuide = true
       } label: {
-        Image(systemName: "info.circle")
-          .font(.body)
+        Image(systemName: "questionmark.circle")
+          .font(.title3)
           .frame(width: 44, height: 44)
       }
-      .accessibilityLabel("How to play")
+      .accessibilityLabel("Help")
       Button {
         showingLibrary = true
       } label: {
-        Image(systemName: "square.stack")
-          .font(.system(size: 19, weight: .medium))
-          .frame(width: 46, height: 44)
-          .background(Deck.paper, in: RoundedRectangle(cornerRadius: 12))
-          .overlay(RoundedRectangle(cornerRadius: 12).stroke(Deck.line))
+        Label("Library", systemImage: "square.stack")
+          .font(.subheadline.weight(.semibold))
+          .padding(.horizontal, 14)
+          .frame(minHeight: 40)
+          .background(Deck.paper, in: Capsule())
+          .overlay(Capsule().stroke(Deck.line))
       }
-      .accessibilityLabel("Tape library")
+      .accessibilityHint("Factory patterns and your saved tapes")
     }
     .foregroundStyle(Deck.ink)
+    .buttonStyle(HardwareButtonStyle())
   }
 
-  private var patternTitle: some View {
-    HStack(alignment: .center) {
-      VStack(alignment: .leading, spacing: 3) {
-        Text(store.pattern.name).font(.system(.title2, design: .rounded).weight(.bold))
-          .foregroundStyle(Deck.ink)
+  // MARK: Display
+
+  private var display: some View {
+    let reelAngle = reduceMotion ? 0 : Double(max(0, store.currentStep)) * 22.5
+    return VStack(spacing: 14) {
+      HStack(alignment: .firstTextBaseline) {
+        Text(store.pattern.name)
+          .font(.title2.weight(.semibold))
+          .foregroundStyle(Deck.paper)
           .lineLimit(2)
-      }
-      Spacer()
-      VStack(alignment: .trailing, spacing: 4) {
-        Micro(text: store.isPlaying ? "PLAYING" : "STOPPED", color: Deck.red)
-        Text(String(format: "%02d / 16", max(0, store.currentStep) + 1))
-          .font(.system(.caption, design: .monospaced).weight(.medium))
-          .foregroundStyle(Deck.muted).monospacedDigit()
-          .accessibilityLabel("Step \(max(0, store.currentStep) + 1) of 16")
-      }
-    }
-  }
-
-  private var parameterControls: some View {
-    HStack(spacing: 0) {
-      parameter(
-        name: "TEMPO", value: "\(Int(store.pattern.tempo))", unit: "BPM",
-        fraction: (store.pattern.tempo - 60) / 120)
-      Rectangle().fill(Deck.line).frame(width: 1, height: 40).padding(.horizontal, 12)
-      parameter(
-        name: "SWING", value: "\(Int((store.pattern.swing * 100).rounded()))", unit: "%",
-        fraction: store.pattern.swing / 0.6)
-    }
-    .padding(.horizontal, 10)
-    .padding(.vertical, 7)
-    .background(Deck.paper.opacity(0.7), in: RoundedRectangle(cornerRadius: 13))
-    .overlay(RoundedRectangle(cornerRadius: 13).stroke(Deck.line))
-  }
-
-  private func parameter(name: String, value: String, unit: String, fraction: Double) -> some View {
-    Button {
-      showingControls = true
-    } label: {
-      HStack(spacing: 8) {
-        Knob(fraction: fraction)
-        VStack(alignment: .leading, spacing: 1) {
-          HStack(spacing: 3) {
-            Micro(text: name)
-            Image(systemName: "chevron.right").font(.system(size: 8, weight: .bold))
-              .foregroundStyle(Deck.muted)
-          }
-          HStack(alignment: .firstTextBaseline, spacing: 3) {
-            Text(value).font(.system(.title2, design: .monospaced).weight(.bold))
-            Text(unit).font(.system(.caption2, design: .monospaced))
-          }.foregroundStyle(Deck.ink).monospacedDigit()
+        Spacer(minLength: 12)
+        HStack(spacing: 6) {
+          Circle()
+            .fill(store.isPlaying ? Deck.red : Deck.bone.opacity(0.3))
+            .frame(width: 8, height: 8)
+          Text(
+            store.isPlaying
+              ? "Step \(String(format: "%02d", store.currentStep + 1))" : "Stopped"
+          )
+          .font(.subheadline.weight(.medium))
+          .monospacedDigit()
+          .foregroundStyle(Deck.bone.opacity(0.85))
         }
-        Spacer(minLength: 0)
+        .accessibilityElement(children: .combine)
       }
+      HStack(spacing: 14) {
+        Reel(angle: reelAngle).frame(width: 44, height: 44)
+        VStack(spacing: 8) {
+          stepLamps
+          levelMeter
+        }
+        Reel(angle: reelAngle).frame(width: 44, height: 44)
+      }
+    }
+    .padding(18)
+    .background(Deck.ink, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+  }
+
+  private var stepLamps: some View {
+    HStack(spacing: 0) {
+      ForEach(0..<16) { step in
+        Capsule()
+          .fill(
+            store.currentStep == step
+              ? Deck.amber : Deck.bone.opacity(step % 4 == 0 ? 0.35 : 0.14)
+          )
+          .frame(maxWidth: .infinity)
+          .frame(height: 6)
+          .padding(.trailing, step == 15 ? 0 : 3)
+      }
+    }
+    .accessibilityHidden(true)
+  }
+
+  private var levelMeter: some View {
+    GeometryReader { proxy in
+      ZStack(alignment: .leading) {
+        Capsule().fill(Deck.bone.opacity(0.12))
+        Capsule()
+          .fill(Deck.amber)
+          .frame(width: proxy.size.width * CGFloat(min(1, store.level * 1.6)))
+      }
+    }
+    .frame(height: 6)
+    .accessibilityHidden(true)
+  }
+
+  // MARK: Tracks
+
+  private var tracks: some View {
+    VStack(spacing: 2) {
+      ForEach(Drum.allCases) { drum in
+        trackRow(drum)
+      }
+    }
+  }
+
+  private func trackRow(_ drum: Drum) -> some View {
+    let index = drum.rawValue
+    let selected = store.selectedDrum == drum
+    let audible = store.pattern.activeMask & (1 << index) != 0
+    return HStack(spacing: 10) {
+      Button {
+        store.selectedDrum = drum
+        UISelectionFeedbackGenerator().selectionChanged()
+      } label: {
+        HStack(spacing: 12) {
+          RoundedRectangle(cornerRadius: 2)
+            .fill(selected ? Deck.red : Color.clear)
+            .frame(width: 4, height: 24)
+          Text(drum.name)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(audible ? Deck.ink : Deck.muted)
+            .frame(width: 52, alignment: .leading)
+          StepStrip(
+            steps: store.pattern.steps[index],
+            currentStep: store.currentStep,
+            on: audible ? Deck.ink : Deck.muted.opacity(0.45),
+            off: Deck.ink.opacity(0.08),
+            height: 14)
+        }
+        .frame(minHeight: 40)
+        .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
+      .accessibilityLabel("\(drum.name) track")
+      .accessibilityValue(trackStatus(drum) + (selected ? ", selected" : ""))
+      .accessibilityHint("Selects this track for editing")
+      mixToggle("M", label: "Mute \(drum.name)", on: store.pattern.muted[index], color: Deck.red) {
+        store.edit { $0.muted[index].toggle() }
+      }
+      mixToggle("S", label: "Solo \(drum.name)", on: store.pattern.soloed[index], color: Deck.amber)
+      {
+        store.edit { $0.soloed[index].toggle() }
+      }
+    }
+    .padding(.trailing, 6)
+    .background(
+      selected ? Deck.paper : Color.clear,
+      in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+  }
+
+  private func mixToggle(
+    _ symbol: String, label: String, on: Bool, color: Color, action: @escaping () -> Void
+  ) -> some View {
+    Button {
+      action()
+      UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    } label: {
+      Text(symbol)
+        .font(.footnote.weight(.bold))
+        .frame(width: 34, height: 34)
+        .foregroundStyle(on ? Deck.paper : Deck.muted)
+        .background(
+          on ? color : Deck.ink.opacity(0.06),
+          in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
     .buttonStyle(HardwareButtonStyle())
-    .accessibilityLabel("\(name.capitalized), \(value) \(unit)")
-    .accessibilityHint("Opens tempo and swing controls")
-  }
-
-  private var sequencer: some View {
-    VStack(spacing: 6) {
-      HStack(spacing: 4) {
-        ForEach(Drum.allCases) { drum in
-          Button {
-            store.selectedDrum = drum
-            UISelectionFeedbackGenerator().selectionChanged()
-          } label: {
-            VStack(spacing: 4) {
-              Text(drum.name.uppercased())
-                .font(.system(.subheadline, design: .monospaced).weight(.bold))
-              Text(trackStatus(drum))
-                .font(.system(.caption2, design: .monospaced).weight(.medium))
-                .foregroundStyle(Deck.muted)
-              Capsule().fill(store.selectedDrum == drum ? Deck.red : Deck.line)
-                .frame(height: 3)
-            }
-            .frame(maxWidth: .infinity, minHeight: 58)
-            .foregroundStyle(store.selectedDrum == drum ? Deck.red : Deck.ink)
-          }
-          .accessibilityLabel("\(drum.name) track")
-          .accessibilityValue(trackStatus(drum))
-          .accessibilityAddTraits(store.selectedDrum == drum ? .isSelected : [])
-        }
-      }
-      HStack(spacing: 8) {
-        Micro(text: store.selectedDrum.name.uppercased() + " / 16")
-        Spacer(minLength: 0)
-        trackToggle(
-          "MUTE", label: "Mute", enabled: store.pattern.muted[store.selectedDrum.rawValue]
-        ) {
-          store.edit { $0.muted[store.selectedDrum.rawValue].toggle() }
-        }
-        trackToggle(
-          "SOLO", label: "Solo", enabled: store.pattern.soloed[store.selectedDrum.rawValue]
-        ) {
-          store.edit { $0.soloed[store.selectedDrum.rawValue].toggle() }
-        }
-        Button {
-          confirmingClear = true
-        } label: {
-          Image(systemName: "eraser").font(.body).frame(width: 44, height: 44)
-        }.accessibilityLabel("Clear \(store.selectedDrum.name) steps")
-      }
-      .foregroundStyle(Deck.muted)
-      LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8)
-      {
-        ForEach(0..<16) { step in pad(step) }
-      }
-    }
+    .accessibilityLabel(label)
+    .accessibilityValue(on ? "On" : "Off")
+    .accessibilityAddTraits(on ? .isSelected : [])
   }
 
   private func trackStatus(_ drum: Drum) -> String {
     let index = drum.rawValue
-    if store.pattern.muted[index] {
-      return store.pattern.soloed[index] ? "MUTE + SOLO" : "MUTED"
-    }
-    if store.pattern.soloed[index] { return "SOLO" }
-    if store.pattern.activeMask & (1 << index) == 0 { return "HELD" }
-    return "\(store.pattern.steps[index].filter { $0 }.count) HITS"
+    let hits = store.pattern.steps[index].filter { $0 }.count
+    if store.pattern.muted[index] { return "muted" }
+    if store.pattern.soloed[index] { return "solo, \(hits) hits" }
+    if store.pattern.activeMask & (1 << index) == 0 { return "muted by solo" }
+    return "\(hits) hits"
   }
 
-  private var deckStatus: some View {
-    VStack(spacing: 8) {
-      Rectangle().fill(Deck.line).frame(height: 1)
-      HStack(alignment: .top, spacing: 10) {
-        Image(systemName: store.notice == nil ? "internaldrive" : "checkmark.circle")
-          .foregroundStyle(Deck.red)
-        Text(store.notice ?? "Working copy · only on this iPhone")
+  // MARK: Pads
+
+  private var pads: some View {
+    VStack(spacing: 10) {
+      HStack(alignment: .firstTextBaseline) {
+        Text(store.selectedDrum.name)
+          .font(.headline)
+          .foregroundStyle(Deck.ink)
+        Text(trackStatus(store.selectedDrum))
+          .font(.subheadline)
           .foregroundStyle(Deck.muted)
-        Spacer(minLength: 0)
+        Spacer()
+        Button("Clear") { confirmingClear = true }
+          .font(.subheadline.weight(.semibold))
+          .disabled(!store.pattern.steps[store.selectedDrum.rawValue].contains(true))
+          .accessibilityLabel("Clear \(store.selectedDrum.name) steps")
       }
-      .font(.footnote)
-      .accessibilityElement(children: .combine)
-      .accessibilityAddTraits(.updatesFrequently)
+      .accessibilityElement(children: .contain)
+      LazyVGrid(
+        columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4),
+        spacing: 8
+      ) {
+        ForEach(0..<16) { step in
+          pad(step)
+        }
+      }
     }
-    .padding(.top, 6)
-  }
-
-  private func trackToggle(
-    _ title: String, label: String, enabled: Bool,
-    action: @escaping () -> Void
-  ) -> some View {
-    Button(action: action) {
-      Text(title).font(.system(.caption, design: .monospaced).weight(.bold))
-        .padding(.horizontal, 10)
-        .frame(minWidth: 54, minHeight: 36)
-        .foregroundStyle(enabled ? Deck.paper : Deck.ink)
-        .background(enabled ? Deck.red : Deck.paper, in: RoundedRectangle(cornerRadius: 7))
-        .overlay(RoundedRectangle(cornerRadius: 7).stroke(enabled ? Deck.red : Deck.line))
-        .frame(height: 44)
-    }
-    .accessibilityLabel("\(label) \(store.selectedDrum.name)")
-    .accessibilityValue(enabled ? "On" : "Off")
   }
 
   private func pad(_ step: Int) -> some View {
@@ -281,30 +308,20 @@ struct DeckView: View {
     return Button {
       store.toggleStep(step)
     } label: {
-      HStack(alignment: .center) {
-        Text(String(format: "%02d", step + 1))
-          .font(.system(.caption, design: .monospaced).weight(.semibold))
-        Spacer(minLength: 0)
-        RoundedRectangle(cornerRadius: 2)
-          .fill(enabled ? Deck.ink.opacity(0.8) : Color.white.opacity(0.13))
-          .frame(width: 15, height: 4)
+      ZStack(alignment: .topLeading) {
+        RoundedRectangle(cornerRadius: 10, style: .continuous)
+          .fill(enabled ? Deck.amber : Deck.charcoal)
+        Text("\(step + 1)")
+          .font(.caption.weight(.semibold))
+          .monospacedDigit()
+          .foregroundStyle(enabled ? Deck.ink : Deck.bone.opacity(0.55))
+          .padding(8)
       }
-      .foregroundStyle(enabled ? Deck.ink : Deck.paper.opacity(0.7))
-      .padding(.horizontal, 13)
       .frame(maxWidth: .infinity, minHeight: padHeight)
-      .background(
-        LinearGradient(
-          colors: enabled
-            ? [Deck.amber, Color(red: 0.87, green: 0.55, blue: 0.22)]
-            : [Color(white: 0.23), Deck.ink],
-          startPoint: .top, endPoint: .bottom),
-        in: RoundedRectangle(cornerRadius: 8)
-      )
       .overlay(
-        RoundedRectangle(cornerRadius: 8)
-          .stroke(current ? Deck.red : .black.opacity(0.35), lineWidth: current ? 3 : 1)
+        RoundedRectangle(cornerRadius: 10, style: .continuous)
+          .stroke(Deck.red, lineWidth: current ? 3 : 0)
       )
-      .shadow(color: .black.opacity(0.15), radius: 0, y: 3)
     }
     .buttonStyle(HardwareButtonStyle())
     .accessibilityLabel("\(store.selectedDrum.name), step \(step + 1)")
@@ -312,42 +329,111 @@ struct DeckView: View {
     .accessibilityHint("Double tap to toggle this step")
   }
 
+  // MARK: Parameters
+
+  private var parameters: some View {
+    HStack(spacing: 10) {
+      stepper(
+        "Tempo", value: "\(Int(store.pattern.tempo)) BPM",
+        canDecrease: store.pattern.tempo > 60, canIncrease: store.pattern.tempo < 180,
+        decrease: { store.nudgeTempo(-1) }, increase: { store.nudgeTempo(1) })
+      stepper(
+        "Swing", value: "\(Int((store.pattern.swing * 100).rounded()))% swing",
+        canDecrease: store.pattern.swing > 0, canIncrease: store.pattern.swing < 0.6,
+        decrease: { store.nudgeSwing(-0.02) }, increase: { store.nudgeSwing(0.02) })
+    }
+  }
+
+  private func stepper(
+    _ title: String, value: String, canDecrease: Bool, canIncrease: Bool,
+    decrease: @escaping () -> Void, increase: @escaping () -> Void
+  ) -> some View {
+    VStack(alignment: .leading, spacing: 6) {
+      HStack(spacing: 0) {
+        stepButton("minus", label: "Decrease \(title.lowercased())", enabled: canDecrease, decrease)
+        Button {
+          showingControls = true
+        } label: {
+          Text(value)
+            .font(.body.weight(.semibold))
+            .monospacedDigit()
+            .foregroundStyle(Deck.ink)
+            .frame(maxWidth: .infinity, minHeight: 44)
+        }
+        .accessibilityLabel("\(title), \(value)")
+        .accessibilityHint("Opens sliders and tap tempo")
+        stepButton("plus", label: "Increase \(title.lowercased())", enabled: canIncrease, increase)
+      }
+      .background(Deck.paper, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+      .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Deck.line))
+    }
+    .buttonStyle(HardwareButtonStyle())
+  }
+
+  private func stepButton(
+    _ symbol: String, label: String, enabled: Bool, _ action: @escaping () -> Void
+  ) -> some View {
+    Button {
+      action()
+      UISelectionFeedbackGenerator().selectionChanged()
+    } label: {
+      Image(systemName: symbol)
+        .font(.body.weight(.semibold))
+        .frame(width: 44, height: 44)
+        .foregroundStyle(enabled ? Deck.ink : Deck.line)
+    }
+    .disabled(!enabled)
+    .accessibilityLabel(label)
+  }
+
+  // MARK: Transport
+
   private var transport: some View {
-    HStack(spacing: 12) {
+    HStack(spacing: 10) {
       Button {
         store.toggleTransport()
       } label: {
-        HStack(spacing: 10) {
-          Image(systemName: store.isPlaying ? "stop.fill" : "play.fill")
-          Text(store.isPlaying ? "STOP" : "PLAY")
-            .font(.system(.subheadline, design: .monospaced).weight(.bold))
-            .tracking(2)
-          Spacer()
-          Circle().fill(Deck.paper.opacity(0.45)).frame(width: 6, height: 6)
-        }
-        .padding(.horizontal, 21).frame(maxWidth: .infinity, minHeight: 54)
+        Label(
+          store.isPlaying ? "Stop" : "Play",
+          systemImage: store.isPlaying ? "stop.fill" : "play.fill"
+        )
+        .font(.headline)
+        .frame(maxWidth: .infinity, minHeight: 56)
         .foregroundStyle(Deck.paper)
-        .background(Deck.red, in: RoundedRectangle(cornerRadius: 10))
-        .shadow(color: Deck.red.opacity(0.3), radius: 0, y: 3)
+        .background(Deck.red, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
       }
       .accessibilityLabel(store.isPlaying ? "Stop playback" : "Play pattern")
       Button {
         showingSave = true
       } label: {
-        HStack(spacing: 8) {
-          Image(systemName: "square.and.arrow.down")
-          Text("SAVE").font(.system(.caption, design: .monospaced).weight(.bold))
-        }
-        .frame(minWidth: 108, minHeight: 54)
-        .foregroundStyle(Deck.ink)
-        .background(Deck.paper, in: RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Deck.line))
-        .shadow(color: .black.opacity(0.1), radius: 0, y: 3)
+        Label("Save", systemImage: "square.and.arrow.down")
+          .font(.headline)
+          .padding(.horizontal, 20)
+          .frame(minHeight: 56)
+          .foregroundStyle(Deck.ink)
+          .background(Deck.paper, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+          .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Deck.line))
       }
       .accessibilityLabel("Save a copy")
     }
     .buttonStyle(HardwareButtonStyle())
-    .padding(.horizontal, 22).padding(.top, 12).padding(.bottom, 10)
-    .background(Deck.bone.shadow(color: .black.opacity(0.06), radius: 12, y: -5))
+    .padding(.horizontal, 18)
+    .padding(.top, 10)
+    .padding(.bottom, 8)
+    .background(Deck.bone.shadow(.drop(color: .black.opacity(0.06), radius: 10, y: -4)))
+  }
+
+  @ViewBuilder private var notice: some View {
+    if let text = store.notice {
+      Text(text)
+        .font(.subheadline.weight(.medium))
+        .foregroundStyle(Deck.paper)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(Deck.ink, in: Capsule())
+        .padding(.bottom, 10)
+        .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
+        .accessibilityAddTraits(.updatesFrequently)
+    }
   }
 }
