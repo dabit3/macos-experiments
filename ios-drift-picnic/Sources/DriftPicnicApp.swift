@@ -626,7 +626,7 @@ struct PicnicView: View {
               Rectangle().strokeBorder(ink, lineWidth: 2)
             }
           }
-          .hardShadow(ink, 3)
+          .background { Rectangle().fill(ink).offset(x: 3, y: 3) }
           .id(text)
           .transition(.scale(scale: 1.2))
           .accessibilityIdentifier("coachHint")
