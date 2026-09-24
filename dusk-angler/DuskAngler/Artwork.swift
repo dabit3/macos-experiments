@@ -292,7 +292,7 @@ struct SurgeForecast: View {
           Duel.surges(at: t)
           ? Palette.danger
           : cycle >= 3.2 && cycle < 4.5
-            ? Palette.amber.opacity(0.7)
+            ? Palette.amber
             : Palette.text.opacity(0.14)
         let height: CGFloat =
           Duel.surges(at: t) ? size.height : cycle >= 3.2 && cycle < 4.5 ? size.height * 0.6 : 3
