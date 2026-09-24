@@ -89,8 +89,19 @@ private struct BestRail: View {
   }
 }
 
+private struct ShareSheet: UIViewControllerRepresentable {
+  let items: [Any]
+
+  func makeUIViewController(context: Context) -> UIActivityViewController {
+    UIActivityViewController(activityItems: items, applicationActivities: nil)
+  }
+
+  func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
+}
+
 struct BoardwalkView: View {
   @StateObject private var game = GameStore()
+  @State private var showShare = false
   @Environment(\.scenePhase) private var scenePhase
   @Environment(\.accessibilityReduceMotion) private var reducedMotion
 
@@ -556,15 +567,29 @@ struct BoardwalkView: View {
   }
 
   private func settingRow(_ title: String, icon: String, isOn: Binding<Bool>) -> some View {
-    Toggle(isOn: isOn) {
+    Button {
+      isOn.wrappedValue.toggle()
+    } label: {
       HStack(spacing: 12) {
         Image(systemName: icon).font(.system(size: 14, weight: .semibold))
           .foregroundStyle(Palette.mint).frame(width: 30)
         Text(title).font(.system(size: 15, weight: .semibold))
+        Spacer()
+        Capsule()
+          .fill(isOn.wrappedValue ? Palette.mint : .white.opacity(0.16))
+          .frame(width: 50, height: 30)
+          .overlay(alignment: isOn.wrappedValue ? .trailing : .leading) {
+            Circle().fill(.white).padding(3).shadow(color: .black.opacity(0.25), radius: 2, y: 1)
+          }
+          .animation(.spring(duration: 0.25), value: isOn.wrappedValue)
       }
+      .frame(minHeight: 52)
+      .contentShape(Rectangle())
     }
-    .tint(Palette.mint)
-    .frame(minHeight: 52)
+    .buttonStyle(.plain)
+    .accessibilityLabel(title)
+    .accessibilityValue(isOn.wrappedValue ? "On" : "Off")
+    .accessibilityAddTraits(isOn.wrappedValue ? .isSelected : [])
   }
 
   // MARK: Results
@@ -574,15 +599,22 @@ struct BoardwalkView: View {
       HStack {
         resultBadge
         Spacer()
-        ShareLink(item: shareText) {
+        Button {
+          showShare = true
+        } label: {
           Image(systemName: "square.and.arrow.up")
             .font(.system(size: 15, weight: .semibold))
             .frame(width: 44, height: 44)
             .background(.white.opacity(0.07), in: Circle())
             .overlay(Circle().strokeBorder(.white.opacity(0.12)))
         }
+        .buttonStyle(PressableStyle())
         .accessibilityLabel("Share result")
         .accessibilityIdentifier("shareResult")
+        .sheet(isPresented: $showShare) {
+          ShareSheet(items: [shareText])
+            .presentationDetents([.medium, .large])
+        }
       }
       VStack(alignment: .leading, spacing: 2) {
         Text(game.newBest ? "Made your mark." : "Wiped out.")
