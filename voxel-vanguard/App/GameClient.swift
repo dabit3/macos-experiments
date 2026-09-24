@@ -15,6 +15,9 @@ final class GameClient: ObservableObject {
   @Published var driverStep = "Awaiting expedition"
   @Published var connected = false
   @Published var gearOpen = false
+  @Published var menuOpen = false
+  @Published var notice: Notice?
+  @Published var damagePulse = 0
   let world = DungeonScene()
   let sound = Soundscape()
   private var socket: URLSessionWebSocketTask?
@@ -115,6 +118,9 @@ final class GameClient: ObservableObject {
     token = ""
     identity = ""
     state = nil
+    notice = nil
+    menuOpen = false
+    gearOpen = false
     connected = false
     autoReadySent = false
     status = "LOCAL CO-OP • 2 HEROES"
@@ -184,12 +190,18 @@ final class GameClient: ObservableObject {
       status = "CHECK CONNECTION"
     }
     if reply.type == "state", let snapshot = try? decoder.decode(Snapshot.self, from: data) {
+      let previousHP = me?.hp
       state = snapshot
       world.apply(snapshot, identity: identity)
+      if let previousHP, let hp = me?.hp, hp < previousHP { damagePulse += 1 }
       for event in snapshot.events where event.id > lastEvent {
         sound.play(event.kind)
         lastEvent = max(lastEvent, event.id)
+        if Notice.kinds.contains(event.kind) && !event.text.isEmpty {
+          notice = Notice(id: event.id, kind: event.kind, text: event.text, tick: event.tick)
+        }
       }
+      if let notice, snapshot.tick - notice.tick > 50 { self.notice = nil }
       if snapshot.tick % 20 == 0 {
         let text = String(data: data, encoding: .utf8) ?? "{}"
         try? logHandle?.write(

@@ -29,588 +29,1079 @@ struct WorldView: UIViewRepresentable {
   func updateUIView(_ view: SCNView, context: Context) {}
 }
 
-enum Palette {
-  static let gold = Color(red: 0.96, green: 0.73, blue: 0.35)
-  static let blue = Color(red: 0.36, green: 0.8, blue: 0.92)
-  static let panel = Color(red: 0.055, green: 0.095, blue: 0.12)
-  static let muted = Color(red: 0.58, green: 0.69, blue: 0.7)
-}
+let canvas = CGSize(width: 900, height: 420)
 
 struct VanguardView: View {
   @StateObject private var game = GameClient()
+  @State private var damageFlash = 0.0
+
+  private var phase: String { game.state?.phase ?? "" }
+  private var inMatch: Bool { game.state != nil && phase != "lobby" }
+
   var body: some View {
     GeometryReader { geometry in
       ZStack {
         WorldView(world: game.world).ignoresSafeArea()
         LinearGradient(
-          colors: [.black.opacity(0.65), .clear, .clear, .black.opacity(0.65)],
+          colors: [.black.opacity(inMatch ? 0.55 : 0.7), .clear, .clear, .black.opacity(0.7)],
           startPoint: .top, endPoint: .bottom
         ).allowsHitTesting(false)
+        if !inMatch {
+          Palette.ink.opacity(0.35).allowsHitTesting(false)
+        }
+        RadialGradient(
+          colors: [.clear, Palette.heart.opacity(0.75)], center: .center, startRadius: 120,
+          endRadius: 520
+        )
+        .opacity(damageFlash).allowsHitTesting(false)
         ZStack {
           if game.state == nil {
-            entry
-          } else if game.state?.phase == "lobby" {
-            lobby
+            EntryView(game: game)
+          } else if phase == "lobby" {
+            LobbyView(game: game)
           } else {
-            hud
-            if ["victory", "defeat"].contains(game.state?.phase ?? "") { result }
-            if game.gearOpen { gearPicker }
-            if game.state?.paused == true || !game.connected { pause }
+            HUDView(game: game)
+            if game.state?.paused == true || !game.connected { PauseView(game: game) }
+            if ["victory", "defeat"].contains(phase) { ResultView(game: game) }
+            if game.gearOpen { GearPickerView(game: game) }
+            if game.menuOpen { MenuView(game: game) }
           }
         }
-        .frame(width: 900, height: 420)
-        .scaleEffect(min(geometry.size.width / 900, geometry.size.height / 420))
+        .frame(width: canvas.width, height: canvas.height)
+        .scaleEffect(min(geometry.size.width / canvas.width, geometry.size.height / canvas.height))
         .frame(width: geometry.size.width, height: geometry.size.height)
       }
-    }
-  }
-
-  private var entry: some View {
-    HStack(spacing: 45) {
-      VStack(alignment: .leading, spacing: 8) {
-        Text("A COOPERATIVE DUNGEON EXPEDITION").font(
-          .system(size: 10, weight: .heavy, design: .monospaced)
-        )
-        .tracking(2.3).foregroundStyle(Palette.gold)
-        Text("VOXEL\nVANGUARD").font(.system(size: 44, weight: .black, design: .rounded))
-          .tracking(1).lineSpacing(-6).shadow(color: .black, radius: 0, x: 3, y: 4)
-        Rectangle().fill(Palette.gold).frame(width: 48, height: 3)
-        Text("THE HOLLOWWOOD EXPEDITION").font(
-          .system(size: 11, weight: .bold, design: .monospaced)
-        )
-        .foregroundStyle(Palette.gold).padding(.top, 4)
-        Text("Two heroes. Three seals. One ancient Warden.\nGather your party. Restore the forest.")
-          .font(.system(size: 12)).foregroundStyle(.white.opacity(0.8)).lineSpacing(5)
-        HStack(spacing: 13) {
-          Label("REAL NETWORK CO-OP", systemImage: "network")
-          Label("GUEST PLAY", systemImage: "person.2.fill")
-        }.font(.system(size: 8, weight: .bold, design: .monospaced)).foregroundStyle(Palette.muted)
-          .padding(.top, 30)
-      }.frame(width: 395, alignment: .leading)
-      VStack(alignment: .leading, spacing: 10) {
-        Text("ASSEMBLE YOUR PARTY").font(.system(size: 17, weight: .black, design: .rounded))
-        labeledField("HERO NAME", text: $game.name, hint: "Aster")
-        labeledField("SERVER ADDRESS", text: $game.address, hint: "ws://192.168.1.20:8791")
-        labeledField("ROOM CODE  ·  LEAVE BLANK TO CREATE", text: $game.room, hint: "GROVE")
-        HStack(spacing: 9) {
-          solidButton("CREATE ROOM", icon: "plus", color: Palette.gold) {
-            game.connect(create: true)
-          }
-          solidButton("JOIN", icon: "arrow.right", color: Palette.blue) {
-            game.connect(create: false)
-          }
-        }
-        Text(game.error.isEmpty ? game.status : game.error)
-          .font(.system(size: 10, weight: .medium, design: .monospaced))
-          .foregroundStyle(game.error.isEmpty ? Palette.muted : .orange)
-          .fixedSize(horizontal: false, vertical: true)
+      .animation(.easeOut(duration: 0.25), value: game.gearOpen)
+      .animation(.easeOut(duration: 0.25), value: game.menuOpen)
+      .onChange(of: game.damagePulse) {
+        Haptics.heavy()
+        damageFlash = 1
+        withAnimation(.easeOut(duration: 0.6)) { damageFlash = 0 }
       }
-      .padding(22).frame(width: 334)
-      .background(Palette.panel.opacity(0.96))
-      .overlay(Rectangle().stroke(Palette.gold.opacity(0.5), lineWidth: 1))
-    }
-  }
-
-  private func labeledField(_ title: String, text: Binding<String>, hint: String) -> some View {
-    VStack(alignment: .leading, spacing: 5) {
-      Text(title).font(.system(size: 8, weight: .bold, design: .monospaced))
-        .tracking(1).foregroundStyle(Palette.muted)
-      TextField(hint, text: text)
-        .font(.system(size: 12, weight: .medium, design: .monospaced))
-        .textInputAutocapitalization(.never).autocorrectionDisabled()
-        .padding(10).background(.black.opacity(0.3))
-        .overlay(Rectangle().stroke(.white.opacity(0.13)))
-        .accessibilityLabel(title)
-    }
-  }
-
-  private var lobby: some View {
-    VStack(spacing: 12) {
-      Text("THE HOLLOWWOOD").font(.system(size: 11, weight: .black, design: .monospaced))
-        .tracking(3).foregroundStyle(Palette.gold)
-      Text("YOUR PARTY IS GATHERING").font(.system(size: 27, weight: .black, design: .rounded))
-      HStack(spacing: 12) {
-        Image(systemName: "network").foregroundStyle(Palette.blue)
-        Text("ROOM \(game.room)").font(.system(size: 24, weight: .black, design: .monospaced))
-          .tracking(5)
-      }
-      HStack(spacing: 16) {
-        ForEach(0..<2) { slot in
-          let player = game.state?.players.first { $0.slot == slot }
-          VStack(spacing: 7) {
-            Image(systemName: slot == 0 ? "shield.lefthalf.filled" : "arrow.up.right")
-              .font(.system(size: 26)).foregroundStyle(slot == 0 ? Palette.blue : Palette.gold)
-            Text(player?.name ?? "Waiting for a friend").font(.system(size: 16, weight: .bold))
-            Text(player == nil ? "JOIN WITH THE ROOM CODE" : player!.ready ? "READY" : "NOT READY")
-              .font(.system(size: 9, weight: .bold, design: .monospaced))
-              .foregroundStyle(player?.ready == true ? .green : Palette.muted)
-            Text(player.map { String($0.id.prefix(8)) } ?? "—")
-              .font(.system(size: 8, design: .monospaced)).foregroundStyle(Palette.muted)
-          }.frame(width: 220, height: 104).background(Palette.panel.opacity(0.9))
-            .overlay(Rectangle().stroke((slot == 0 ? Palette.blue : Palette.gold).opacity(0.4)))
-        }
-      }
-      Text("Joystick to move  •  Strike, shoot & dodge  •  Hold revive beside a fallen hero")
-        .font(.system(size: 11)).foregroundStyle(.white.opacity(0.8))
-      HStack {
-        solidButton(
-          game.me?.ready == true ? "UNREADY" : "READY FOR EXPEDITION",
-          icon: "play.fill", color: Palette.gold
-        ) { game.ready() }
-        .frame(width: 295)
-        Button("Leave room") { game.leave() }.font(.system(size: 12)).foregroundStyle(Palette.muted)
-      }
-      if game.automation { driverBanner }
-    }.padding(25).background(Palette.panel.opacity(0.8))
-  }
-
-  private var hud: some View {
-    ZStack {
-      VStack(spacing: 0) {
-        HStack(alignment: .top, spacing: 12) {
-          if let me = game.me { heroPanel(me, local: true) }
-          Spacer(minLength: 0)
-          VStack(spacing: 5) {
-            Text(
-              "HOLLOWWOOD  /  \(["MOSSGATE", "SUNDERED CRYPT", "WARDEN'S COURT"][min(2, (game.state?.stage ?? 1) - 1)])"
-            )
-            .font(.system(size: 9, weight: .black, design: .monospaced)).tracking(1.4)
-            .foregroundStyle(Palette.gold)
-            Text(game.state?.objective ?? "").font(.system(size: 11, weight: .bold))
-            HStack(spacing: 6) {
-              ForEach(1...3, id: \.self) { stage in
-                Image(
-                  systemName: (game.state?.completedStages ?? 0) >= stage
-                    ? "diamond.fill" : "diamond"
-                )
-                .foregroundStyle((game.state?.stage ?? 1) >= stage ? Palette.gold : Palette.muted)
-              }
-              Text("\(game.state?.enemies.count ?? 0) FOES")
-                .foregroundStyle(Palette.muted)
-            }.font(.system(size: 9, weight: .bold, design: .monospaced))
-          }.frame(width: 342).padding(.top, 6)
-          Spacer(minLength: 0)
-          if let ally = game.partner { heroPanel(ally, local: false) }
-        }
-        if let boss = game.state?.enemies.first(where: { $0.kind == "boss" }) {
-          VStack(spacing: 3) {
-            Text("THE HOLLOW WARDEN").font(.system(size: 9, weight: .heavy, design: .monospaced))
-              .tracking(2)
-            ZStack(alignment: .leading) {
-              Rectangle().fill(.black.opacity(0.75))
-              Rectangle().fill(
-                LinearGradient(colors: [.red, .orange], startPoint: .leading, endPoint: .trailing)
-              )
-              .frame(width: 330 * Double(boss.hp) / Double(boss.maxHP))
-            }.frame(width: 330, height: 6).overlay(Rectangle().stroke(Palette.gold.opacity(0.6)))
-          }.padding(8).background(Palette.panel.opacity(0.75)).padding(.top, 6)
-        }
-        Spacer()
-        HStack(alignment: .bottom, spacing: 15) {
-          VStack(spacing: 5) {
-            Joystick { game.movement($0, $1) }
-            Text("MOVE").font(.system(size: 9, weight: .black, design: .monospaced))
-              .foregroundStyle(Palette.muted)
-          }.frame(width: 132)
-          VStack(spacing: 6) {
-            if game.nearChest != nil {
-              Button {
-                game.gearOpen = true
-              } label: {
-                Label("CLAIM YOUR GEAR CARD", systemImage: "shippingbox.fill")
-                  .font(.system(size: 10, weight: .black, design: .monospaced))
-                  .foregroundStyle(Palette.panel).padding(8).frame(maxWidth: .infinity).background(
-                    Palette.gold)
-              }.accessibilityLabel("Claim gear")
-            }
-            HStack(spacing: 5) {
-              gearCard("MELEE", item: game.me?.weapon ?? "iron", glyph: "sword", color: .red)
-              gearCard("RANGE", item: game.me?.bow ?? "oak", glyph: "bow", color: .purple)
-              gearCard(
-                "ARMOR", item: game.me?.armor ?? "scout", glyph: "armor", color: Palette.blue)
-              Button {
-                game.perform("artifact")
-              } label: {
-                VStack(spacing: 3) {
-                  Text("RELIC").font(.system(size: 8, weight: .black, design: .monospaced))
-                  GearGlyph(kind: "relic", color: .purple).frame(width: 30, height: 30)
-                  Text(game.me?.charge == 100 ? "READY!" : "\(game.me?.charge ?? 0)%")
-                    .font(.system(size: 8, weight: .black, design: .monospaced))
-                }.foregroundStyle(.white).frame(width: 58, height: 69)
-                  .background(Palette.panel.opacity(0.9))
-                  .overlay(
-                    Rectangle().stroke(
-                      game.me?.charge == 100 ? .purple : .purple.opacity(0.4), lineWidth: 2))
-              }.accessibilityLabel("Activate thunder relic")
-            }
-            HStack(spacing: 4) {
-              Image(systemName: "bolt.fill").foregroundStyle(.purple)
-              ProgressView(value: Double(game.me?.charge ?? 0), total: 100).tint(.purple)
-            }.frame(width: 244).font(.system(size: 8))
-          }
-          Spacer(minLength: 0)
-          VStack(spacing: 6) {
-            HStack(spacing: 7) {
-              actionButton(
-                "HEAL", icon: "cross.case.fill", action: "heal", color: .green, small: true,
-                cooldown: max(0, ((game.me?.potion ?? 0) - (game.state?.tick ?? 0) + 19) / 20))
-              actionButton(
-                "REVIVE", icon: "heart.circle.fill", action: "revive", color: Palette.blue,
-                small: true)
-            }
-            HStack(alignment: .bottom, spacing: 8) {
-              actionButton(
-                "DODGE", icon: "wind", action: "dodge", color: Palette.gold,
-                cooldown: max(0, ((game.me?.dodge ?? 0) - (game.state?.tick ?? 0) + 19) / 20))
-              actionButton("RANGE", icon: "scope", action: "ranged", color: .purple)
-              actionButton(
-                "MELEE", icon: "bolt.shield.fill", action: "melee", color: .orange, large: true)
-            }
-          }
-        }
-        HStack(spacing: 9) {
-          Text(
-            "● \(game.connected ? "LIVE" : "OFFLINE")  \(game.room)  ·  P\((game.me?.slot ?? 0) + 1)  ·  \(game.identity.prefix(6))"
-          )
-          .font(.system(size: 8, weight: .bold, design: .monospaced)).foregroundStyle(Palette.muted)
-          Button("Reconnect") { game.reconnect() }.font(.system(size: 9, weight: .bold))
-            .foregroundStyle(Palette.blue)
-          Spacer()
-          if Launch.has("automation") {
-            Button(game.automation ? "AUTO DRIVER: ON" : "AUTO DRIVER: OFF") { game.toggleDriver() }
-              .font(.system(size: 8, weight: .black, design: .monospaced)).foregroundStyle(
-                Palette.gold)
-          }
-          Button("Exit") { game.leave() }.font(.system(size: 9)).foregroundStyle(Palette.muted)
-        }.padding(.top, 7)
-      }.padding(.horizontal, 30).padding(.top, 12).padding(.bottom, 12)
-      if let me = game.me, me.down {
-        VStack(spacing: 8) {
-          Text("HERO DOWN").font(.system(size: 23, weight: .black, design: .rounded))
-            .foregroundStyle(.orange)
-          Text("Your ally can hold REVIVE nearby").font(.system(size: 12, weight: .bold))
-          ProgressView(value: me.revive).tint(.green).frame(width: 200)
-        }.padding(20).background(Palette.panel.opacity(0.9))
-      }
-      if game.automation {
-        VStack {
-          Spacer()
-          driverBanner
-          Spacer().frame(height: 146)
-        }
-      }
-    }
-  }
-
-  private var driverBanner: some View {
-    Text("AUTOMATED INPUT  •  \(game.driverStep)")
-      .font(.system(size: 8, weight: .bold, design: .monospaced))
-      .foregroundStyle(Palette.gold).padding(.horizontal, 12).padding(.vertical, 5)
-      .background(Palette.panel.opacity(0.9)).allowsHitTesting(false)
-  }
-
-  private func heroPanel(_ hero: Hero, local: Bool) -> some View {
-    VStack(alignment: .leading, spacing: 5) {
-      HStack {
-        Text("P\(hero.slot + 1) \(hero.name.uppercased())")
-          .font(.system(size: 11, weight: .black, design: .monospaced)).lineLimit(1)
-        Spacer()
-        Text(local ? "YOU" : "ALLY").font(.system(size: 7, weight: .heavy, design: .monospaced))
-          .foregroundStyle(Palette.muted)
-      }
-      HStack(spacing: 3) {
-        ForEach(0..<5) { index in
-          PixelHeart().fill(
-            Double(hero.hp) / Double(hero.maxHP) > Double(index) / 5
-              ? Color(red: 0.97, green: 0.32, blue: 0.29) : .gray.opacity(0.3)
-          )
-          .frame(width: 16, height: 14)
-        }
-        Text("\(hero.hp)/\(hero.maxHP)").font(.system(size: 9, weight: .bold, design: .monospaced))
-      }
-      HStack(spacing: 10) {
-        Text("◆ \(hero.gems)").foregroundStyle(.green)
-        Text("SCORE \(hero.score)").foregroundStyle(.white)
-      }.font(.system(size: 9, weight: .heavy, design: .monospaced))
-    }.padding(9).frame(width: 190).background(Palette.panel.opacity(0.86))
-      .overlay(alignment: .leading) {
-        Rectangle().fill(hero.slot == 0 ? Palette.blue : Palette.gold).frame(width: 3)
-      }
-  }
-
-  private func gearCard(_ label: String, item: String, glyph: String, color: Color) -> some View {
-    Button {
-      game.gearOpen = true
-    } label: {
-      VStack(spacing: 3) {
-        Text(label).font(.system(size: 8, weight: .black, design: .monospaced)).foregroundStyle(
-          color)
-        GearGlyph(kind: glyph, color: color).frame(width: 30, height: 30)
-        Text(item.uppercased()).font(.system(size: 7, weight: .heavy, design: .monospaced))
-          .lineLimit(1)
-      }.foregroundStyle(.white).frame(width: 58, height: 69)
-        .background(Palette.panel.opacity(0.9))
-        .overlay(Rectangle().stroke(color.opacity(0.65), lineWidth: 2))
-    }.accessibilityLabel("Inspect \(label.lowercased()) card")
-  }
-
-  private func actionButton(
-    _ label: String, icon: String, action: String, color: Color,
-    small: Bool = false, large: Bool = false, cooldown: Int = 0
-  ) -> some View {
-    VStack(spacing: 3) {
-      Image(systemName: icon).font(.system(size: small ? 14 : large ? 25 : 22, weight: .bold))
-      Text(cooldown > 0 ? "\(cooldown)s" : label)
-        .font(.system(size: small ? 8 : 9, weight: .black, design: .monospaced))
-    }
-    .foregroundStyle(cooldown > 0 ? color.opacity(0.5) : color)
-    .frame(width: small ? 75 : large ? 72 : 60, height: small ? 36 : large ? 72 : 62)
-    .background(Palette.panel.opacity(0.91))
-    .overlay(
-      RoundedRectangle(cornerRadius: 6).stroke(
-        color.opacity(cooldown > 0 ? 0.25 : 0.8), lineWidth: 2)
-    )
-    .clipShape(RoundedRectangle(cornerRadius: 6))
-    .contentShape(Rectangle())
-    .gesture(
-      DragGesture(minimumDistance: 0)
-        .onChanged { _ in game.hold(action, down: true) }
-        .onEnded { _ in game.hold(action, down: false) }
-    )
-    .accessibilityLabel(label.capitalized)
-    .accessibilityAddTraits(.isButton)
-    .accessibilityAction { game.perform(action) }
-  }
-
-  private var gearPicker: some View {
-    VStack(spacing: 13) {
-      HStack {
-        VStack(alignment: .leading, spacing: 4) {
-          Text("THE RELIQUARY").font(.system(size: 23, weight: .black, design: .rounded))
-          Text(
-            game.nearChest == nil
-              ? "Find a cache after clearing a seal to claim a card."
-              : "One card per hero, per cache. Choose your advantage."
-          )
-          .font(.system(size: 11)).foregroundStyle(Palette.muted)
-        }
-        Spacer()
-        Button("CLOSE") { game.gearOpen = false }.font(.system(size: 11, weight: .bold))
-          .foregroundStyle(Palette.gold)
-      }
-      HStack(spacing: 10) {
-        choiceCard(
-          "cleaver", title: "SUN CLEAVER", detail: "36 melee damage\nWide cleaving arcs",
-          glyph: "sword", color: .orange)
-        choiceCard(
-          "storm", title: "STORM BLADE", detail: "24 melee damage\nFaster attacks", glyph: "sword",
-          color: .purple)
-        choiceCard(
-          "ember", title: "EMBER BOW", detail: "38 arrow damage\nSearing projectiles", glyph: "bow",
-          color: .red)
-        choiceCard(
-          "swift", title: "SWIFT BOW", detail: "Rapid arrow volley\nReduced cooldown", glyph: "bow",
-          color: .green)
-        choiceCard(
-          "guardian", title: "WARDEN MAIL", detail: "+20 max health\n35% less damage",
-          glyph: "armor", color: Palette.blue)
-      }
-      Text(
-        "Equipped: \(game.me?.weapon ?? "iron")  /  \(game.me?.bow ?? "oak")  /  \(game.me?.armor ?? "scout")"
-      )
-      .font(.system(size: 10, weight: .medium, design: .monospaced)).foregroundStyle(Palette.muted)
-    }.padding(23).frame(width: 755).background(Palette.panel)
-      .overlay(Rectangle().stroke(Palette.gold, lineWidth: 2))
-  }
-
-  private func choiceCard(
-    _ choice: String, title: String, detail: String, glyph: String, color: Color
-  ) -> some View {
-    Button {
-      game.equip(choice)
-    } label: {
-      VStack(spacing: 10) {
-        Text("RARE GEAR").font(.system(size: 8, weight: .black, design: .monospaced))
-          .foregroundStyle(color)
-        GearGlyph(kind: glyph, color: color).frame(width: 48, height: 48)
-        Text(title).font(.system(size: 10, weight: .black, design: .monospaced))
-        Text(detail).font(.system(size: 10)).multilineTextAlignment(.center).foregroundStyle(
-          Palette.muted)
-        Text(game.nearChest == nil ? "LOCKED" : "EQUIP")
-          .font(.system(size: 10, weight: .black, design: .monospaced)).foregroundStyle(color)
-      }.foregroundStyle(.white).frame(width: 128, height: 188)
-        .background(color.opacity(0.07)).overlay(
-          Rectangle().stroke(color.opacity(0.6), lineWidth: 2))
-    }.disabled(game.nearChest == nil).accessibilityLabel("Equip \(title)")
-  }
-
-  private var result: some View {
-    VStack(spacing: 12) {
-      Text("EXPEDITION \(game.state?.round ?? 1)").font(
-        .system(size: 10, weight: .bold, design: .monospaced)
-      )
-      .tracking(3).foregroundStyle(Palette.gold)
-      Text(game.state?.phase == "victory" ? "HOLLOWWOOD RESTORED" : "THE VANGUARD FALLS")
-        .font(.system(size: 31, weight: .black, design: .rounded))
-      Text(
-        game.state?.phase == "victory"
-          ? "Three seals broken. The Warden defeated. Together."
-          : "No hero is left behind. Regroup and try again."
-      )
-      .font(.system(size: 12)).foregroundStyle(Palette.muted)
-      HStack(spacing: 18) {
-        ForEach(game.state?.players ?? []) { hero in
-          VStack(spacing: 6) {
-            Text(hero.name.uppercased()).font(
-              .system(size: 16, weight: .black, design: .monospaced)
-            )
-            .foregroundStyle(hero.slot == 0 ? Palette.blue : Palette.gold)
-            Text("\(hero.score)").font(.system(size: 30, weight: .black, design: .rounded))
-            Text("\(hero.kills) DEFEATED   ◆ \(hero.gems) GEMS")
-              .font(.system(size: 9, weight: .bold, design: .monospaced))
-            Text(
-              "\(hero.stats.hits) hits  ·  \(hero.stats.equipment) cards  ·  \(hero.stats.revive) revives"
-            )
-            .font(.system(size: 9)).foregroundStyle(Palette.muted)
-            Text(hero.ready ? "READY FOR REMATCH" : "AWAITING REMATCH")
-              .font(.system(size: 9, weight: .heavy, design: .monospaced)).foregroundStyle(
-                hero.ready ? .green : Palette.muted)
-          }.frame(width: 242, height: 125).background(.black.opacity(0.2))
-        }
-      }
-      HStack(spacing: 18) {
-        solidButton(
-          game.me?.ready == true ? "CANCEL READY" : "REMATCH", icon: "arrow.clockwise",
-          color: Palette.gold
-        ) { game.ready() }
-        .frame(width: 240)
-        Button("LEAVE EXPEDITION") { game.leave() }.font(.system(size: 10, weight: .bold))
-          .foregroundStyle(Palette.muted)
-      }
-      if game.automation { driverBanner }
-    }.padding(22).background(Palette.panel.opacity(0.97))
-      .overlay(Rectangle().stroke(Palette.gold.opacity(0.7), lineWidth: 2))
-  }
-
-  private var pause: some View {
-    VStack(spacing: 12) {
-      Text(game.connected ? "WAITING FOR YOUR ALLY" : "CONNECTION INTERRUPTED")
-        .font(.system(size: 20, weight: .black, design: .rounded))
-      Text("The dungeon is paused. Your hero and loot are preserved.")
-        .font(.system(size: 12)).foregroundStyle(Palette.muted)
-      solidButton("RECONNECT", icon: "network", color: Palette.blue) { game.reconnect() }.frame(
-        width: 235)
-      Button("Leave expedition") { game.leave() }.font(.system(size: 12)).foregroundStyle(
-        Palette.muted)
-    }.padding(30).background(Palette.panel).overlay(Rectangle().stroke(Palette.blue))
-  }
-
-  private func solidButton(
-    _ title: String, icon: String, color: Color, action: @escaping () -> Void
-  ) -> some View {
-    Button(action: action) {
-      HStack(spacing: 7) {
-        Image(systemName: icon)
-        Text(title)
-      }.font(.system(size: 11, weight: .black, design: .monospaced))
-        .frame(maxWidth: .infinity).padding(.vertical, 12)
-        .foregroundStyle(Palette.panel).background(color)
     }
   }
 }
+
+// MARK: - Entry
+
+struct EntryView: View {
+  @ObservedObject var game: GameClient
+  @State private var joining = false
+  @State private var advanced = false
+
+  private var busy: Bool { game.status.hasSuffix("…") && game.error.isEmpty }
+
+  var body: some View {
+    HStack(spacing: 48) {
+      VStack(alignment: .leading, spacing: 10) {
+        Eyebrow(text: "A COOPERATIVE DUNGEON EXPEDITION", size: 10)
+        Text("VOXEL\nVANGUARD").font(Fonts.display(46)).lineSpacing(-8)
+          .shadow(color: Palette.ink, radius: 0, x: 3, y: 4)
+        RoundedRectangle(cornerRadius: 2).fill(Palette.gold).frame(width: 56, height: 4)
+          .padding(.top, 4)
+        Text(
+          "Two heroes. Three seals. One ancient Warden.\nGather your party and restore the forest."
+        )
+        .font(Fonts.body(13)).foregroundStyle(.white.opacity(0.85)).lineSpacing(4)
+        HStack(spacing: 8) {
+          featurePill("network", "Real network co-op")
+          featurePill("person.2.fill", "Guest play, no accounts")
+        }.padding(.top, 14)
+      }.frame(width: 390, alignment: .leading)
+
+      VStack(alignment: .leading, spacing: 12) {
+        HStack(spacing: 0) {
+          modeTab("CREATE ROOM", icon: "plus", selected: !joining) { joining = false }
+          modeTab("JOIN ROOM", icon: "arrow.right.circle", selected: joining) { joining = true }
+        }
+        .padding(3).background(RoundedRectangle(cornerRadius: 10).fill(Palette.ink.opacity(0.7)))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Palette.line))
+
+        field("HERO NAME", text: $game.name, hint: "Aster")
+        if joining {
+          field("ROOM CODE", text: $game.room, hint: "GROVE", uppercase: true)
+            .transition(.opacity)
+        } else {
+          Text("A fresh room code is created for you. Share it with your ally.")
+            .font(Fonts.body(11)).foregroundStyle(Palette.muted).fixedSize(
+              horizontal: false, vertical: true)
+        }
+        DisclosureGroup(isExpanded: $advanced) {
+          field("SERVER ADDRESS", text: $game.address, hint: "ws://192.168.1.20:8791")
+            .padding(.top, 6)
+        } label: {
+          HStack(spacing: 5) {
+            Image(systemName: "server.rack")
+            Text(advanced ? "SERVER" : "SERVER  ·  \(game.address)")
+          }.font(Fonts.mono(9)).foregroundStyle(Palette.muted).lineLimit(1)
+        }.tint(Palette.muted)
+
+        Button {
+          Haptics.tap()
+          game.connect(create: !joining)
+        } label: {
+          HStack(spacing: 8) {
+            if busy {
+              ProgressView().tint(Palette.ink).scaleEffect(0.8)
+            } else {
+              Image(systemName: joining ? "arrow.right" : "flag.fill")
+            }
+            Text(joining ? "JOIN EXPEDITION" : "CREATE EXPEDITION")
+          }
+        }
+        .buttonStyle(BlockButtonStyle(color: joining ? Palette.blue : Palette.gold))
+        .disabled(busy || game.name.trimmingCharacters(in: .whitespaces).isEmpty)
+        .accessibilityLabel(joining ? "Join room" : "Create room")
+
+        HStack(spacing: 6) {
+          Circle().fill(game.error.isEmpty ? Palette.green : Palette.ember).frame(
+            width: 6, height: 6)
+          Text(game.error.isEmpty ? game.status : game.error)
+            .font(Fonts.mono(9)).foregroundStyle(game.error.isEmpty ? Palette.muted : Palette.ember)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+      }
+      .padding(22).frame(width: 340)
+      .blockPanel(stroke: Palette.gold.opacity(0.35), radius: 16)
+    }
+    .animation(.easeInOut(duration: 0.2), value: joining)
+    .animation(.easeInOut(duration: 0.2), value: advanced)
+    .onAppear { joining = !game.room.isEmpty }
+  }
+
+  private func featurePill(_ icon: String, _ text: String) -> some View {
+    HStack(spacing: 5) {
+      Image(systemName: icon).font(.system(size: 9, weight: .bold))
+      Text(text.uppercased()).font(Fonts.eyebrow(8)).tracking(1)
+    }
+    .foregroundStyle(Palette.muted).padding(.horizontal, 9).frame(height: 24)
+    .background(Capsule().fill(.white.opacity(0.06))).overlay(Capsule().stroke(Palette.line))
+  }
+
+  private func modeTab(
+    _ title: String, icon: String, selected: Bool, action: @escaping () -> Void
+  ) -> some View {
+    Button(action: action) {
+      HStack(spacing: 6) {
+        Image(systemName: icon)
+        Text(title)
+      }
+      .font(Fonts.mono(10)).tracking(0.8)
+      .foregroundStyle(selected ? Palette.ink : Palette.muted)
+      .frame(maxWidth: .infinity).frame(height: 34)
+      .background(RoundedRectangle(cornerRadius: 8).fill(selected ? Palette.gold : .clear))
+    }
+    .buttonStyle(.plain)
+    .accessibilityAddTraits(selected ? .isSelected : [])
+  }
+
+  private func field(_ title: String, text: Binding<String>, hint: String, uppercase: Bool = false)
+    -> some View
+  {
+    VStack(alignment: .leading, spacing: 5) {
+      Eyebrow(text: title, color: Palette.muted, size: 8)
+      TextField(hint, text: text)
+        .font(.system(size: 14, weight: .semibold, design: .monospaced))
+        .textInputAutocapitalization(uppercase ? .characters : .never).autocorrectionDisabled()
+        .padding(.horizontal, 12).frame(height: 40).background(.black.opacity(0.35))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(.white.opacity(0.14)))
+        .accessibilityLabel(title)
+    }
+  }
+}
+
+// MARK: - Lobby
+
+struct LobbyView: View {
+  @ObservedObject var game: GameClient
+  @State private var copied = false
+
+  private var players: [Hero] { game.state?.players ?? [] }
+  private var readyCount: Int { players.filter(\.ready).count }
+
+  var body: some View {
+    VStack(spacing: 16) {
+      HStack(alignment: .top) {
+        VStack(alignment: .leading, spacing: 4) {
+          Eyebrow(text: "THE HOLLOWWOOD  ·  EXPEDITION LOBBY")
+          Text(players.count < 2 ? "Waiting for your ally" : "Your party is assembled")
+            .font(Fonts.display(26))
+        }
+        Spacer()
+        Button {
+          UIPasteboard.general.string = game.room
+          Haptics.tap()
+          copied = true
+          Task {
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            copied = false
+          }
+        } label: {
+          HStack(spacing: 10) {
+            VStack(alignment: .trailing, spacing: 1) {
+              Eyebrow(text: "ROOM CODE", color: Palette.muted, size: 8)
+              Text(game.room).font(.system(size: 26, weight: .black, design: .monospaced))
+                .tracking(4)
+            }
+            Image(systemName: copied ? "checkmark" : "doc.on.doc")
+              .font(.system(size: 14, weight: .bold))
+              .foregroundStyle(copied ? Palette.green : Palette.muted).frame(width: 20)
+          }
+          .padding(.horizontal, 14).padding(.vertical, 8)
+          .background(RoundedRectangle(cornerRadius: 10).fill(.black.opacity(0.4)))
+          .overlay(
+            RoundedRectangle(cornerRadius: 10).stroke(Palette.gold.opacity(0.5), lineWidth: 1.5))
+        }
+        .buttonStyle(.plain).accessibilityLabel("Copy room code \(game.room)")
+      }
+
+      HStack(spacing: 14) {
+        ForEach(0..<2) { slot in
+          slotCard(slot, hero: players.first { $0.slot == slot })
+        }
+      }
+
+      HStack(spacing: 18) {
+        tip("dpad.fill", "Joystick to move")
+        tip("bolt.shield.fill", "Strike, shoot & dodge")
+        tip("heart.circle.fill", "Hold revive beside a fallen hero")
+        tip("shippingbox.fill", "Claim gear cards from caches")
+      }
+
+      HStack(spacing: 12) {
+        Button {
+          Haptics.tap()
+          game.ready()
+        } label: {
+          HStack(spacing: 8) {
+            Image(systemName: game.me?.ready == true ? "xmark" : "play.fill")
+            Text(game.me?.ready == true ? "CANCEL READY" : "READY FOR EXPEDITION")
+          }
+        }
+        .buttonStyle(BlockButtonStyle(color: Palette.gold, prominent: game.me?.ready != true))
+        .frame(width: 300)
+        Text("\(readyCount) / 2 READY").font(Fonts.mono(10)).foregroundStyle(Palette.muted)
+        Spacer()
+        Button("LEAVE ROOM") { game.leave() }.buttonStyle(QuietButtonStyle())
+      }
+      if game.automation { DriverBanner(step: game.driverStep) }
+    }
+    .padding(24).frame(width: 640)
+    .blockPanel(radius: 16)
+  }
+
+  private func slotCard(_ slot: Int, hero: Hero?) -> some View {
+    let color = Palette.slot(slot)
+    return HStack(spacing: 12) {
+      ZStack {
+        RoundedRectangle(cornerRadius: 8).fill(color.opacity(hero == nil ? 0.15 : 0.9))
+        Image(systemName: slot == 0 ? "shield.lefthalf.filled" : "arrow.up.right")
+          .font(.system(size: 20, weight: .black))
+          .foregroundStyle(hero == nil ? color.opacity(0.6) : Palette.ink)
+      }.frame(width: 44, height: 44)
+      VStack(alignment: .leading, spacing: 3) {
+        Eyebrow(
+          text: "PLAYER \(slot + 1)\(hero?.id == game.identity ? "  ·  YOU" : "")", color: color,
+          size: 8)
+        Text(hero?.name ?? "Open seat").font(Fonts.label(16))
+          .foregroundStyle(hero == nil ? Palette.muted : .white)
+        Text(hero == nil ? "Share the room code" : hero?.ready == true ? "Ready" : "Not ready yet")
+          .font(Fonts.body(11)).foregroundStyle(hero?.ready == true ? Palette.green : Palette.muted)
+      }
+      Spacer()
+      if let hero {
+        Image(systemName: hero.ready ? "checkmark.circle.fill" : "circle.dashed")
+          .font(.system(size: 22, weight: .bold))
+          .foregroundStyle(hero.ready ? Palette.green : Palette.muted.opacity(0.6))
+      } else {
+        ProgressView().tint(Palette.muted)
+      }
+    }
+    .padding(12).frame(width: 289, height: 70)
+    .background(RoundedRectangle(cornerRadius: 12).fill(.black.opacity(hero == nil ? 0.2 : 0.4)))
+    .overlay(
+      RoundedRectangle(cornerRadius: 12)
+        .stroke(
+          hero == nil ? Palette.line : color.opacity(0.5),
+          style: StrokeStyle(lineWidth: 1.5, dash: hero == nil ? [5, 4] : []))
+    )
+  }
+
+  private func tip(_ icon: String, _ text: String) -> some View {
+    HStack(spacing: 6) {
+      Image(systemName: icon).foregroundStyle(Palette.gold)
+      Text(text).foregroundStyle(.white.opacity(0.8))
+    }.font(Fonts.body(10))
+  }
+}
+
+struct DriverBanner: View {
+  let step: String
+  var body: some View {
+    HStack(spacing: 6) {
+      Image(systemName: "cpu").font(.system(size: 9, weight: .bold))
+      Text("AUTOMATED INPUT  •  \(step)").font(Fonts.eyebrow(8)).tracking(1)
+    }
+    .foregroundStyle(Palette.gold).padding(.horizontal, 12).frame(height: 24)
+    .background(Capsule().fill(Palette.ink.opacity(0.9)))
+    .overlay(Capsule().stroke(Palette.gold.opacity(0.4)))
+    .allowsHitTesting(false)
+  }
+}
+
+// MARK: - HUD
+
+struct HUDView: View {
+  @ObservedObject var game: GameClient
+
+  private var state: Snapshot? { game.state }
+  private var tick: Int { state?.tick ?? 0 }
+  private var stageName: String {
+    ["MOSSGATE", "SUNDERED CRYPT", "WARDEN'S COURT"][min(2, max(0, (state?.stage ?? 1) - 1))]
+  }
+
+  var body: some View {
+    ZStack {
+      VStack(spacing: 0) {
+        HStack(alignment: .top, spacing: 10) {
+          if let me = game.me { HeroPanel(hero: me, local: true) }
+          Spacer(minLength: 0)
+          objective
+          Spacer(minLength: 0)
+          if let ally = game.partner {
+            HeroPanel(hero: ally, local: false)
+          } else {
+            allyPlaceholder
+          }
+          menuButton
+        }
+        if let notice = game.notice { NoticeToast(notice: notice).padding(.top, 10) }
+        Spacer()
+        HStack(alignment: .bottom, spacing: 14) {
+          VStack(spacing: 6) {
+            Joystick { game.movement($0, $1) }
+            Eyebrow(text: "MOVE", color: Palette.muted, size: 8)
+          }
+          Spacer(minLength: 0)
+          loadout
+          Spacer(minLength: 0)
+          actions
+        }
+      }
+      .padding(.horizontal, 22).padding(.vertical, 14)
+      .animation(.spring(duration: 0.35), value: game.notice)
+      if let me = game.me, me.down { downOverlay(me) }
+      if game.automation {
+        VStack {
+          Spacer()
+          DriverBanner(step: game.driverStep)
+          Spacer().frame(height: 138)
+        }
+      }
+    }
+  }
+
+  private var objective: some View {
+    VStack(spacing: 6) {
+      HStack(spacing: 8) {
+        ForEach(1...3, id: \.self) { stage in
+          let complete = (state?.completedStages ?? 0) >= stage
+          let current = (state?.stage ?? 1) == stage && !complete
+          Image(systemName: complete ? "diamond.fill" : "diamond")
+            .font(.system(size: current ? 11 : 9, weight: .bold))
+            .foregroundStyle(complete || current ? Palette.gold : Palette.muted.opacity(0.5))
+        }
+        Eyebrow(text: stageName, size: 9)
+      }
+      Text(state?.objective ?? "").font(Fonts.label(12)).lineLimit(1)
+      if let boss = state?.enemies.first(where: { $0.kind == "boss" }) {
+        VStack(spacing: 3) {
+          HStack {
+            Eyebrow(text: "THE HOLLOW WARDEN", color: Palette.ember, size: 8)
+            Spacer()
+            Text("\(boss.hp) / \(boss.maxHP)").font(Fonts.mono(8)).foregroundStyle(Palette.muted)
+          }
+          bar(Double(boss.hp) / Double(max(1, boss.maxHP)), colors: [Palette.ember, Palette.gold])
+        }.padding(.top, 2)
+      } else {
+        StatChip(
+          icon: "figure.fencing", value: "\(state?.enemies.count ?? 0) FOES REMAIN",
+          color: (state?.enemies.isEmpty ?? true) ? Palette.green : Palette.muted)
+      }
+    }
+    .padding(.horizontal, 16).padding(.vertical, 9).frame(width: 330)
+    .blockPanel(opacity: 0.86, depth: 3)
+  }
+
+  private var allyPlaceholder: some View {
+    HStack(spacing: 8) {
+      ProgressView().tint(Palette.muted).scaleEffect(0.7)
+      Text("Ally reconnecting…").font(Fonts.body(11)).foregroundStyle(Palette.muted)
+    }
+    .padding(.horizontal, 12).frame(width: 200, height: 46)
+    .blockPanel(opacity: 0.7, depth: 3)
+  }
+
+  private var menuButton: some View {
+    Button {
+      Haptics.tap()
+      game.menuOpen = true
+    } label: {
+      VStack(spacing: 3) {
+        Image(systemName: "line.3.horizontal").font(.system(size: 15, weight: .bold))
+        Circle().fill(game.connected ? Palette.green : Palette.ember).frame(width: 5, height: 5)
+      }
+      .foregroundStyle(.white).frame(width: 40, height: 46)
+      .blockPanel(opacity: 0.86, radius: 10, depth: 3)
+    }
+    .buttonStyle(.plain).accessibilityLabel("Expedition menu")
+  }
+
+  private var loadout: some View {
+    let me = game.me
+    return VStack(spacing: 8) {
+      if game.nearChest != nil {
+        Button {
+          Haptics.success()
+          game.gearOpen = true
+        } label: {
+          HStack(spacing: 8) {
+            Image(systemName: "shippingbox.fill")
+            Text("OPEN CACHE  ·  CLAIM A GEAR CARD")
+          }
+          .font(Fonts.mono(10)).tracking(0.8).foregroundStyle(Palette.ink)
+          .padding(.horizontal, 16).frame(height: 34)
+          .background(Capsule().fill(Palette.gold))
+          .shadow(color: Palette.gold.opacity(0.6), radius: 12)
+        }
+        .buttonStyle(.plain).accessibilityLabel("Claim gear")
+        .transition(.scale.combined(with: .opacity))
+      }
+      HStack(spacing: 6) {
+        loadoutCard("MELEE", item: me?.weapon ?? "iron", glyph: "sword", color: Palette.ember)
+        loadoutCard("RANGED", item: me?.bow ?? "oak", glyph: "bow", color: Palette.violet)
+        loadoutCard("ARMOR", item: me?.armor ?? "scout", glyph: "armor", color: Palette.blue)
+      }
+    }
+    .animation(.spring(duration: 0.3), value: game.nearChest?.id)
+  }
+
+  private func loadoutCard(_ label: String, item: String, glyph: String, color: Color) -> some View
+  {
+    Button {
+      Haptics.tap()
+      game.gearOpen = true
+    } label: {
+      HStack(spacing: 7) {
+        GearGlyph(kind: glyph, color: color).frame(width: 24, height: 24)
+        VStack(alignment: .leading, spacing: 1) {
+          Eyebrow(text: label, color: color, size: 7)
+          Text(GearInfo.title(item)).font(Fonts.label(10)).foregroundStyle(.white).lineLimit(1)
+        }
+      }
+      .padding(.horizontal, 9).frame(width: 118, height: 40, alignment: .leading)
+      .blockPanel(opacity: 0.86, stroke: color.opacity(0.45), radius: 9, depth: 3)
+    }
+    .buttonStyle(.plain).accessibilityLabel("Inspect \(label.lowercased()) card")
+  }
+
+  private var actions: some View {
+    let me = game.me
+    let potion = max(0, ((me?.potion ?? 0) - tick + 19) / 20)
+    let dodge = max(0, ((me?.dodge ?? 0) - tick + 19) / 20)
+    let charge = me?.charge ?? 0
+    return VStack(alignment: .trailing, spacing: 8) {
+      HStack(spacing: 8) {
+        ActionButton(
+          label: "HEAL", icon: "cross.vial.fill", color: Palette.green, size: .small,
+          cooldown: potion, hint: "+48"
+        ) {
+          game.hold("heal", down: $0)
+        } perform: {
+          game.perform("heal")
+        }
+        ActionButton(
+          label: "REVIVE", icon: "heart.circle.fill", color: Palette.blue, size: .small,
+          highlighted: game.partner?.down == true
+        ) {
+          game.hold("revive", down: $0)
+        } perform: {
+          game.perform("revive")
+        }
+        ActionButton(
+          label: charge == 100 ? "RELIC!" : "RELIC", icon: "bolt.fill", color: Palette.violet,
+          size: .small, progress: Double(charge) / 100, highlighted: charge == 100
+        ) {
+          game.hold("artifact", down: $0)
+        } perform: {
+          game.perform("artifact")
+        }
+      }
+      HStack(alignment: .bottom, spacing: 8) {
+        ActionButton(
+          label: "DODGE", icon: "wind", color: Palette.gold, size: .medium, cooldown: dodge
+        ) {
+          game.hold("dodge", down: $0)
+        } perform: {
+          game.perform("dodge")
+        }
+        ActionButton(label: "RANGED", icon: "scope", color: Palette.violet, size: .medium) {
+          game.hold("ranged", down: $0)
+        } perform: {
+          game.perform("ranged")
+        }
+        ActionButton(label: "MELEE", icon: "bolt.shield.fill", color: Palette.ember, size: .large) {
+          game.hold("melee", down: $0)
+        } perform: {
+          game.perform("melee")
+        }
+      }
+    }
+  }
+
+  private func bar(_ ratio: Double, colors: [Color]) -> some View {
+    GeometryReader { geo in
+      ZStack(alignment: .leading) {
+        Capsule().fill(.black.opacity(0.6))
+        Capsule().fill(LinearGradient(colors: colors, startPoint: .leading, endPoint: .trailing))
+          .frame(width: geo.size.width * max(0, min(1, ratio)))
+          .animation(.easeOut(duration: 0.3), value: ratio)
+      }
+    }.frame(height: 7)
+  }
+
+  private func downOverlay(_ me: Hero) -> some View {
+    VStack(spacing: 10) {
+      Image(systemName: "heart.slash.fill").font(.system(size: 26)).foregroundStyle(Palette.ember)
+      Text("YOU ARE DOWN").font(Fonts.display(24)).foregroundStyle(Palette.ember)
+      Text(
+        game.partner == nil
+          ? "Wait for an ally to rejoin and revive you."
+          : "\(game.partner?.name ?? "Your ally") can hold REVIVE beside you."
+      ).font(Fonts.body(12)).foregroundStyle(.white.opacity(0.85))
+      VStack(spacing: 4) {
+        bar(me.revive, colors: [Palette.green, Palette.blue]).frame(width: 220)
+        Eyebrow(text: "REVIVAL \(Int(me.revive * 100))%", color: Palette.muted, size: 8)
+      }
+    }
+    .padding(24).frame(width: 320)
+    .blockPanel(opacity: 0.94, stroke: Palette.ember.opacity(0.5), radius: 16)
+    .allowsHitTesting(false)
+  }
+}
+
+struct HeroPanel: View {
+  let hero: Hero
+  let local: Bool
+  var body: some View {
+    let color = Palette.slot(hero.slot)
+    HStack(spacing: 10) {
+      RoundedRectangle(cornerRadius: 3).fill(color).frame(width: 4)
+      VStack(alignment: .leading, spacing: 5) {
+        HStack(spacing: 6) {
+          Text("P\(hero.slot + 1)").font(Fonts.mono(9)).foregroundStyle(color)
+          Text(hero.name.uppercased()).font(Fonts.mono(11)).lineLimit(1)
+          Spacer()
+          Text(local ? "YOU" : hero.connected ? "ALLY" : "AWAY")
+            .font(Fonts.eyebrow(7)).tracking(1)
+            .foregroundStyle(hero.connected ? Palette.muted : Palette.ember)
+        }
+        HStack(spacing: 6) {
+          HeartRow(hp: hero.hp, maxHP: hero.maxHP, size: 15)
+          Text("\(hero.hp)").font(Fonts.mono(10)).foregroundStyle(.white)
+            .contentTransition(.numericText())
+            .animation(.default, value: hero.hp)
+        }
+        HStack(spacing: 6) {
+          StatChip(icon: "diamond.fill", value: "\(hero.gems)", color: Palette.green)
+          StatChip(icon: "star.fill", value: hero.score.formatted(), color: Palette.gold)
+          if hero.down { StatChip(icon: "heart.slash", value: "DOWN", color: Palette.ember) }
+        }
+      }
+    }
+    .padding(.vertical, 8).padding(.horizontal, 9).frame(width: 200)
+    .fixedSize(horizontal: false, vertical: true)
+    .blockPanel(opacity: 0.86, depth: 3)
+    .opacity(hero.connected ? 1 : 0.7)
+  }
+}
+
+struct NoticeToast: View {
+  let notice: Notice
+  private var color: Color {
+    switch notice.kind {
+    case "warning", "down": return Palette.ember
+    case "clear", "artifact": return Palette.gold
+    case "equip": return Palette.violet
+    default: return Palette.blue
+    }
+  }
+  private var icon: String {
+    switch notice.kind {
+    case "warning": return "exclamationmark.triangle.fill"
+    case "down": return "heart.slash.fill"
+    case "clear": return "seal.fill"
+    case "artifact": return "bolt.fill"
+    case "equip": return "shippingbox.fill"
+    default: return "flag.fill"
+    }
+  }
+  var body: some View {
+    HStack(spacing: 8) {
+      Image(systemName: icon).font(.system(size: 11, weight: .bold))
+      Text(notice.text.uppercased()).font(Fonts.mono(11)).tracking(1.5)
+    }
+    .foregroundStyle(color).padding(.horizontal, 16).frame(height: 32)
+    .background(Capsule().fill(Palette.ink.opacity(0.9)))
+    .overlay(Capsule().stroke(color.opacity(0.6), lineWidth: 1.5))
+    .shadow(color: color.opacity(0.35), radius: 12)
+    .id(notice.id)
+    .transition(.move(edge: .top).combined(with: .opacity))
+    .allowsHitTesting(false)
+  }
+}
+
+struct ActionButton: View {
+  enum Size { case small, medium, large }
+  let label: String
+  let icon: String
+  let color: Color
+  let size: Size
+  var cooldown = 0
+  var progress: Double? = nil
+  var highlighted = false
+  var hint: String? = nil
+  let hold: (Bool) -> Void
+  let perform: () -> Void
+  @GestureState private var pressed = false
+
+  private var dimension: CGSize {
+    switch size {
+    case .small: return CGSize(width: 66, height: 40)
+    case .medium: return CGSize(width: 66, height: 66)
+    case .large: return CGSize(width: 88, height: 88)
+    }
+  }
+  private var radius: CGFloat { size == .small ? 10 : size == .medium ? 14 : 18 }
+  private var ready: Bool { cooldown == 0 }
+
+  var body: some View {
+    let face = ready ? color : color.opacity(0.35)
+    ZStack {
+      RoundedRectangle(cornerRadius: radius).fill(Palette.ink.opacity(0.9)).offset(
+        y: pressed ? 0 : 4)
+      RoundedRectangle(cornerRadius: radius).fill(
+        highlighted ? color.opacity(0.9) : Palette.panel.opacity(0.92))
+      if let progress, !highlighted {
+        RoundedRectangle(cornerRadius: radius).fill(color.opacity(0.25))
+          .mask(alignment: .bottom) { Rectangle().frame(height: dimension.height * progress) }
+      }
+      if !ready {
+        RoundedRectangle(cornerRadius: radius).fill(.black.opacity(0.5))
+      }
+      content(face: highlighted ? Palette.ink : face)
+    }
+    .frame(width: dimension.width, height: dimension.height)
+    .overlay(
+      RoundedRectangle(cornerRadius: radius)
+        .stroke(ready ? color.opacity(highlighted ? 0 : 0.75) : color.opacity(0.2), lineWidth: 2)
+    )
+    .shadow(color: highlighted ? color.opacity(0.7) : .clear, radius: 10)
+    .offset(y: pressed ? 4 : 0)
+    .scaleEffect(pressed ? 0.97 : 1)
+    .animation(.spring(duration: 0.12), value: pressed)
+    .animation(.easeInOut(duration: 0.2), value: highlighted)
+    .contentShape(Rectangle())
+    .gesture(DragGesture(minimumDistance: 0).updating($pressed) { _, state, _ in state = true })
+    .onChange(of: pressed) {
+      if pressed { Haptics.tap() }
+      hold(pressed)
+    }
+    .accessibilityLabel(label.capitalized)
+    .accessibilityAddTraits(.isButton)
+    .accessibilityAction { perform() }
+  }
+
+  @ViewBuilder
+  private func content(face: Color) -> some View {
+    switch size {
+    case .small:
+      HStack(spacing: 5) {
+        Image(systemName: icon).font(.system(size: 13, weight: .bold))
+        VStack(alignment: .leading, spacing: 0) {
+          Text(ready ? label : "\(cooldown)s").font(Fonts.mono(9))
+          if let hint, ready {
+            Text(hint).font(Fonts.eyebrow(7)).foregroundStyle(face.opacity(0.7))
+          }
+        }
+      }.foregroundStyle(face)
+    default:
+      VStack(spacing: 4) {
+        Image(systemName: icon).font(.system(size: size == .large ? 30 : 22, weight: .bold))
+        Text(ready ? label : "\(cooldown)s").font(Fonts.mono(size == .large ? 10 : 9))
+      }.foregroundStyle(face)
+    }
+  }
+}
+
+// MARK: - Gear picker
+
+struct GearPickerView: View {
+  @ObservedObject var game: GameClient
+
+  private var canEquip: Bool { game.nearChest != nil }
+
+  var body: some View {
+    ZStack {
+      Palette.ink.opacity(0.55).onTapGesture { game.gearOpen = false }
+      VStack(spacing: 14) {
+        HStack(alignment: .top) {
+          VStack(alignment: .leading, spacing: 4) {
+            Eyebrow(text: canEquip ? "CACHE OPEN  ·  ONE CARD PER HERO" : "YOUR LOADOUT")
+            Text("The Reliquary").font(Fonts.display(24))
+            Text(
+              canEquip
+                ? "Choose one card. It replaces the gear in that slot for the rest of the run."
+                : "Cards unlock at the cache that appears after each seal is broken."
+            ).font(Fonts.body(11)).foregroundStyle(Palette.muted)
+          }
+          Spacer()
+          Button {
+            game.gearOpen = false
+          } label: {
+            Image(systemName: "xmark").font(.system(size: 13, weight: .bold)).frame(
+              width: 40, height: 40)
+          }
+          .buttonStyle(QuietButtonStyle(color: .white)).accessibilityLabel("Close")
+        }
+        HStack(alignment: .top, spacing: 14) {
+          ForEach(["weapon", "bow", "armor"], id: \.self) { slot in
+            VStack(spacing: 8) {
+              slotHeader(slot)
+              HStack(spacing: 8) {
+                ForEach(GearInfo.catalogue.filter { $0.slot == slot }, id: \.choice) { gear in
+                  choiceCard(gear, equipped: equipped(slot) == gear.choice)
+                }
+              }
+            }
+          }
+        }
+        if game.automation { DriverBanner(step: game.driverStep) }
+      }
+      .padding(22).frame(width: 780)
+      .blockPanel(opacity: 0.97, stroke: Palette.gold.opacity(0.6), radius: 18)
+    }
+  }
+
+  private func equipped(_ slot: String) -> String {
+    switch slot {
+    case "weapon": return game.me?.weapon ?? "iron"
+    case "bow": return game.me?.bow ?? "oak"
+    default: return game.me?.armor ?? "scout"
+    }
+  }
+
+  private func slotHeader(_ slot: String) -> some View {
+    let label = slot == "weapon" ? "MELEE" : slot == "bow" ? "RANGED" : "ARMOR"
+    return HStack(spacing: 6) {
+      Eyebrow(text: label, color: Palette.muted, size: 8)
+      Text("·").foregroundStyle(Palette.muted)
+      Text(GearInfo.title(equipped(slot))).font(Fonts.label(10)).foregroundStyle(.white)
+    }
+  }
+
+  private func choiceCard(_ gear: GearInfo, equipped: Bool) -> some View {
+    Button {
+      Haptics.success()
+      game.equip(gear.choice)
+    } label: {
+      VStack(spacing: 8) {
+        HStack {
+          Eyebrow(
+            text: equipped ? "EQUIPPED" : "RARE", color: equipped ? Palette.green : gear.color,
+            size: 7)
+          Spacer()
+          if equipped {
+            Image(systemName: "checkmark.circle.fill").font(.system(size: 10)).foregroundStyle(
+              Palette.green)
+          }
+        }
+        GearGlyph(kind: gear.glyph, color: gear.color).frame(width: 44, height: 44)
+          .padding(8).background(RoundedRectangle(cornerRadius: 10).fill(gear.color.opacity(0.12)))
+        Text(gear.title.uppercased()).font(Fonts.mono(10)).foregroundStyle(.white)
+          .multilineTextAlignment(.center).lineLimit(1).minimumScaleFactor(0.8)
+        VStack(spacing: 2) {
+          ForEach(gear.stats, id: \.self) { stat in
+            Text(stat).font(Fonts.body(10)).foregroundStyle(Palette.muted)
+          }
+        }
+        Spacer(minLength: 0)
+        Text(equipped ? "IN USE" : canEquip ? "EQUIP" : "LOCKED")
+          .font(Fonts.mono(9)).tracking(1)
+          .foregroundStyle(canEquip && !equipped ? Palette.ink : gear.color)
+          .frame(maxWidth: .infinity).frame(height: 28)
+          .background(
+            RoundedRectangle(cornerRadius: 7)
+              .fill(canEquip && !equipped ? gear.color : gear.color.opacity(0.12)))
+      }
+      .padding(10).frame(width: 138, height: 208)
+      .background(RoundedRectangle(cornerRadius: 12).fill(.black.opacity(0.35)))
+      .overlay(
+        RoundedRectangle(cornerRadius: 12)
+          .stroke(
+            equipped ? Palette.green.opacity(0.7) : gear.color.opacity(canEquip ? 0.7 : 0.3),
+            lineWidth: 1.5)
+      )
+      .opacity(canEquip || equipped ? 1 : 0.65)
+    }
+    .buttonStyle(.plain)
+    .disabled(!canEquip || equipped)
+    .accessibilityLabel("Equip \(gear.title)")
+  }
+}
+
+// MARK: - Result
+
+struct ResultView: View {
+  @ObservedObject var game: GameClient
+
+  private var victory: Bool { game.state?.phase == "victory" }
+  private var players: [Hero] { (game.state?.players ?? []).sorted { $0.slot < $1.slot } }
+  private var topScore: Int { players.map(\.score).max() ?? 0 }
+  private var readyCount: Int { players.filter(\.ready).count }
+
+  var body: some View {
+    ZStack {
+      Palette.ink.opacity(0.5)
+      VStack(spacing: 16) {
+        VStack(spacing: 6) {
+          Eyebrow(
+            text: "EXPEDITION \(game.state?.round ?? 1)  ·  \(victory ? "COMPLETE" : "FAILED")",
+            color: victory ? Palette.gold : Palette.ember)
+          Text(victory ? "Hollowwood Restored" : "The Vanguard Falls").font(Fonts.display(32))
+            .foregroundStyle(victory ? Palette.gold : .white)
+          Text(
+            victory
+              ? "Three seals broken. The Warden defeated. Together."
+              : "No hero is left behind. Regroup and try again."
+          ).font(Fonts.body(12)).foregroundStyle(Palette.muted)
+        }
+        HStack(spacing: 14) {
+          ForEach(players) { hero in resultCard(hero) }
+        }
+        HStack(spacing: 12) {
+          Button {
+            Haptics.tap()
+            game.ready()
+          } label: {
+            HStack(spacing: 8) {
+              Image(systemName: game.me?.ready == true ? "xmark" : "arrow.clockwise")
+              Text(game.me?.ready == true ? "CANCEL REMATCH" : "REMATCH")
+            }
+          }
+          .buttonStyle(BlockButtonStyle(color: Palette.gold, prominent: game.me?.ready != true))
+          .frame(width: 240)
+          Text("\(readyCount) / 2 READY").font(Fonts.mono(10)).foregroundStyle(Palette.muted)
+          Spacer()
+          Button("LEAVE EXPEDITION") { game.leave() }.buttonStyle(QuietButtonStyle())
+        }
+        if game.automation { DriverBanner(step: game.driverStep) }
+      }
+      .padding(24).frame(width: 620)
+      .blockPanel(
+        opacity: 0.97, stroke: (victory ? Palette.gold : Palette.ember).opacity(0.6), radius: 18)
+    }
+  }
+
+  private func resultCard(_ hero: Hero) -> some View {
+    let color = Palette.slot(hero.slot)
+    let mvp = hero.score == topScore && players.count > 1
+    return VStack(alignment: .leading, spacing: 8) {
+      HStack {
+        Eyebrow(
+          text: "P\(hero.slot + 1)  ·  \(hero.id == game.identity ? "YOU" : "ALLY")", color: color,
+          size: 8)
+        Spacer()
+        if mvp {
+          Text("TOP SCORE").font(Fonts.eyebrow(7)).tracking(1).foregroundStyle(Palette.ink)
+            .padding(.horizontal, 6).frame(height: 16).background(Capsule().fill(Palette.gold))
+        }
+      }
+      Text(hero.name).font(Fonts.label(16))
+      Text(hero.score.formatted()).font(Fonts.display(30)).foregroundStyle(color)
+      HStack(spacing: 6) {
+        StatChip(icon: "figure.fencing", value: "\(hero.kills)", color: Palette.ember)
+        StatChip(icon: "diamond.fill", value: "\(hero.gems)", color: Palette.green)
+        StatChip(icon: "scope", value: "\(hero.stats.hits)", color: Palette.violet)
+        StatChip(icon: "shippingbox.fill", value: "\(hero.stats.equipment)", color: Palette.gold)
+        StatChip(icon: "heart.circle.fill", value: "\(hero.stats.revive)", color: Palette.blue)
+      }
+      HStack(spacing: 5) {
+        Image(systemName: hero.ready ? "checkmark.circle.fill" : "circle.dashed")
+        Text(hero.ready ? "Ready for rematch" : "Deciding…")
+      }.font(Fonts.body(10)).foregroundStyle(hero.ready ? Palette.green : Palette.muted)
+    }
+    .padding(14).frame(width: 279, alignment: .leading)
+    .background(RoundedRectangle(cornerRadius: 12).fill(.black.opacity(0.35)))
+    .overlay(RoundedRectangle(cornerRadius: 12).stroke(color.opacity(0.45), lineWidth: 1.5))
+  }
+}
+
+// MARK: - Pause and menu
+
+struct PauseView: View {
+  @ObservedObject var game: GameClient
+  var body: some View {
+    ZStack {
+      Palette.ink.opacity(0.45)
+      VStack(spacing: 12) {
+        Image(systemName: game.connected ? "person.2.wave.2.fill" : "wifi.exclamationmark")
+          .font(.system(size: 26)).foregroundStyle(game.connected ? Palette.blue : Palette.ember)
+        Text(game.connected ? "Waiting for your ally" : "Connection interrupted")
+          .font(Fonts.display(22))
+        Text(
+          game.connected
+            ? "The dungeon is paused until \(game.partner?.name ?? "your ally") returns. Your hero and loot are safe."
+            : "The dungeon is paused. Reconnect to resume your hero exactly where you left off."
+        ).font(Fonts.body(12)).foregroundStyle(Palette.muted).multilineTextAlignment(.center)
+        HStack(spacing: 10) {
+          if !game.connected {
+            Button {
+              game.reconnect()
+            } label: {
+              Label("RECONNECT", systemImage: "arrow.clockwise")
+            }.buttonStyle(BlockButtonStyle(color: Palette.blue)).frame(width: 200)
+          }
+          Button("LEAVE EXPEDITION") { game.leave() }.buttonStyle(QuietButtonStyle())
+        }
+      }
+      .padding(28).frame(width: 400)
+      .blockPanel(stroke: (game.connected ? Palette.blue : Palette.ember).opacity(0.5), radius: 18)
+    }
+  }
+}
+
+struct MenuView: View {
+  @ObservedObject var game: GameClient
+  var body: some View {
+    ZStack {
+      Palette.ink.opacity(0.45).onTapGesture { game.menuOpen = false }
+      VStack(spacing: 14) {
+        HStack {
+          VStack(alignment: .leading, spacing: 3) {
+            Eyebrow(text: "EXPEDITION MENU")
+            Text("Room \(game.room)").font(Fonts.display(22))
+          }
+          Spacer()
+          Button {
+            game.menuOpen = false
+          } label: {
+            Image(systemName: "xmark").font(.system(size: 13, weight: .bold)).frame(
+              width: 40, height: 40)
+          }.buttonStyle(QuietButtonStyle(color: .white)).accessibilityLabel("Close")
+        }
+        VStack(spacing: 0) {
+          row(
+            "Connection", value: game.connected ? "Live" : "Offline",
+            color: game.connected ? Palette.green : Palette.ember)
+          Divider().overlay(Palette.line)
+          row("Server", value: game.address, color: .white)
+          Divider().overlay(Palette.line)
+          row(
+            "Hero",
+            value: "P\((game.me?.slot ?? 0) + 1)  ·  \(game.name)  ·  \(game.identity.prefix(6))",
+            color: .white)
+        }
+        .background(RoundedRectangle(cornerRadius: 10).fill(.black.opacity(0.35)))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Palette.line))
+        if Launch.has("automation") {
+          Toggle(isOn: Binding(get: { game.automation }, set: { _ in game.toggleDriver() })) {
+            VStack(alignment: .leading, spacing: 2) {
+              Text("Automated input driver").font(Fonts.label(12))
+              Text("Labelled test driver that plays through the normal input path.")
+                .font(Fonts.body(10)).foregroundStyle(Palette.muted)
+            }
+          }
+          .tint(Palette.gold).padding(.horizontal, 12).frame(height: 52)
+          .background(RoundedRectangle(cornerRadius: 10).fill(.black.opacity(0.35)))
+          .overlay(RoundedRectangle(cornerRadius: 10).stroke(Palette.line))
+          .accessibilityLabel(game.automation ? "AUTO DRIVER: ON" : "AUTO DRIVER: OFF")
+        }
+        HStack(spacing: 10) {
+          Button {
+            game.menuOpen = false
+            game.reconnect()
+          } label: {
+            Label("RECONNECT", systemImage: "arrow.clockwise")
+          }.buttonStyle(BlockButtonStyle(color: Palette.blue, prominent: false))
+          Button {
+            game.leave()
+          } label: {
+            Label("EXIT EXPEDITION", systemImage: "rectangle.portrait.and.arrow.right")
+          }.buttonStyle(BlockButtonStyle(color: Palette.ember, prominent: false))
+            .accessibilityLabel("Exit")
+        }
+      }
+      .padding(22).frame(width: 440)
+      .blockPanel(opacity: 0.97, radius: 18)
+    }
+  }
+
+  private func row(_ title: String, value: String, color: Color) -> some View {
+    HStack {
+      Text(title.uppercased()).font(Fonts.eyebrow(8)).tracking(1).foregroundStyle(Palette.muted)
+      Spacer()
+      Text(value).font(Fonts.mono(10)).foregroundStyle(color).lineLimit(1)
+    }.padding(.horizontal, 12).frame(height: 34)
+  }
+}
+
+// MARK: - Joystick
 
 struct Joystick: View {
   let changed: (Double, Double) -> Void
   @State private var offset = CGSize.zero
+  @State private var active = false
+  private let radius: CGFloat = 60
+  private let travel: CGFloat = 40
+
   var body: some View {
     ZStack {
-      Circle().fill(Palette.panel.opacity(0.65))
-      Circle().stroke(.white.opacity(0.24), lineWidth: 2)
-      Circle().stroke(.white.opacity(0.07), lineWidth: 15).padding(13)
-      Image(systemName: "plus").font(.system(size: 36, weight: .ultraLight)).foregroundStyle(
-        .white.opacity(0.15))
-      Circle().fill(
-        LinearGradient(
-          colors: [Color(white: 0.42), Color(white: 0.17)],
-          startPoint: .topLeading, endPoint: .bottomTrailing)
-      )
-      .overlay(Circle().stroke(.white.opacity(0.5), lineWidth: 1))
-      .frame(width: 40, height: 40).offset(offset)
-    }.frame(width: 101, height: 101).contentShape(Circle())
-      .gesture(
-        DragGesture(minimumDistance: 0).onChanged { value in
-          let dx = value.location.x - 50.5
-          let dy = value.location.y - 50.5
-          let distance = max(1, hypot(dx, dy) / 35)
-          offset = CGSize(width: dx / distance, height: dy / distance)
-          changed(Double(offset.width / 35), Double(offset.height / 35))
-        }.onEnded { _ in
-          offset = .zero
-          changed(0, 0)
-        }
-      )
-      .accessibilityLabel("Movement joystick")
-  }
-}
-
-struct PixelHeart: Shape {
-  func path(in rect: CGRect) -> Path {
-    let points: [(CGFloat, CGFloat)] = [
-      (0, 1), (1, 1), (1, 0), (3, 0), (3, 1), (4, 1),
-      (4, 0), (6, 0), (6, 1), (7, 1), (7, 3), (6, 3), (6, 4),
-      (5, 4), (5, 5), (4, 5), (4, 6), (3, 6), (3, 5), (2, 5),
-      (2, 4), (1, 4), (1, 3), (0, 3),
-    ]
-    var path = Path()
-    for (i, p) in points.enumerated() {
-      let point = CGPoint(x: p.0 * rect.width / 7, y: p.1 * rect.height / 6)
-      if i == 0 { path.move(to: point) } else { path.addLine(to: point) }
-    }
-    path.closeSubpath()
-    return path
-  }
-}
-
-struct GearGlyph: View {
-  let kind: String
-  let color: Color
-  var body: some View {
-    Canvas { context, size in
-      let unit = size.width / 12
-      func pixel(_ x: Int, _ y: Int, _ w: Int, _ h: Int, _ fill: Color) {
-        context.fill(
-          Path(
-            CGRect(
-              x: CGFloat(x) * unit, y: CGFloat(y) * unit,
-              width: CGFloat(w) * unit, height: CGFloat(h) * unit)), with: .color(fill))
+      Circle().fill(Palette.ink.opacity(active ? 0.7 : 0.5))
+      Circle().stroke(.white.opacity(active ? 0.4 : 0.22), lineWidth: 2)
+      Circle().stroke(.white.opacity(0.06), lineWidth: 16).padding(14)
+      ForEach(0..<4) { index in
+        Image(systemName: "chevron.up").font(.system(size: 9, weight: .black))
+          .foregroundStyle(.white.opacity(0.35)).offset(y: -radius + 12)
+          .rotationEffect(.degrees(Double(index) * 90))
       }
-      if kind == "sword" {
-        for i in 0..<7 { pixel(8 - i, 1 + i, 2, 2, .white.opacity(0.9)) }
-        pixel(2, 7, 4, 1, color)
-        pixel(3, 6, 1, 4, color)
-        pixel(1, 9, 2, 2, Palette.gold)
-      } else if kind == "bow" {
-        for (x, y) in [(3, 1), (5, 2), (6, 3), (7, 4), (7, 5), (7, 6), (6, 7), (5, 8), (3, 9)] {
-          pixel(x, y, 2, 2, Palette.gold)
-        }
-        pixel(3, 1, 1, 10, .white.opacity(0.7))
-        pixel(1, 5, 10, 1, color)
-        pixel(9, 4, 2, 3, .white)
-      } else if kind == "armor" {
-        pixel(3, 2, 6, 8, color)
-        pixel(1, 2, 2, 4, .gray)
-        pixel(9, 2, 2, 4, .gray)
-        pixel(5, 1, 2, 3, Palette.panel)
-        pixel(4, 4, 4, 3, .white.opacity(0.5))
-        pixel(3, 9, 6, 1, Palette.gold)
-      } else {
-        pixel(3, 2, 6, 8, color)
-        pixel(2, 3, 8, 6, color)
-        pixel(5, 1, 2, 10, .white.opacity(0.7))
-        pixel(1, 5, 10, 2, .white.opacity(0.7))
-        pixel(4, 4, 4, 4, color)
-        pixel(5, 5, 2, 2, .white)
-      }
+      Circle()
+        .fill(
+          LinearGradient(
+            colors: [Color(white: 0.5), Color(white: 0.2)], startPoint: .topLeading,
+            endPoint: .bottomTrailing)
+        )
+        .overlay(Circle().stroke(.white.opacity(0.6), lineWidth: 1.5))
+        .shadow(color: .black.opacity(0.5), radius: 4, y: 3)
+        .frame(width: 48, height: 48).offset(offset)
+        .animation(.spring(duration: 0.15), value: active)
     }
+    .frame(width: radius * 2, height: radius * 2).contentShape(Circle())
+    .gesture(
+      DragGesture(minimumDistance: 0).onChanged { value in
+        active = true
+        let dx = value.location.x - radius
+        let dy = value.location.y - radius
+        let distance = max(1, hypot(dx, dy) / travel)
+        offset = CGSize(width: dx / distance, height: dy / distance)
+        changed(Double(offset.width / travel), Double(offset.height / travel))
+      }.onEnded { _ in
+        active = false
+        withAnimation(.spring(duration: 0.2)) { offset = .zero }
+        changed(0, 0)
+      }
+    )
+    .accessibilityLabel("Movement joystick")
   }
 }
