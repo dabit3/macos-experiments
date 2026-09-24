@@ -12,10 +12,6 @@ interface ToolbarProps {
   onEdgeStyleChange: (style: EdgeStyle) => void
   snapToGrid: boolean
   onSnapChange: (snap: boolean) => void
-  zoom: number
-  onZoomIn: () => void
-  onZoomOut: () => void
-  onFit: () => void
   canUndo: boolean
   canRedo: boolean
   onUndo: () => void
@@ -73,18 +69,17 @@ export function Toolbar(p: ToolbarProps) {
         <Logo size={30} />
         <span className="brand-text">
           <span className="brand-name">Flowchart Studio</span>
-          <span className="brand-sub">Diagram workspace</span>
         </span>
       </div>
 
       <div className="tb-group" role="group" aria-label="Tools">
-        <ToolButton icon="select" label="Select" title="Select tool (V)" active={p.tool === 'select'} onClick={() => p.onToolChange('select')} testId="tool-select" />
-        <ToolButton icon="hand" label="Pan" title="Pan tool (H) — or hold Space and drag" active={p.tool === 'pan'} onClick={() => p.onToolChange('pan')} testId="tool-pan" />
+        <ToolButton icon="select" title="Select tool (V)" active={p.tool === 'select'} onClick={() => p.onToolChange('select')} testId="tool-select" />
+        <ToolButton icon="hand" title="Pan tool (H) — or hold Space and drag" active={p.tool === 'pan'} onClick={() => p.onToolChange('pan')} testId="tool-pan" />
       </div>
 
       <div className="tb-group" role="group" aria-label="Edge style">
-        <ToolButton icon="orthogonal" label="Orthogonal" title="Orthogonal edges" active={p.edgeStyle === 'orthogonal'} onClick={() => p.onEdgeStyleChange('orthogonal')} testId="edges-orthogonal" />
-        <ToolButton icon="straight" label="Straight" title="Straight edges" active={p.edgeStyle === 'straight'} onClick={() => p.onEdgeStyleChange('straight')} testId="edges-straight" />
+        <ToolButton icon="orthogonal" title="Orthogonal edges" active={p.edgeStyle === 'orthogonal'} onClick={() => p.onEdgeStyleChange('orthogonal')} testId="edges-orthogonal" />
+        <ToolButton icon="straight" title="Straight edges" active={p.edgeStyle === 'straight'} onClick={() => p.onEdgeStyleChange('straight')} testId="edges-straight" />
       </div>
 
       <div className="tb-group" role="group" aria-label="Canvas">
@@ -99,16 +94,12 @@ export function Toolbar(p: ToolbarProps) {
         <ToolButton icon="trash" title="Delete selection (Delete)" disabled={!p.hasSelection} onClick={p.onDelete} testId="delete" />
       </div>
 
-      <div className="tb-group zoom-group" role="group" aria-label="Zoom">
-        <ToolButton icon="zoom-out" title="Zoom out (-)" onClick={p.onZoomOut} testId="zoom-out" />
-        <button type="button" className="tb-zoom" title="Fit diagram to view (Shift+1)" onClick={p.onFit} data-action="zoom-fit">
-          {Math.round(p.zoom * 100)}%
-        </button>
-        <ToolButton icon="zoom-in" title="Zoom in (+)" onClick={p.onZoomIn} testId="zoom-in" />
-        <ToolButton icon="fit" title="Fit to view (Shift+1)" onClick={p.onFit} testId="fit" />
-      </div>
-
       <div className="tb-spacer" />
+
+      <span className="tb-saved" title="Changes are saved in this browser">
+        <Icon name="check" size={14} />
+        Saved locally
+      </span>
 
       <div className="tb-group tb-group-plain" role="group" aria-label="File">
         <ToolButton icon="new" label="New" title="Clear the canvas" onClick={p.onNew} testId="new" />

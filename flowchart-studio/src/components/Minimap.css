@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   background: var(--panel);
   box-shadow: var(--shadow-md);
   overflow: hidden;
@@ -19,17 +19,18 @@
 }
 
 .minimap-view {
-  fill: color-mix(in srgb, var(--accent) 10%, transparent);
+  fill: color-mix(in srgb, var(--accent) 4%, transparent);
   stroke: var(--accent);
-  stroke-width: 1.5;
+  stroke-opacity: 0.7;
+  stroke-width: 1.25;
 }
 
 .minimap-caption {
   padding: 6px 10px;
   border-top: 1px solid var(--border);
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--text-muted);
-  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
   text-align: center;
   background: var(--panel);
 }

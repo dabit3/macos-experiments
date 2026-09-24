@@ -381,7 +381,7 @@ export function Canvas(props: CanvasProps) {
             <circle cx={GRID / 2} cy={GRID / 2} r={1.1} className="grid-dot" />
           </pattern>
           <filter id="node-shadow" x="-10%" y="-10%" width="120%" height="130%">
-            <feDropShadow dx="0" dy="1.5" stdDeviation="2" floodColor="#0f172a" floodOpacity="0.1" />
+            <feDropShadow dx="0" dy="1" stdDeviation="1.5" floodColor="#0f172a" floodOpacity="0.08" />
           </filter>
         </defs>
         <rect className="canvas-bg" width="100%" height="100%" fill="url(#grid-dots)" data-bg="true" />
@@ -440,6 +440,9 @@ export function Canvas(props: CanvasProps) {
           <div className="canvas-empty-card">
             <span className="canvas-empty-title">Start with a shape</span>
             <span className="canvas-empty-sub">Drag one in from the palette, then drag between ports to connect.</span>
+            <span className="canvas-empty-keys">
+              Press <kbd>?</kbd> for keyboard shortcuts
+            </span>
           </div>
         </div>
       )}
