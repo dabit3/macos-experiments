@@ -149,8 +149,12 @@ struct LobbyView: View {
             HStack(alignment: .top, spacing: 8) {
                 field("GUEST NAME", text: $client.name, prompt: "Guest", focus: .name)
                     .frame(maxWidth: .infinity)
-                field("ROOM CODE", text: roomBinding, prompt: "BLANK = NEW", focus: .room, code: true)
+                field("ROOM CODE", text: $client.roomCode, prompt: "BLANK = NEW", focus: .room, code: true)
                     .frame(width: 150)
+                    .onChange(of: client.roomCode) { _, value in
+                        let clean = String(value.uppercased().filter { $0.isLetter || $0.isNumber }.prefix(8))
+                        if clean != value { client.roomCode = clean }
+                    }
             }
             field("SERVER ADDRESS", text: $client.address, prompt: "ws://host:8787", focus: .server)
             Button {
@@ -171,11 +175,6 @@ struct LobbyView: View {
     }
 
     private var joining: Bool { !client.roomCode.isEmpty }
-
-    private var roomBinding: Binding<String> {
-        Binding(get: { client.roomCode },
-                set: { client.roomCode = String($0.uppercased().filter { $0.isLetter || $0.isNumber }.prefix(8)) })
-    }
 
     private func field(_ label: String, text: Binding<String>, prompt: String, focus target: Field,
                        code: Bool = false) -> some View {

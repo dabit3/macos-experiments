@@ -153,6 +153,7 @@ final class DuelClient: ObservableObject {
         socket?.cancel(with: .normalClosure, reason: nil)
         socket = nil; state = nil; token = ""; connected = false; connecting = false
         outgoing = []; sending = false; retryCount = 0
+        status = "LOCAL NETWORK / PROTOCOL 01"
     }
 
     func reconnect() { connect(rejoining: true) }
