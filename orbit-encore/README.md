@@ -91,7 +91,10 @@ SEGA's exact timing/scoring internals.
 
 ## Architecture and tests
 
-SwiftUI owns connect/lobby/game/results/help/settings screens. SpriteKit draws
+SwiftUI owns connect/lobby/game/results/help/settings screens, one file per
+screen (`App/ConnectView.swift`, `LobbyView.swift`, `GameView.swift`,
+`ResultsView.swift`) on top of the shared design system in `App/Theme.swift`
+(palette, typography, cards, buttons, chips, fields, avatars). SpriteKit draws
 the animated playfield at 60fps with real UIKit multitouch; native AVAudioPlayer
 schedules PCM playback on the audio device clock. WebSocket snapshots run at
 ~30Hz. The Node server owns chart selection, readiness, start time, note state,
