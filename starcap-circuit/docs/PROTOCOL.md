@@ -63,6 +63,14 @@ through zap/comet/gum/bubble per pickup/race. Rotating cube rows lie at samples
 1.1 seconds. Item effect ranges and drift thresholds live in the server
 rules, never accepted from clients.
 
+Racer handling (`RACERS`): 0 balanced, 1 higher acceleration/turning and lower
+top speed, 2 higher top speed and lower acceleration/turning. Drift release uses
+three tiers at 0.65/1.3/2.0 seconds of charge (boost 0.8/1.4/2.0 s) and emits
+`drift` with `tier` 1–3. Dash panels at samples 12,72,132,192 boost for 1 second,
+once per lap each, emitting `dash`. Gas held continuously from 0.2–2.0 s before
+the shared start emits `rocket` (1.2 s boost); held longer emits `stall`
+(0.6 s stun).
+
 Events have monotonically increasing `id`, `kind`, `player`, and optional `target`,
 `item`, `gate` or `time`. Last sixteen retained to avoid missed effects between
 snapshots; clients consume each event once. Gum hazards have `x,z,owner,ttl`.

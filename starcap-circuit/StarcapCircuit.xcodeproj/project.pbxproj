@@ -9,16 +9,24 @@
 /* Begin PBXBuildFile section */
 		229595EB7369F8EE19EEF77E /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BF0786F50D0B92D2E45859 /* App.swift */; };
 		4A41632F011D9F217EBA2D5C /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 143EAA58E1B26BC4D8FB3A53 /* Models.swift */; };
+		6D599CF24D5B650BEDDCEB00 /* HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E1D51E1A5F5A5C7ED6CE26A /* HUD.swift */; };
+		87AAA41A20EBAC880A9FBEFD /* Garage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31BE132E32E3BFF567E77EC /* Garage.swift */; };
+		B994991AAB82AE590C05D830 /* Results.swift in Sources */ = {isa = PBXBuildFile; fileRef = D33F79F3ACC6AABA224EAEBC /* Results.swift */; };
 		C026F22476D8CD4856845789 /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C41C225059FA82F89EADBF /* Audio.swift */; };
 		C6EC10C0D15F4393221EC8BF /* World.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFCEA72BA23BCB58E4E86912 /* World.swift */; };
+		FFE74FAEC77D981404E6FFD4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFFFFCF5B3654875F9824ACD /* Theme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		143EAA58E1B26BC4D8FB3A53 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		16BF0786F50D0B92D2E45859 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		1E1D51E1A5F5A5C7ED6CE26A /* HUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUD.swift; sourceTree = "<group>"; };
+		B31BE132E32E3BFF567E77EC /* Garage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Garage.swift; sourceTree = "<group>"; };
+		D33F79F3ACC6AABA224EAEBC /* Results.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Results.swift; sourceTree = "<group>"; };
 		E6C41C225059FA82F89EADBF /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
 		F1C8C920C8D78B76EB48DA7B /* StarcapCircuit.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = StarcapCircuit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FFCEA72BA23BCB58E4E86912 /* World.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = World.swift; sourceTree = "<group>"; };
+		FFFFFCF5B3654875F9824ACD /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -43,7 +51,11 @@
 			children = (
 				16BF0786F50D0B92D2E45859 /* App.swift */,
 				E6C41C225059FA82F89EADBF /* Audio.swift */,
+				B31BE132E32E3BFF567E77EC /* Garage.swift */,
+				1E1D51E1A5F5A5C7ED6CE26A /* HUD.swift */,
 				143EAA58E1B26BC4D8FB3A53 /* Models.swift */,
+				D33F79F3ACC6AABA224EAEBC /* Results.swift */,
+				FFFFFCF5B3654875F9824ACD /* Theme.swift */,
 				FFCEA72BA23BCB58E4E86912 /* World.swift */,
 			);
 			path = Sources;
@@ -106,7 +118,11 @@
 			files = (
 				229595EB7369F8EE19EEF77E /* App.swift in Sources */,
 				C026F22476D8CD4856845789 /* Audio.swift in Sources */,
+				87AAA41A20EBAC880A9FBEFD /* Garage.swift in Sources */,
+				6D599CF24D5B650BEDDCEB00 /* HUD.swift in Sources */,
 				4A41632F011D9F217EBA2D5C /* Models.swift in Sources */,
+				B994991AAB82AE590C05D830 /* Results.swift in Sources */,
+				FFE74FAEC77D981404E6FFD4 /* Theme.swift in Sources */,
 				C6EC10C0D15F4393221EC8BF /* World.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -11,6 +11,7 @@ final class RaceWorld {
   private var kartNodes: [String: SCNNode] = [:]
   private var itemNodes: [SCNNode] = []
   private var previewKart = SCNNode()
+  private var previewRacer = 0
   private var lastHazards = -1
   private var lastRace = -1
   private var cameraReady = false
@@ -119,7 +120,21 @@ final class RaceWorld {
       night
       ? UIColor(red: 0.19, green: 0.1, blue: 0.39, alpha: 1)
       : UIColor(red: 0.26, green: 0.73, blue: 0.97, alpha: 1)
-    scene.background.contents = sky
+    scene.background.contents = UIGraphicsImageRenderer(size: CGSize(width: 8, height: 256)).image {
+      context in
+      let top =
+        night
+        ? UIColor(red: 0.08, green: 0.04, blue: 0.25, alpha: 1)
+        : UIColor(red: 0.1, green: 0.48, blue: 0.95, alpha: 1)
+      let colors = [top.cgColor, sky.cgColor, UIColor.white.withAlphaComponent(1).cgColor]
+      let gradient = CGGradient(
+        colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors as CFArray,
+        locations: [0, 0.62, 1])
+      if let gradient {
+        context.cgContext.drawLinearGradient(
+          gradient, start: .zero, end: CGPoint(x: 0, y: 256), options: [])
+      }
+    }
     scene.fogColor = sky
     scene.fogStartDistance = 190
     scene.fogEndDistance = 440
@@ -214,11 +229,88 @@ final class RaceWorld {
         itemNodes.append(root)
       }
     }
-    previewKart = makeKart(racer: 0)
+    for index in [12, 72, 132, 192] { dashPanel(index: index, night: night) }
+    preview(racer: previewRacer)
+  }
+
+  func preview(racer: Int) {
+    previewRacer = racer
+    previewKart.removeFromParentNode()
+    previewKart = makeKart(racer: racer)
     let p = Course.point(track, 0)
     previewKart.position = SCNVector3(p.x, 0.15, p.z)
-    previewKart.eulerAngles.y = Float(Course.heading(track, 0))
     racersRoot.addChildNode(previewKart)
+    previewKart.scale = SCNVector3(0.6, 0.6, 0.6)
+    previewKart.runAction(
+      .sequence([
+        .scale(to: 1.12, duration: 0.14), .scale(to: 1, duration: 0.12),
+      ]))
+  }
+
+  private func dashPanel(index: Int, night: Bool) {
+    let p = Course.point(track, Double(index))
+    let root = SCNNode()
+    root.position = SCNVector3(p.x, 0.07, p.z)
+    root.eulerAngles.y = Float(Course.heading(track, Double(index)))
+    courseRoot.addChildNode(root)
+    let image = UIGraphicsImageRenderer(size: CGSize(width: 128, height: 128)).image { context in
+      UIColor(red: 1, green: 0.45, blue: 0.05, alpha: 1).setFill()
+      context.fill(CGRect(x: 0, y: 0, width: 128, height: 128))
+      UIColor(red: 1, green: 0.92, blue: 0.3, alpha: 1).setFill()
+      for row in 0..<3 {
+        let y = CGFloat(row) * 42 + 8
+        let chevron = UIBezierPath()
+        chevron.move(to: CGPoint(x: 14, y: y))
+        chevron.addLine(to: CGPoint(x: 64, y: y + 26))
+        chevron.addLine(to: CGPoint(x: 114, y: y))
+        chevron.addLine(to: CGPoint(x: 114, y: y + 12))
+        chevron.addLine(to: CGPoint(x: 64, y: y + 38))
+        chevron.addLine(to: CGPoint(x: 14, y: y + 12))
+        chevron.close()
+        chevron.fill()
+      }
+    }
+    let plane = SCNPlane(width: 6.2, height: 5)
+    let mat = SCNMaterial()
+    mat.diffuse.contents = image
+    mat.emission.contents = image
+    mat.emission.intensity = night ? 0.9 : 0.45
+    mat.isDoubleSided = true
+    plane.materials = [mat]
+    let node = SCNNode(geometry: plane)
+    node.eulerAngles.x = -.pi / 2
+    root.addChildNode(node)
+    node.runAction(
+      .repeatForever(
+        .sequence([.fadeOpacity(to: 0.7, duration: 0.35), .fadeOpacity(to: 1, duration: 0.35)])))
+  }
+
+  private func nameTag(_ name: String, color: UIColor) -> SCNNode {
+    let font = UIFont.systemFont(ofSize: 34, weight: .black)
+    let textSize = (name as NSString).size(withAttributes: [.font: font])
+    let size = CGSize(width: textSize.width + 44, height: 58)
+    let image = UIGraphicsImageRenderer(size: size).image { _ in
+      let pill = UIBezierPath(
+        roundedRect: CGRect(origin: .zero, size: size).insetBy(dx: 3, dy: 3), cornerRadius: 26)
+      color.setFill()
+      pill.fill()
+      ink.setStroke()
+      pill.lineWidth = 5
+      pill.stroke()
+      (name as NSString).draw(
+        at: CGPoint(x: 22, y: (size.height - textSize.height) / 2),
+        withAttributes: [.font: font, .foregroundColor: UIColor.white])
+    }
+    let plane = SCNPlane(width: size.width / 58 * 0.9, height: 0.9)
+    let mat = SCNMaterial()
+    mat.diffuse.contents = image
+    mat.lightingModel = .constant
+    mat.isDoubleSided = true
+    plane.materials = [mat]
+    let node = SCNNode(geometry: plane)
+    node.constraints = [SCNBillboardConstraint()]
+    node.renderingOrder = 10
+    return node
   }
 
   private func ribbon(
@@ -452,16 +544,29 @@ final class RaceWorld {
   }
 
   func update(state: RaceState?, playerID: String, time: Double) {
+    for (i, node) in itemNodes.enumerated() {
+      let hue = (time * 0.25 + Double(i) * 0.08).truncatingRemainder(dividingBy: 1)
+      node.childNodes.first?.geometry?.firstMaterial?.emission.contents = UIColor(
+        hue: hue, saturation: 0.8, brightness: 0.55, alpha: 1)
+    }
     guard let state, let me = state.players.first(where: { $0.id == playerID }),
       ["racing", "countdown", "results"].contains(state.phase)
     else {
       previewKart.isHidden = false
       let p = Course.point(track, 0)
-      let angle = time * 0.15
-      cameraNode.position = SCNVector3(p.x + sin(angle) * 11, 6, p.z + cos(angle) * 11)
+      let h = Course.heading(track, 0)
+      previewKart.eulerAngles.y = Float(h + 0.65 + sin(time * 0.6) * 0.55)
+      previewKart.position.y = 0.15 + Float(abs(sin(time * 2.2)) * 0.08)
+      let side = 6.4
+      let baseX = p.x + cos(h) * side
+      let baseZ = p.z - sin(h) * side
+      let cameraX = baseX + sin(h) * 12.5
+      let cameraZ = baseZ + cos(h) * 12.5
+      cameraNode.position = SCNVector3(cameraX, 3.1, cameraZ)
       cameraNode.look(
-        at: SCNVector3(p.x, 1.7, p.z), up: SCNVector3(0, 1, 0),
+        at: SCNVector3(baseX, 1.9, baseZ), up: SCNVector3(0, 1, 0),
         localFront: SCNVector3(0, 0, -1))
+      cameraNode.camera?.fieldOfView = 60
       return
     }
     previewKart.isHidden = true
@@ -479,10 +584,10 @@ final class RaceWorld {
         racersRoot.addChildNode(node)
         node.position = SCNVector3(p.x, 0.15, p.z)
         node.eulerAngles.y = Float(p.heading)
-        let label = text(
-          p.name.uppercased(), size: 0.62, color: .white, parent: node,
-          position: SCNVector3(0, 5.5, 0))
-        label.constraints = [SCNBillboardConstraint()]
+        let tag = nameTag(p.name.uppercased(), color: colors[min(2, max(0, p.racer))])
+        tag.position = SCNVector3(0, 5.4, 0)
+        tag.isHidden = p.id == playerID
+        node.addChildNode(tag)
       }
       let factor: Float = 0.42
       node.position.x += (Float(p.x) - node.position.x) * factor
@@ -490,7 +595,8 @@ final class RaceWorld {
       node.position.y = 0.15 + Float(sin(time * 17) * min(0.05, p.speed / 400))
       let turn = wrappedAngle(p.heading - Double(node.eulerAngles.y))
       node.eulerAngles.y += Float(turn) * factor
-      node.eulerAngles.z = p.drifting ? Float(sin(time * 6) * 0.04) : 0
+      node.eulerAngles.z =
+        p.drifting ? Float(sin(time * 6) * 0.04) - Float(turn) * 0.9 : -Float(turn) * 0.6
       for flame in node.childNodes where flame.name == "flame" {
         flame.isHidden = p.boost <= 0
         flame.scale.y = 0.7 + Float(sin(time * 45) * 0.3)
@@ -498,9 +604,21 @@ final class RaceWorld {
       node.childNode(withName: "shield", recursively: false)?.isHidden = p.shield <= 0
       let sparks = node.childNode(withName: "sparks", recursively: false)
       sparks?.isHidden = !p.drifting
+      let tier = Turbo.tier(p.charge)
+      let sparkColor: UIColor =
+        switch tier {
+        case 0: UIColor.white.withAlphaComponent(0.6)
+        case 1: UIColor(red: 0.25, green: 0.7, blue: 1, alpha: 1)
+        case 2: UIColor.systemOrange
+        default:
+          UIColor(
+            hue: (time * 2).truncatingRemainder(dividingBy: 1), saturation: 0.7, brightness: 1,
+            alpha: 1)
+        }
+      sparks?.scale = SCNVector3(1, 0.7 + Float(tier) * 0.35, 1 + Float(tier) * 0.25)
       for spark in sparks?.childNodes ?? [] {
-        spark.geometry?.firstMaterial?.emission.contents =
-          p.charge > 1.5 ? UIColor.systemOrange : UIColor.cyan
+        spark.geometry?.firstMaterial?.emission.contents = sparkColor
+        spark.geometry?.firstMaterial?.diffuse.contents = sparkColor
         spark.opacity = 0.5 + CGFloat(abs(sin(time * 32 + Double(spark.position.z)))) * 0.5
       }
       node.opacity = p.connected ? 1 : 0.35
@@ -515,7 +633,7 @@ final class RaceWorld {
       lastHazards = state.hazards.count
     }
     let h = me.heading
-    let target = SCNVector3(me.x - sin(h) * 10.5, 6.9, me.z - cos(h) * 10.5)
+    let target = SCNVector3(me.x - sin(h) * 9.6, 5.4, me.z - cos(h) * 9.6)
     if !cameraReady {
       cameraNode.position = target
       cameraReady = true
@@ -524,9 +642,11 @@ final class RaceWorld {
     cameraNode.position.z += (target.z - cameraNode.position.z) * 0.22
     cameraNode.position.y += (target.y - cameraNode.position.y) * 0.22
     cameraNode.look(
-      at: SCNVector3(me.x + sin(h) * 7, 1.5, me.z + cos(h) * 7),
+      at: SCNVector3(me.x + sin(h) * 7, 1.9, me.z + cos(h) * 7),
       up: SCNVector3(0, 1, 0), localFront: SCNVector3(0, 0, -1))
-    cameraNode.camera?.fieldOfView = me.boost > 0 ? 76 : 68
+    let fov = (me.boost > 0 ? 80.0 : 66.0) + min(4, me.speed / 10)
+    let current = Double(cameraNode.camera?.fieldOfView ?? 66)
+    cameraNode.camera?.fieldOfView = CGFloat(current + (fov - current) * 0.12)
     if state.phase == "results"
       && courseRoot.childNode(withName: "confetti", recursively: false) == nil
     {

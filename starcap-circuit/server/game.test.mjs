@@ -2,7 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { once } from "node:events";
 import { WebSocket } from "ws";
-import { createPlayer, inputPlayer, resetRace, tick, driver, snapshot, useItem, trackPoint } from "./game.mjs";
+import { createPlayer, inputPlayer, resetRace, tick, driver, snapshot, useItem, trackPoint, tangent } from "./game.mjs";
+const tangentAt = index => tangent(0, index);
 import { startServer } from "./server.mjs";
 
 function fixture(track = 0) {
@@ -106,4 +107,56 @@ test("real WebSocket room limits, shared countdown, token rejoin, stale socket p
     const live = await waitMessage(replacement, m => m.type === "state");
     assert.equal(live.players.find(p => p.id === a.response.id).connected, true);
   } finally { peers.forEach(p => p.terminate()); await host.close(); }
+});
+
+test("rocket start rewards gas held from the 2 count and stalls gas held from the 3", () => {
+  const room = fixture(); resetRace(room, 0);
+  const a = room.players.get("a"), b = room.players.get("b");
+  inputPlayer(a, { seq: 1, steer: 0, throttle: 1 }, 2200);
+  inputPlayer(b, { seq: 1, steer: 0, throttle: 1 }, 600);
+  inputPlayer(b, { seq: 2, steer: 0, throttle: 1 }, 3300);
+  inputPlayer(a, { seq: 2, steer: 0, throttle: 1 }, 3400);
+  tick(room, 3500);
+  assert.equal(room.phase, "racing");
+  assert.ok(a.boost > 1 && a.speed > 19, JSON.stringify(a));
+  assert.ok(b.stun > 0 && b.boost === 0);
+  assert.deepEqual(room.events.map(e => e.kind), ["rocket", "stall"]);
+});
+
+test("drift charge releases blue, orange and ultra turbo tiers with increasing boost", () => {
+  const boosts = [0.8, 1.5, 2.2].map((seconds, n) => {
+    const room = fixture(); resetRace(room, 0); room.phase = "racing";
+    const p = room.players.get("a"); p.speed = 30;
+    let now = 4000, seq = 1;
+    for (; now < 4000 + seconds * 1000; now += 1000 / 30) {
+      inputPlayer(p, { seq: seq++, steer: 0.3, throttle: 1, drift: true }, now); tick(room, now);
+      Object.assign(p, trackPoint(0, 10), { heading: 0, index: 10 });
+    }
+    inputPlayer(p, { seq: seq++, steer: 0, throttle: 1, drift: false }, now); tick(room, now);
+    assert.equal(room.events.find(e => e.kind === "drift").tier, n + 1);
+    return p.boost;
+  });
+  assert.ok(boosts[0] < boosts[1] && boosts[1] < boosts[2], String(boosts));
+});
+
+test("dash panels boost once per lap and racer stats change real handling", () => {
+  const room = fixture(); resetRace(room, 0); room.phase = "racing";
+  const p = room.players.get("a");
+  Object.assign(p, trackPoint(0, 11.6), { heading: tangentAt(11.6), index: 11, progress: 11, speed: 20 });
+  inputPlayer(p, { seq: 1, steer: 0, throttle: 1 }, 5000); tick(room, 5000);
+  assert.ok(p.boost > 0.9);
+  assert.equal(room.events.filter(e => e.kind === "dash").length, 1);
+  p.boost = 0; inputPlayer(p, { seq: 2, steer: 0, throttle: 1 }, 5033); tick(room, 5033);
+  assert.equal(room.events.filter(e => e.kind === "dash").length, 1);
+  const top = racer => {
+    const r = fixture(); resetRace(r, 0); r.phase = "racing";
+    const k = r.players.get("a"); k.racer = racer;
+    for (let f = 0; f < 150; f++) {
+      const now = 4000 + f * 1000 / 30;
+      Object.assign(k, trackPoint(0, 40), { heading: tangentAt(40), index: 40, progress: 40 });
+      inputPlayer(k, { seq: f + 1, steer: 0, throttle: 1 }, now); tick(r, now);
+    }
+    return k.speed;
+  };
+  assert.ok(top(2) > top(0) && top(0) > top(1), [top(0), top(1), top(2)].join());
 });
