@@ -299,7 +299,7 @@ struct SurgeForecast: View {
         context.fill(
           Path(
             roundedRect: CGRect(
-              x: CGFloat(index) * width, y: (size.height - height) / 2, width: max(1, width - 1),
+              x: CGFloat(index) * width, y: (size.height - height) / 2, width: width + 0.5,
               height: height), cornerRadius: 1),
           with: .color(color))
       }

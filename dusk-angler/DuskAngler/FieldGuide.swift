@@ -32,10 +32,13 @@ struct CatchView: View {
         IconButton(
           systemImage: "xmark", label: "Back to shore", identifier: "result-home", action: home)
       }
-      ScrollView {
-        CatchCard(record: record)
-          .scaleEffect(arrived || reduceMotion ? 1 : 0.92)
-          .opacity(arrived ? 1 : 0)
+      GeometryReader { geometry in
+        ScrollView {
+          CatchCard(record: record)
+            .scaleEffect(arrived || reduceMotion ? 1 : 0.92)
+            .opacity(arrived ? 1 : 0)
+            .frame(minHeight: geometry.size.height)
+        }
       }
       .scrollIndicators(.visible)
       .scrollBounceBehavior(.basedOnSize)
