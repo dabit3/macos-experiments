@@ -46,7 +46,7 @@ const FINISH_HINTS = { matte: 'Soft leather', suede: 'Napped velvet', gloss: 'Pa
 const LABEL_HINTS = { embroidered: 'Satin thread', debossed: 'Pressed leather', foil: 'Hot-stamped' }
 
 /** The heel label as it renders on the shoe, flattened onto the tab colour. */
-function useLabelPreview(text: string, ink: string, style: LabelStyle, tab: string) {
+function LabelPreview({ text, ink, style, tab }: { text: string; ink: string; style: LabelStyle; tab: string }) {
   const ref = useRef<HTMLCanvasElement>(null)
   useEffect(() => {
     const ctx = ref.current?.getContext('2d')
@@ -65,7 +65,15 @@ function useLabelPreview(text: string, ink: string, style: LabelStyle, tab: stri
     ctx.fill()
     ctx.drawImage(art.color, 0, 0)
   }, [text, ink, style, tab])
-  return ref
+  return (
+    <canvas
+      ref={ref}
+      width={LABEL_W}
+      height={LABEL_H}
+      role="img"
+      aria-label={`Heel label preview: ${text || 'brand mark'}`}
+    />
+  )
 }
 
 export function Sidebar({
@@ -85,7 +93,6 @@ export function Sidebar({
   const id = selected ?? 'upper'
   const current = config.parts[id]
   const index = PART_IDS.indexOf(id)
-  const labelPreview = useLabelPreview(config.text, config.ink, config.label, config.parts.heel.color)
   const activeLook = LOOKS.find((look) =>
     PART_IDS.every(
       (p) => look.parts[p].color === config.parts[p].color && look.parts[p].finish === config.parts[p].finish,
@@ -299,13 +306,7 @@ export function Sidebar({
             <h3>Leave your mark.</h3>
             <p>A name, a number, a reminder — finished on the heel tab by hand.</p>
             <figure className="label-preview" data-testid="label-preview">
-              <canvas
-                ref={labelPreview}
-                width={LABEL_W}
-                height={LABEL_H}
-                role="img"
-                aria-label={`Heel label preview: ${config.text || 'brand mark'}`}
-              />
+              <LabelPreview text={config.text} ink={config.ink} style={config.label} tab={config.parts.heel.color} />
               <figcaption>
                 {LABEL_STYLE_LABELS[config.label]} · {config.text || 'Brand mark'}
               </figcaption>
