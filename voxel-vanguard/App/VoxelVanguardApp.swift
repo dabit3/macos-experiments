@@ -45,7 +45,7 @@ struct VanguardView: View {
         LinearGradient(
           colors: [.black.opacity(inMatch ? 0.55 : 0.7), .clear, .clear, .black.opacity(0.7)],
           startPoint: .top, endPoint: .bottom
-        ).allowsHitTesting(false)
+        ).ignoresSafeArea().allowsHitTesting(false)
         if !inMatch {
           Palette.ink.opacity(0.35).allowsHitTesting(false)
         }
@@ -53,7 +53,7 @@ struct VanguardView: View {
           colors: [.clear, Palette.heart.opacity(0.75)], center: .center, startRadius: 120,
           endRadius: 520
         )
-        .opacity(damageFlash).allowsHitTesting(false)
+        .ignoresSafeArea().opacity(damageFlash).allowsHitTesting(false)
         ZStack {
           if game.state == nil {
             EntryView(game: game)

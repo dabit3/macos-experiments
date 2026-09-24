@@ -191,9 +191,14 @@ final class GameClient: ObservableObject {
     }
     if reply.type == "state", let snapshot = try? decoder.decode(Snapshot.self, from: data) {
       let previousHP = me?.hp
+      let previousRound = state?.round
       state = snapshot
       world.apply(snapshot, identity: identity)
-      if let previousHP, let hp = me?.hp, hp < previousHP { damagePulse += 1 }
+      if let previousHP, let hp = me?.hp, hp < previousHP, snapshot.phase == "playing",
+        snapshot.round == previousRound
+      {
+        damagePulse += 1
+      }
       for event in snapshot.events where event.id > lastEvent {
         sound.play(event.kind)
         lastEvent = max(lastEvent, event.id)
