@@ -14,10 +14,14 @@ enum ArcadeAudio {
         })
     }()
 
+    static var enabled = true
+
     static func play(_ cue: Cue) {
-        let player = players[cue]
-        player?.currentTime = 0
-        player?.play()
+        if enabled {
+            let player = players[cue]
+            player?.currentTime = 0
+            player?.play()
+        }
         if cue == .tap { UISelectionFeedbackGenerator().selectionChanged() }
         if cue == .deploy { UIImpactFeedbackGenerator(style: .light).impactOccurred() }
     }

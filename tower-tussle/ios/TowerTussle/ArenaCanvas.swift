@@ -13,12 +13,13 @@ private func hash(_ x: Int, _ y: Int, _ salt: Int = 0) -> Double {
 struct ArenaCanvas: View {
     @ObservedObject var engine: BattleEngine
     let scale: CGFloat
+    var hover: Vec? = nil
 
     var body: some View {
         ZStack {
             ArenaGround(scale: scale).equatable()
             Canvas(rendersAsynchronously: false) { ctx, size in
-                let painter = ArenaPainter(engine: engine, scale: scale)
+                let painter = ArenaPainter(engine: engine, scale: scale, hover: hover)
                 painter.drawDynamic(&ctx, size: size)
             }
         }
@@ -38,6 +39,7 @@ struct ArenaGround: View, Equatable {
 struct ArenaPainter {
     let engine: BattleEngine
     let scale: CGFloat
+    var hover: Vec? = nil
 
     private func pt(_ v: Vec) -> CGPoint { CGPoint(x: v.x * scale, y: v.y * scale) }
     private func len(_ d: Double) -> CGFloat { d * scale }
@@ -205,6 +207,31 @@ struct ArenaPainter {
         for e in engine.effects where e.kind == .towerFall || (e.kind != .deploy && e.landed) { drawEffect(&ctx, e) }
         for p in engine.particles where !(p.kind == .dust || p.kind == .debris || p.kind == .bone) { drawParticle(&ctx, p) }
         drawFloatingTexts(&ctx)
+        drawGhost(&ctx)
+    }
+
+    /// Placement preview that follows the finger while a card is selected.
+    private func drawGhost(_ ctx: inout GraphicsContext) {
+        guard let hover, let card = engine.selectedCard, engine.result == nil else { return }
+        let valid = engine.isValidDeploy(card, at: hover) && engine.canAfford(card)
+        let color = valid ? Theme.player : Theme.enemy
+        let c = pt(hover)
+        let r = card.kind == .spell ? len(card.radius) : len(1.1)
+        let pulse = 0.5 + 0.5 * sin(engine.elapsed * 6)
+        ctx.fill(Art.circle(c.x, c.y, r), with: .color(color.opacity(0.18 + 0.08 * pulse)))
+        ctx.stroke(Art.circle(c.x, c.y, r), with: .color(color.opacity(0.9)), style: StrokeStyle(lineWidth: 2.5, dash: [6, 4], dashPhase: CGFloat(engine.elapsed * 30)))
+        var cross = Path()
+        cross.move(to: CGPoint(x: c.x - len(0.5), y: c.y)); cross.addLine(to: CGPoint(x: c.x + len(0.5), y: c.y))
+        cross.move(to: CGPoint(x: c.x, y: c.y - len(0.5))); cross.addLine(to: CGPoint(x: c.x, y: c.y + len(0.5)))
+        ctx.stroke(cross, with: .color(.white.opacity(0.9)), style: StrokeStyle(lineWidth: 2, lineCap: .round))
+        if card.kind == .troop {
+            if let frame = RenderedArt.frames[card.id]?.first {
+                let size = len(card.count > 1 ? 2.4 : 3.0)
+                var g = ctx
+                g.opacity = valid ? 0.75 : 0.35
+                g.draw(frame, in: CGRect(x: c.x - size / 2, y: c.y - size * 0.85, width: size, height: size))
+            }
+        }
     }
 
     private func drawWater(_ ctx: inout GraphicsContext, size: CGSize) {

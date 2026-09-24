@@ -154,3 +154,47 @@ data class MatchResult(
     val goldDelta: Int,
     val durationSeconds: Int,
 )
+
+/** Trophy tiers that give the player a sense of progression between battles. */
+data class League(val name: String, val minTrophies: Int, val color: Color) {
+    val next: League? get() = all.getOrNull(all.indexOf(this) + 1)
+
+    /** 0..1 progress from this league's floor to the next league. */
+    fun progress(trophies: Int): Double {
+        val n = next ?: return 1.0
+        return ((trophies - minTrophies).toDouble() / (n.minTrophies - minTrophies)).coerceIn(0.0, 1.0)
+    }
+
+    companion object {
+        val all = listOf(
+            League("Sky Rookie", 0, Color(0.55f, 0.75f, 0.9f)),
+            League("Cloud Squire", 60, Color(0.45f, 0.85f, 0.75f)),
+            League("Storm Knight", 160, Color(0.4f, 0.65f, 1.0f)),
+            League("Sun Champion", 320, Color(1.0f, 0.75f, 0.3f)),
+            League("Star Legend", 560, Color(0.95f, 0.6f, 1.0f)),
+        )
+
+        fun forTrophies(trophies: Int): League = all.last { trophies >= it.minTrophies }
+    }
+}
+
+object BattleTips {
+    private val afterDefeat = listOf(
+        "Wait for 10 elixir before starting a big push.",
+        "Volley clears Bone Brigade and Gremlins in one cast.",
+        "Drop the Colossus at the back so support catches up.",
+        "Archers and Sharpshooter can shoot the flying Whelp.",
+        "Defend on your side first: your towers help you fight.",
+    )
+    private val afterVictory = listOf(
+        "Keep your average elixir under 4 for faster cycles.",
+        "Meteor on a crowded bridge swings the whole match.",
+        "A tower with low health is worth a Meteor at 35%.",
+        "Double elixir starts in the last minute: go all in.",
+    )
+
+    fun tip(outcome: MatchOutcome, seed: Int): String {
+        val pool = if (outcome == MatchOutcome.DEFEAT) afterDefeat else afterVictory
+        return pool[Math.floorMod(seed, pool.size)]
+    }
+}

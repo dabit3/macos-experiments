@@ -11,6 +11,7 @@ class ArcadeAudio(context: Context) {
         .build()
     private val ready = mutableSetOf<Int>()
     private val sounds = mutableMapOf<String, Int>()
+    var enabled = true
 
     init {
         pool.setOnLoadCompleteListener { _, id, status -> if (status == 0) ready.add(id) }
@@ -20,6 +21,7 @@ class ArcadeAudio(context: Context) {
     }
 
     fun play(name: String) {
+        if (!enabled) return
         val id = sounds[name] ?: return
         if (id in ready) pool.play(id, 0.7f, 0.7f, 1, 0, 1f)
     }

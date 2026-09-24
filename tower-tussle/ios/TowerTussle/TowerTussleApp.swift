@@ -47,7 +47,7 @@ struct RootView: View {
                 HomeView(onBattle: startBattle, onCards: { screen = .cards })
                     .transition(.opacity)
             case .cards:
-                CardsView(onBack: { screen = .home })
+                CardsView(onBack: { screen = .home }, onBattle: startBattle)
                     .transition(.move(edge: .trailing))
             case .battle:
                 if let engine {
@@ -61,7 +61,7 @@ struct RootView: View {
                 }
             case .results:
                 if let lastResult {
-                    ResultsView(result: lastResult, onHome: { screen = .home }, onRematch: startBattle)
+                    ResultsView(result: lastResult, onHome: { screen = .home }, onCards: { screen = .cards }, onRematch: startBattle)
                         .transition(.opacity)
                 }
             }

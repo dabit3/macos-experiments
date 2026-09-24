@@ -10,6 +10,12 @@ enum IconKind {
     case swords
     case cards
     case clock
+    case help
+    case sound(on: Bool)
+    case pause
+    case swap
+    case flame
+    case shield
 }
 
 struct IconView: View {
@@ -42,6 +48,75 @@ struct IconView: View {
                 hands.move(to: c); hands.addLine(to: CGPoint(x: c.x, y: c.y - d * 0.3))
                 hands.move(to: c); hands.addLine(to: CGPoint(x: c.x + d * 0.22, y: c.y))
                 ctx.stroke(hands, with: .color(Art.outline), style: StrokeStyle(lineWidth: max(1, d * 0.07), lineCap: .round))
+            case .help:
+                Art.ball(&ctx, cx: c.x, cy: c.y, r: d * 0.45, color: Theme.player, dark: Art.teamDark(.player), line: max(1, d * 0.07))
+                var q = Path()
+                q.addArc(center: CGPoint(x: c.x, y: c.y - d * 0.12), radius: d * 0.15, startAngle: .degrees(200), endAngle: .degrees(60), clockwise: false)
+                q.addLine(to: CGPoint(x: c.x, y: c.y + d * 0.1))
+                ctx.stroke(q, with: .color(.white), style: StrokeStyle(lineWidth: max(1.5, d * 0.1), lineCap: .round))
+                ctx.fill(Art.circle(c.x, c.y + d * 0.28, d * 0.065), with: .color(.white))
+            case .sound(let on):
+                var horn = Path()
+                horn.move(to: CGPoint(x: c.x - d * 0.42, y: c.y - d * 0.14))
+                horn.addLine(to: CGPoint(x: c.x - d * 0.22, y: c.y - d * 0.14))
+                horn.addLine(to: CGPoint(x: c.x + d * 0.02, y: c.y - d * 0.36))
+                horn.addLine(to: CGPoint(x: c.x + d * 0.02, y: c.y + d * 0.36))
+                horn.addLine(to: CGPoint(x: c.x - d * 0.22, y: c.y + d * 0.14))
+                horn.addLine(to: CGPoint(x: c.x - d * 0.42, y: c.y + d * 0.14))
+                horn.closeSubpath()
+                ctx.fill(horn, with: .color(.white))
+                ctx.stroke(horn, with: .color(Art.outline), style: StrokeStyle(lineWidth: max(1, d * 0.06), lineJoin: .round))
+                if on {
+                    for (r, a) in [(0.2, 0.9), (0.34, 0.6)] {
+                        var wave = Path()
+                        wave.addArc(center: CGPoint(x: c.x + d * 0.06, y: c.y), radius: d * r, startAngle: .degrees(-40), endAngle: .degrees(40), clockwise: false)
+                        ctx.stroke(wave, with: .color(.white.opacity(a)), style: StrokeStyle(lineWidth: max(1.5, d * 0.08), lineCap: .round))
+                    }
+                } else {
+                    var x = Path()
+                    x.move(to: CGPoint(x: c.x + d * 0.14, y: c.y - d * 0.16)); x.addLine(to: CGPoint(x: c.x + d * 0.42, y: c.y + d * 0.16))
+                    x.move(to: CGPoint(x: c.x + d * 0.42, y: c.y - d * 0.16)); x.addLine(to: CGPoint(x: c.x + d * 0.14, y: c.y + d * 0.16))
+                    ctx.stroke(x, with: .color(Theme.enemy), style: StrokeStyle(lineWidth: max(1.5, d * 0.1), lineCap: .round))
+                }
+            case .pause:
+                for dx in [-0.18, 0.18] {
+                    let r = CGRect(x: c.x + d * dx - d * 0.1, y: c.y - d * 0.32, width: d * 0.2, height: d * 0.64)
+                    ctx.fill(Art.rounded(r, d * 0.06), with: .color(.white))
+                    ctx.stroke(Art.rounded(r, d * 0.06), with: .color(Art.outline), lineWidth: max(1, d * 0.06))
+                }
+            case .swap:
+                for (dir, dy) in [(1.0, -0.18), (-1.0, 0.18)] {
+                    var p = Path()
+                    p.move(to: CGPoint(x: c.x - dir * d * 0.36, y: c.y + d * dy))
+                    p.addLine(to: CGPoint(x: c.x + dir * d * 0.3, y: c.y + d * dy))
+                    p.move(to: CGPoint(x: c.x + dir * d * 0.14, y: c.y + d * dy - d * 0.14))
+                    p.addLine(to: CGPoint(x: c.x + dir * d * 0.32, y: c.y + d * dy))
+                    p.addLine(to: CGPoint(x: c.x + dir * d * 0.14, y: c.y + d * dy + d * 0.14))
+                    ctx.stroke(p, with: .color(Art.outline), style: StrokeStyle(lineWidth: max(2, d * 0.2), lineCap: .round, lineJoin: .round))
+                    ctx.stroke(p, with: .color(.white), style: StrokeStyle(lineWidth: max(1, d * 0.1), lineCap: .round, lineJoin: .round))
+                }
+            case .flame:
+                var f = Path()
+                f.move(to: CGPoint(x: c.x, y: c.y - d * 0.46))
+                f.addQuadCurve(to: CGPoint(x: c.x + d * 0.36, y: c.y + d * 0.12), control: CGPoint(x: c.x + d * 0.42, y: c.y - d * 0.3))
+                f.addQuadCurve(to: CGPoint(x: c.x, y: c.y + d * 0.46), control: CGPoint(x: c.x + d * 0.36, y: c.y + d * 0.5))
+                f.addQuadCurve(to: CGPoint(x: c.x - d * 0.36, y: c.y + d * 0.12), control: CGPoint(x: c.x - d * 0.36, y: c.y + d * 0.5))
+                f.addQuadCurve(to: CGPoint(x: c.x - d * 0.06, y: c.y - d * 0.1), control: CGPoint(x: c.x - d * 0.42, y: c.y - d * 0.2))
+                f.addQuadCurve(to: CGPoint(x: c.x, y: c.y - d * 0.46), control: CGPoint(x: c.x + d * 0.1, y: c.y - d * 0.25))
+                ctx.fill(f, with: .linearGradient(Gradient(colors: [Art.gold, Color(red: 1.0, green: 0.4, blue: 0.1), Theme.enemy]), startPoint: CGPoint(x: c.x, y: c.y - d * 0.4), endPoint: CGPoint(x: c.x, y: c.y + d * 0.4)))
+                ctx.stroke(f, with: .color(Art.outline), lineWidth: max(1, d * 0.06))
+                ctx.fill(Art.ellipse(c.x, c.y + d * 0.2, d * 0.13, d * 0.2), with: .color(Color(red: 1.0, green: 0.95, blue: 0.6)))
+            case .shield:
+                var s = Path()
+                s.move(to: CGPoint(x: c.x, y: c.y - d * 0.46))
+                s.addLine(to: CGPoint(x: c.x + d * 0.4, y: c.y - d * 0.3))
+                s.addQuadCurve(to: CGPoint(x: c.x, y: c.y + d * 0.46), control: CGPoint(x: c.x + d * 0.42, y: c.y + d * 0.25))
+                s.addQuadCurve(to: CGPoint(x: c.x - d * 0.4, y: c.y - d * 0.3), control: CGPoint(x: c.x - d * 0.42, y: c.y + d * 0.25))
+                s.closeSubpath()
+                ctx.fill(s, with: .linearGradient(Gradient(colors: [Theme.player, Art.teamDark(.player)]), startPoint: CGPoint(x: c.x, y: c.y - d * 0.4), endPoint: CGPoint(x: c.x, y: c.y + d * 0.4)))
+                ctx.stroke(s, with: .color(Art.outline), lineWidth: max(1, d * 0.07))
+                ctx.fill(Art.rounded(CGRect(x: c.x - d * 0.05, y: c.y - d * 0.26, width: d * 0.1, height: d * 0.42), d * 0.03), with: .color(Art.gold))
+                ctx.fill(Art.rounded(CGRect(x: c.x - d * 0.2, y: c.y - d * 0.14, width: d * 0.4, height: d * 0.1), d * 0.03), with: .color(Art.gold))
             }
         }
         .frame(width: size, height: size)
@@ -147,19 +222,39 @@ struct ChunkyButton: View {
     }
 }
 
+/// Small round utility button (help, sound, pause) that shares the chunky bevel language.
+struct IconButton: View {
+    let icon: IconKind
+    let label: String
+    var style: ChunkyStyle = .slate
+    var size: CGFloat = 40
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: { ArcadeAudio.play(.tap); action() }) {
+            IconView(kind: icon, size: size * 0.55)
+                .frame(width: size, height: size)
+        }
+        .buttonStyle(ChunkyButtonStyle(style: style, cornerRadius: size / 2))
+        .frame(width: size, height: size)
+        .accessibilityLabel(label)
+    }
+}
+
 struct ChunkyButtonStyle: ButtonStyle {
     let style: ChunkyStyle
+    var cornerRadius: CGFloat = 16
 
     func makeBody(configuration: Configuration) -> some View {
         let pressed = configuration.isPressed
-        let shape = RoundedRectangle(cornerRadius: 16, style: .continuous)
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         configuration.label
             .background {
                 ZStack {
                     shape.fill(style.edge).offset(y: pressed ? 2 : 6)
                     shape.fill(LinearGradient(colors: [style.top, style.bottom], startPoint: .top, endPoint: .bottom))
                     shape.inset(by: 3).stroke(LinearGradient(colors: [.white.opacity(0.55), .white.opacity(0.0)], startPoint: .top, endPoint: .center), lineWidth: 2)
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    RoundedRectangle(cornerRadius: cornerRadius * 0.75, style: .continuous)
                         .fill(.white.opacity(0.18))
                         .padding(.horizontal, 8)
                         .padding(.top, 5)
@@ -459,5 +554,263 @@ struct ElixirBar: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Elixir \(Int(value)) of \(Int(max))")
         .accessibilityValue("\(Int(value))")
+    }
+}
+
+// MARK: - Progression
+
+/// Small uppercase caption used to title sections and groups of controls.
+struct SectionLabel: View {
+    let text: String
+    var color: Color = .white.opacity(0.7)
+
+    var body: some View {
+        Text(text.uppercased())
+            .font(.system(size: 10, weight: .heavy, design: .rounded))
+            .tracking(2)
+            .foregroundStyle(color)
+            .shadow(color: .black.opacity(0.7), radius: 0, y: 1)
+    }
+}
+
+struct ProgressTrack: View {
+    let progress: Double
+    var color: Color = Theme.accent
+    var height: CGFloat = 10
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.black.opacity(0.45))
+                Capsule()
+                    .fill(LinearGradient(colors: [color.opacity(0.95), color.opacity(0.65)], startPoint: .top, endPoint: .bottom))
+                    .frame(width: max(height, geo.size.width * CGFloat(min(1, max(0, progress)))))
+                    .overlay(alignment: .top) {
+                        Capsule().fill(.white.opacity(0.35)).frame(height: height * 0.3).padding(.horizontal, 4).padding(.top, 2)
+                    }
+                    .animation(.easeOut(duration: 0.6), value: progress)
+                Capsule().stroke(Art.outline, lineWidth: 1.5)
+            }
+        }
+        .frame(height: height)
+    }
+}
+
+/// League name, trophy count and progress to the next tier.
+struct LeagueBadge: View {
+    let trophies: Int
+    var compact = false
+
+    var body: some View {
+        let league = League.forTrophies(trophies)
+        HStack(spacing: 10) {
+            IconView(kind: .trophy, size: compact ? 28 : 34)
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text("\(trophies)")
+                        .font(.system(size: compact ? 17 : 20, weight: .black, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.white)
+                    Text(league.name.uppercased())
+                        .font(.system(size: 10, weight: .heavy, design: .rounded))
+                        .tracking(1)
+                        .foregroundStyle(league.color)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
+                ProgressTrack(progress: league.progress(trophies: trophies), color: league.color, height: 7)
+                if let next = league.next, !compact {
+                    Text("\(next.minTrophies - trophies) to \(next.name)")
+                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.65))
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .panel(cornerRadius: 22, tint: Color(red: 0.16, green: 0.2, blue: 0.36))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(trophies) trophies, \(league.name)")
+        .accessibilityIdentifier("leagueBadge")
+    }
+}
+
+/// Miniature battle deck: eight portraits plus the average elixir, tappable to edit.
+struct DeckStrip: View {
+    let deck: [String]
+    let averageElixir: Double
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: { ArcadeAudio.play(.tap); action() }) {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    SectionLabel(text: "Battle deck")
+                    Spacer()
+                    HStack(spacing: 4) {
+                        IconView(kind: .elixir, size: 14)
+                        Text(String(format: "%.1f avg", averageElixir))
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.85))
+                    }
+                    Text("EDIT ›")
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .foregroundStyle(Theme.accent)
+                        .padding(.leading, 6)
+                }
+                HStack(spacing: 5) {
+                    ForEach(deck, id: \.self) { id in
+                        CardFrame(card: Cards.byId(id), showName: false, compact: true)
+                    }
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 9)
+            .panel(cornerRadius: 18)
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Battle deck, average elixir \(String(format: "%.1f", averageElixir)). Edit deck")
+        .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier("deckStrip")
+    }
+}
+
+/// Persistent instruction strip that tells the player what to do next.
+struct HintBanner: View {
+    enum Tone { case neutral, active, warning }
+    let step: String?
+    let text: String
+    var tone: Tone = .neutral
+    var onCancel: (() -> Void)? = nil
+
+    private var color: Color {
+        switch tone {
+        case .neutral: return .white.opacity(0.6)
+        case .active: return Theme.accent
+        case .warning: return Theme.enemy
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            if let step {
+                Text(step)
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(Art.outline)
+                    .frame(width: 24, height: 24)
+                    .background(Circle().fill(color))
+            }
+            Text(text)
+                .font(.system(size: 13, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
+                .lineLimit(2)
+                .minimumScaleFactor(0.8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            if let onCancel {
+                Button(action: { ArcadeAudio.play(.tap); onCancel() }) {
+                    Text("CANCEL")
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Capsule().fill(.white.opacity(0.15)))
+                        .overlay(Capsule().stroke(.white.opacity(0.4), lineWidth: 1))
+                }
+                .accessibilityIdentifier("cancelSwapButton")
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 9)
+        .panel(cornerRadius: 16, tint: tone == .neutral ? Theme.panel : color.opacity(0.35))
+        .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(color.opacity(tone == .neutral ? 0 : 0.8), lineWidth: 2))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(text)
+        .accessibilityIdentifier("hintBanner")
+    }
+}
+
+/// Three-step explainer shown on first launch and from the help button.
+struct HowToPlaySheet: View {
+    let onDone: () -> Void
+
+    private struct Step: Identifiable {
+        let id: Int
+        let icon: IconKind
+        let title: String
+        let body: String
+    }
+
+    private let steps = [
+        Step(id: 1, icon: .cards, title: "Pick a card", body: "Tap a card in your hand. Each card costs elixir, which refills over time."),
+        Step(id: 2, icon: .shield, title: "Drop it on your side", body: "Tap or drag on your half of the arena to deploy. Spells can land anywhere, even on enemy towers."),
+        Step(id: 3, icon: .crown(Art.gold, dim: false), title: "Take the towers", body: "Destroy guard towers for crowns. Break the keep for an instant 3-crown win. Three minutes, then sudden-death overtime."),
+    ]
+
+    var body: some View {
+        VStack(spacing: 18) {
+            Capsule().fill(.white.opacity(0.3)).frame(width: 40, height: 5).padding(.top, 8)
+            DisplayText(text: "HOW TO PLAY", size: 30, fill: .goldText)
+            VStack(spacing: 12) {
+                ForEach(steps) { step in
+                    HStack(alignment: .top, spacing: 14) {
+                        ZStack {
+                            Circle().fill(Theme.panel).frame(width: 52, height: 52)
+                                .overlay(Circle().stroke(Art.outline, lineWidth: 2))
+                            IconView(kind: step.icon, size: 30)
+                            Text("\(step.id)")
+                                .font(.system(size: 11, weight: .black, design: .rounded))
+                                .foregroundStyle(Art.outline)
+                                .frame(width: 18, height: 18)
+                                .background(Circle().fill(Theme.accent))
+                                .offset(x: 20, y: -20)
+                        }
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(step.title.uppercased())
+                                .font(.system(size: 15, weight: .black, design: .rounded))
+                                .foregroundStyle(.white)
+                            Text(step.body)
+                                .font(.system(size: 13, weight: .medium, design: .rounded))
+                                .foregroundStyle(.white.opacity(0.78))
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    .padding(12)
+                    .panel(cornerRadius: 16)
+                }
+            }
+            HStack(spacing: 8) {
+                IconView(kind: .elixir, size: 18)
+                Text("Elixir doubles in the last minute. Surrender any time from the pause menu.")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.7))
+            }
+            ChunkyButton(title: "LET'S TUSSLE", icon: .swords, style: .gold, height: 56, fontSize: 22, action: onDone)
+                .accessibilityIdentifier("tutorialDoneButton")
+        }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(Theme.background.ignoresSafeArea())
+        .accessibilityIdentifier("howToPlay")
+    }
+}
+
+/// Battle phase chip: shows OVERTIME / 2x ELIXIR with the remaining time context.
+struct PhaseChip: View {
+    let text: String
+    let color: Color
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: 10, weight: .black, design: .rounded))
+            .tracking(1)
+            .foregroundStyle(Art.outline)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(Capsule().fill(color))
+            .overlay(Capsule().stroke(Art.outline, lineWidth: 1.5))
+            .transition(.scale.combined(with: .opacity))
     }
 }

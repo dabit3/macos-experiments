@@ -4,6 +4,7 @@ struct ResultsView: View {
     @EnvironmentObject var profile: PlayerProfile
     let result: MatchResult
     let onHome: () -> Void
+    let onCards: () -> Void
     let onRematch: () -> Void
     @State private var revealed = false
 
@@ -15,64 +16,160 @@ struct ResultsView: View {
         }
     }
 
+    private var duration: String {
+        String(format: "%d:%02d", result.durationSeconds / 60, result.durationSeconds % 60)
+    }
+
+    private var subtitle: String {
+        switch result.outcome {
+        case .victory:
+            return result.playerCrowns == 3 ? "Three-crown win in \(duration)" : "You took the lead in \(duration)"
+        case .defeat:
+            return result.enemyCrowns == 3 && result.playerCrowns == 0 && result.durationSeconds < Int(Arena.regulationSeconds)
+                ? "The rival broke through in \(duration)"
+                : "The rival edged it in \(duration)"
+        case .draw:
+            return "Dead even after \(duration)"
+        }
+    }
+
+    private var previousLeague: League { League.forTrophies(max(0, profile.trophies - result.trophyDelta)) }
+
     var body: some View {
         ZStack {
             SceneryBackdrop(dim: result.outcome == .defeat ? 0.6 : 0.2)
-            VStack(spacing: 22) {
-                Spacer()
-                RenderedImage(name: "emblem")
-                    .saturation(result.outcome == .defeat ? 0.2 : 1)
-                    .rotationEffect(.degrees(result.outcome == .defeat ? -12 : 0))
-                    .frame(width: 180, height: 180)
-                    .shadow(color: (result.outcome == .defeat ? Theme.enemy : Theme.accent).opacity(0.22), radius: 28)
-                    .scaleEffect(revealed ? 1 : 0.4)
-                    .opacity(revealed ? 1 : 0)
-                DisplayText(text: result.outcome.rawValue, size: 56, fill: titleFill)
-                    .accessibilityIdentifier("resultTitle")
-                    .scaleEffect(revealed ? 1 : 1.6)
-                    .opacity(revealed ? 1 : 0)
+            VStack(spacing: 0) {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 14) {
+                        RenderedImage(name: "emblem")
+                            .saturation(result.outcome == .defeat ? 0.2 : 1)
+                            .rotationEffect(.degrees(result.outcome == .defeat ? -12 : 0))
+                            .frame(width: 150, height: 150)
+                            .shadow(color: (result.outcome == .defeat ? Theme.enemy : Theme.accent).opacity(0.22), radius: 28)
+                            .scaleEffect(revealed ? 1 : 0.4)
+                            .opacity(revealed ? 1 : 0)
+                            .padding(.top, 12)
+                        VStack(spacing: 4) {
+                            DisplayText(text: result.outcome.rawValue, size: 52, fill: titleFill)
+                                .accessibilityIdentifier("resultTitle")
+                            Text(subtitle)
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
+                                .foregroundStyle(.white.opacity(0.8))
+                                .shadow(color: .black.opacity(0.8), radius: 0, y: 1)
+                                .accessibilityIdentifier("resultSubtitle")
+                        }
+                        .scaleEffect(revealed ? 1 : 1.6)
+                        .opacity(revealed ? 1 : 0)
 
-                HStack(spacing: 30) {
-                    crownColumn("You", result.playerCrowns, Theme.player)
-                    Text("VS").font(.system(.title3, design: .rounded).weight(.black)).foregroundStyle(.white.opacity(0.5))
-                    crownColumn("Enemy", result.enemyCrowns, Theme.enemy)
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 10)
-                .panel(cornerRadius: 22)
+                        HStack(spacing: 30) {
+                            crownColumn("You", result.playerCrowns, Theme.player)
+                            Text("VS").font(.system(.title3, design: .rounded).weight(.black)).foregroundStyle(.white.opacity(0.5))
+                            crownColumn("Rival", result.enemyCrowns, Theme.enemy)
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 8)
+                        .panel(cornerRadius: 22)
 
-                VStack(spacing: 12) {
-                    rewardRow(.trophy, "Trophies", result.trophyDelta, total: profile.trophies)
-                    rewardRow(.coin, "Gold", result.goldDelta, total: profile.gold)
-                    HStack(spacing: 10) {
-                        IconView(kind: .clock, size: 24)
-                        Text("Battle time")
-                        Spacer()
-                        Text(String(format: "%d:%02d", result.durationSeconds / 60, result.durationSeconds % 60)).monospacedDigit()
+                        progressPanel
+                        rewardsPanel
+                        tipPanel
                     }
-                    .font(.system(.subheadline, design: .rounded).weight(.bold))
+                    .padding(.horizontal, 22)
+                    .padding(.bottom, 12)
                 }
-                .padding(16)
-                .panel()
-                .padding(.horizontal, 28)
-                .foregroundStyle(.white)
 
-                Spacer()
-
-                VStack(spacing: 12) {
+                VStack(spacing: 10) {
                     ChunkyButton(title: "REMATCH", icon: .swords, style: .gold, height: 58, fontSize: 24, action: onRematch)
                         .accessibilityIdentifier("rematchButton")
-                    ChunkyButton(title: "HOME", style: .slate, height: 48, fontSize: 19, action: onHome)
-                        .accessibilityIdentifier("homeButton")
+                    HStack(spacing: 10) {
+                        ChunkyButton(title: "EDIT DECK", icon: .cards, style: .slate, height: 46, fontSize: 16, action: onCards)
+                            .accessibilityIdentifier("editDeckButton")
+                        ChunkyButton(title: "HOME", style: .slate, height: 46, fontSize: 16, action: onHome)
+                            .accessibilityIdentifier("homeButton")
+                    }
                 }
-                .padding(.horizontal, 28)
-                .padding(.bottom, 24)
+                .padding(.horizontal, 22)
+                .padding(.top, 6)
+                .padding(.bottom, 16)
+                .background(
+                    LinearGradient(colors: [Theme.background.opacity(0), Theme.background.opacity(0.9)], startPoint: .top, endPoint: .bottom)
+                        .ignoresSafeArea()
+                )
             }
         }
         .onAppear {
             ArcadeAudio.play(result.outcome == .victory ? .victory : (result.outcome == .defeat ? .defeat : .tap))
             withAnimation(.spring(duration: 0.6, bounce: 0.35)) { revealed = true }
         }
+    }
+
+    // MARK: Panels
+
+    private var progressPanel: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                SectionLabel(text: "League progress")
+                Spacer()
+                if previousLeague != profile.league {
+                    Text(profile.league.minTrophies > previousLeague.minTrophies ? "PROMOTED!" : "DEMOTED")
+                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .tracking(1)
+                        .foregroundStyle(Art.outline)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(Capsule().fill(profile.league.minTrophies > previousLeague.minTrophies ? Theme.accent : Theme.enemy))
+                        .accessibilityIdentifier("leagueChange")
+                }
+            }
+            LeagueBadge(trophies: profile.trophies)
+        }
+        .padding(12)
+        .panel()
+        .accessibilityIdentifier("progressPanel")
+    }
+
+    private var rewardsPanel: some View {
+        VStack(spacing: 10) {
+            rewardRow(.trophy, "Trophies", result.trophyDelta, total: profile.trophies)
+            rewardRow(.coin, "Gold", result.goldDelta, total: profile.gold)
+            if profile.streak >= 2 {
+                HStack(spacing: 10) {
+                    IconView(kind: .flame, size: 24)
+                    Text("Win streak")
+                    Spacer()
+                    Text("\(profile.streak)")
+                        .foregroundStyle(Theme.accent)
+                        .monospacedDigit()
+                    Text(profile.streak >= profile.bestStreak ? "BEST" : "best \(profile.bestStreak)")
+                        .font(.system(size: 10, weight: .heavy, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+                .font(.system(.subheadline, design: .rounded).weight(.bold))
+                .accessibilityElement(children: .combine)
+            }
+        }
+        .padding(14)
+        .panel()
+        .foregroundStyle(.white)
+        .accessibilityIdentifier("rewardsPanel")
+    }
+
+    private var tipPanel: some View {
+        HStack(alignment: .top, spacing: 10) {
+            IconView(kind: .help, size: 22)
+            VStack(alignment: .leading, spacing: 2) {
+                SectionLabel(text: result.outcome == .defeat ? "Next time" : "Pro tip")
+                Text(BattleTips.tip(for: result.outcome, seed: profile.matchesPlayed))
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(12)
+        .panel(cornerRadius: 16)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("tipPanel")
     }
 
     private func crownColumn(_ label: String, _ count: Int, _ color: Color) -> some View {
@@ -90,50 +187,16 @@ struct ResultsView: View {
             Text(label)
             Spacer()
             Text(delta >= 0 ? "+\(delta)" : "\(delta)")
+                .font(.system(size: 17, weight: .black, design: .rounded))
                 .foregroundStyle(delta > 0 ? Color(red: 0.45, green: 0.9, blue: 0.4) : (delta < 0 ? Theme.enemy : .white.opacity(0.6)))
                 .monospacedDigit()
-            Text("(\(total))")
-                .foregroundStyle(.white.opacity(0.5))
+            Text("→ \(total)")
+                .foregroundStyle(.white.opacity(0.55))
                 .monospacedDigit()
+                .frame(minWidth: 56, alignment: .trailing)
         }
         .font(.system(.subheadline, design: .rounded).weight(.bold))
-    }
-}
-
-/// Large result badge: a trophy on a sunburst for victory, rubble for defeat, crossed swords for a draw.
-struct ResultEmblem: View {
-    let outcome: MatchOutcome
-
-    var body: some View {
-        Canvas(rendersAsynchronously: false) { ctx, size in
-            let c = CGPoint(x: size.width / 2, y: size.height / 2)
-            let d = min(size.width, size.height)
-            let ray: Color = outcome == .victory ? Art.gold : (outcome == .defeat ? Theme.enemy : Color.white)
-            var burst = ctx
-            burst.opacity = 0.35
-            for i in 0..<12 {
-                let a = Double(i) / 12 * .pi * 2
-                let b = a + .pi / 24
-                let p = Art.polygon([c, CGPoint(x: c.x + cos(a) * d * 0.5, y: c.y + sin(a) * d * 0.5), CGPoint(x: c.x + cos(b) * d * 0.5, y: c.y + sin(b) * d * 0.5)])
-                burst.fill(p, with: .color(ray))
-            }
-            Art.ball(&ctx, cx: c.x, cy: c.y, r: d * 0.3, color: Theme.panel, dark: Theme.background, line: 3)
-            ctx.stroke(Art.circle(c.x, c.y, d * 0.3 - 4), with: .color(ray.opacity(0.7)), lineWidth: 2)
-            switch outcome {
-            case .victory:
-                Art.trophy(&ctx, center: CGPoint(x: c.x, y: c.y + d * 0.02), size: d * 0.36)
-            case .defeat:
-                var r = ctx
-                r.translateBy(x: c.x, y: c.y + d * 0.06)
-                r.scaleBy(x: d * 0.26, y: d * 0.26)
-                Art.rubble(&r, kind: .keep, side: .player, line: 0.09)
-                Art.crown(&ctx, center: CGPoint(x: c.x + d * 0.04, y: c.y - d * 0.06), size: d * 0.18, color: Color(white: 0.6), dim: true)
-            case .draw:
-                Art.sword(&ctx, from: CGPoint(x: c.x - d * 0.16, y: c.y + d * 0.16), to: CGPoint(x: c.x + d * 0.16, y: c.y - d * 0.16), width: d * 0.045)
-                Art.sword(&ctx, from: CGPoint(x: c.x + d * 0.16, y: c.y + d * 0.16), to: CGPoint(x: c.x - d * 0.16, y: c.y - d * 0.16), width: d * 0.045)
-            }
-        }
-        .shadow(color: .black.opacity(0.5), radius: 10, y: 6)
-        .accessibilityHidden(true)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(label) \(delta >= 0 ? "plus" : "minus") \(abs(delta)), now \(total)")
     }
 }

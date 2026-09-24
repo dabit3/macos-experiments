@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Canvas as GraphicsCanvas
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
@@ -28,6 +29,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.sp
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -50,13 +53,13 @@ internal fun hash(x: Int, y: Int, salt: Int = 0): Double {
 }
 
 @Composable
-fun ArenaCanvas(engine: BattleEngine, scale: Float, modifier: Modifier = Modifier) {
+fun ArenaCanvas(engine: BattleEngine, scale: Float, modifier: Modifier = Modifier, hover: Vec? = null) {
     val measurer = rememberTextMeasurer()
     val art = rememberArt(battle = true)
     Canvas(modifier) {
         engine.version
         renderedImage(art.image("arena"), Offset.Zero, size)
-        ArenaPainter(this, engine, measurer, scale, art).drawDynamic()
+        ArenaPainter(this, engine, measurer, scale, art, hover).drawDynamic()
     }
 }
 
@@ -193,7 +196,14 @@ private class ArenaGroundPainter(val scope: DrawScope, val scale: Float) {
     }
 }
 
-private class ArenaPainter(val scope: DrawScope, val engine: BattleEngine, val measurer: TextMeasurer, val scale: Float, val art: RenderedArt) {
+private class ArenaPainter(
+    val scope: DrawScope,
+    val engine: BattleEngine,
+    val measurer: TextMeasurer,
+    val scale: Float,
+    val art: RenderedArt,
+    val hover: Vec? = null,
+) {
     private fun pt(v: Vec) = Offset((v.x * scale).toFloat(), (v.y * scale).toFloat())
     private fun len(d: Double): Float = (d * scale).toFloat()
     private fun len(d: Float): Float = d * scale
@@ -214,6 +224,36 @@ private class ArenaPainter(val scope: DrawScope, val engine: BattleEngine, val m
         for (e in engine.effects) if (e.kind == EffectKind.TOWER_FALL || (e.kind != EffectKind.DEPLOY && e.landed)) drawEffect(e)
         for (p in engine.particles) if (!(p.kind == ParticleKind.DUST || p.kind == ParticleKind.DEBRIS || p.kind == ParticleKind.BONE)) drawParticle(p)
         drawFloatingTexts()
+        drawGhost()
+    }
+
+    /** Placement preview that follows the finger while a card is selected. */
+    private fun DrawScope.drawGhost() {
+        val pos = hover ?: return
+        val card = engine.selectedCard ?: return
+        if (engine.result != null) return
+        val valid = engine.isValidDeploy(card, pos) && engine.canAfford(card)
+        val color = if (valid) Theme.player else Theme.enemy
+        val c = pt(pos)
+        val r = if (card.kind == CardKind.SPELL) len(card.radius) else len(1.1)
+        val pulse = (0.5 + 0.5 * sin(engine.elapsed * 6)).toFloat()
+        drawCircle(color.copy(alpha = 0.18f + 0.08f * pulse), r, c)
+        drawCircle(color.copy(alpha = 0.9f), r, c, style = Stroke(2.5f, pathEffect = PathEffect.dashPathEffect(floatArrayOf(6f, 4f), (engine.elapsed * 30).toFloat())))
+        val cross = Path().apply {
+            moveTo(c.x - len(0.5), c.y); lineTo(c.x + len(0.5), c.y)
+            moveTo(c.x, c.y - len(0.5)); lineTo(c.x, c.y + len(0.5))
+        }
+        drawPath(cross, Color.White.copy(alpha = 0.9f), style = Stroke(2f, cap = StrokeCap.Round))
+        if (card.kind == CardKind.TROOP) {
+            val size = len(if (card.count > 1) 2.4 else 3.0)
+            drawImage(
+                art.image("units_${card.id}"), srcOffset = IntOffset.Zero, srcSize = IntSize(256, 256),
+                dstOffset = IntOffset((c.x - size / 2).toInt(), (c.y - size * 0.85f).toInt()),
+                dstSize = IntSize(size.toInt().coerceAtLeast(1), size.toInt().coerceAtLeast(1)),
+                alpha = if (valid) 0.75f else 0.35f,
+                filterQuality = FilterQuality.Medium,
+            )
+        }
     }
 
     private fun DrawScope.drawWater() {

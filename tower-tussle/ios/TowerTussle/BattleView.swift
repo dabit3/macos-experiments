@@ -1,11 +1,13 @@
 import SwiftUI
 
 struct BattleView: View {
+    @EnvironmentObject var profile: PlayerProfile
     @ObservedObject var engine: BattleEngine
     let onFinished: (MatchResult) -> Void
     let onQuit: () -> Void
-    @State private var showQuitConfirm = false
+    @State private var paused = false
     @State private var finishedHandled = false
+    @State private var hover: Vec? = nil
 
     var body: some View {
         ZStack {
@@ -16,19 +18,16 @@ struct BattleView: View {
                     let scale = min(geo.size.width / Arena.width, geo.size.height / Arena.height)
                     let arenaSize = CGSize(width: Arena.width * scale, height: Arena.height * scale)
                     ZStack {
-                        ArenaCanvas(engine: engine, scale: scale)
+                        ArenaCanvas(engine: engine, scale: scale, hover: hover)
                             .frame(width: arenaSize.width, height: arenaSize.height)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(RoundedRectangle(cornerRadius: 10).stroke(Art.outline, lineWidth: 3))
                             .shadow(color: .black.opacity(0.5), radius: 10, y: 6)
                             .contentShape(Rectangle())
-                            .onTapGesture(coordinateSpace: .local) { point in
-                                let before = engine.playerElixir
-                                engine.deployAtTap(Vec(x: point.x / scale, y: point.y / scale))
-                                if engine.playerElixir < before { ArcadeAudio.play(.deploy) }
-                            }
+                            .gesture(deployGesture(scale: scale))
                             .accessibilityIdentifier("arena")
                             .accessibilityLabel("Arena")
+                            .accessibilityHint(engine.selectedCard == nil ? "Pick a card first" : "Tap your half to deploy \(engine.selectedCard?.name ?? "")")
                         if let text = engine.announcement {
                             Text(text)
                                 .font(.system(.headline, design: .rounded).weight(.black))
@@ -47,6 +46,8 @@ struct BattleView: View {
             }
             .padding(.horizontal, 10)
             .padding(.bottom, 6)
+
+            if paused { pauseMenu }
         }
         .onAppear {
             _ = RenderedArt.frames
@@ -56,68 +57,84 @@ struct BattleView: View {
         .onChange(of: engine.result?.outcome) { _, newValue in
             if newValue != nil, !finishedHandled, let r = engine.result {
                 finishedHandled = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { onFinished(r) }
+                hover = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) { onFinished(r) }
             }
-        }
-        .confirmationDialog("Leave the battle?", isPresented: $showQuitConfirm, titleVisibility: .visible) {
-            Button("Surrender", role: .destructive, action: onQuit)
-            Button("Keep fighting", role: .cancel) {}
         }
         .overlay {
             if let r = engine.result {
-                DisplayText(text: r.outcome.rawValue, size: 58,
-                            fill: r.outcome == .victory ? .goldText : (r.outcome == .defeat ? .redText : .whiteText))
-                    .transition(.scale.combined(with: .opacity))
+                VStack(spacing: 10) {
+                    DisplayText(text: r.outcome.rawValue, size: 58,
+                                fill: r.outcome == .victory ? .goldText : (r.outcome == .defeat ? .redText : .whiteText))
+                    HStack(spacing: 14) {
+                        CrownRow(count: r.playerCrowns, color: Theme.player, size: 24)
+                        Text("vs").font(.system(size: 14, weight: .black, design: .rounded)).foregroundStyle(.white.opacity(0.7))
+                        CrownRow(count: r.enemyCrowns, color: Theme.enemy, size: 24)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .panel(cornerRadius: 20)
+                }
+                .padding(24)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.black.opacity(0.35).ignoresSafeArea())
+                .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                .animation(.spring(duration: 0.4), value: r.outcome)
             }
         }
     }
 
-    private var hud: some View {
-        HStack {
-            Button {
-                showQuitConfirm = true
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.headline.weight(.black))
-                    .foregroundStyle(.white)
-                    .frame(width: 38, height: 38)
-            }
-            .buttonStyle(ChunkyButtonStyle(style: .red))
-            .frame(width: 38, height: 38)
-            .accessibilityIdentifier("quitButton")
-            .accessibilityLabel("Quit battle")
+    // MARK: HUD
 
-            Spacer()
-            HStack(spacing: 10) {
-                CrownRow(count: engine.crowns(for: .enemy), color: Theme.enemy)
-                    .accessibilityIdentifier("enemyCrowns")
-                Text(timerText)
-                    .font(.system(size: 24, weight: .black, design: .rounded))
-                    .monospacedDigit()
-                    .foregroundStyle(engine.isOvertime ? LinearGradient.redText : (engine.isDoubleElixir ? LinearGradient(colors: [Color(red: 0.95, green: 0.65, blue: 1.0), Theme.elixir], startPoint: .top, endPoint: .bottom) : LinearGradient.whiteText))
-                    .shadow(color: .black, radius: 0, x: 1, y: 1)
-                    .frame(minWidth: 70)
-                    .accessibilityIdentifier("timer")
-                CrownRow(count: engine.crowns(for: .player), color: Theme.player)
-                    .accessibilityIdentifier("playerCrowns")
+    private var hud: some View {
+        HStack(alignment: .center, spacing: 8) {
+            IconButton(icon: .pause, label: "Pause", style: .slate, size: 40) { setPaused(true) }
+                .accessibilityIdentifier("quitButton")
+                .accessibilityHint("Opens the pause menu with resume, sound and surrender")
+
+            Spacer(minLength: 0)
+            VStack(spacing: 2) {
+                HStack(spacing: 12) {
+                    VStack(spacing: 1) {
+                        SectionLabel(text: "Rival", color: Theme.enemy.opacity(0.9))
+                        CrownRow(count: engine.crowns(for: .enemy), color: Theme.enemy)
+                            .accessibilityIdentifier("enemyCrowns")
+                    }
+                    Text(timerText)
+                        .font(.system(size: 26, weight: .black, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(engine.isOvertime ? LinearGradient.redText : (engine.isDoubleElixir ? LinearGradient(colors: [Color(red: 0.95, green: 0.65, blue: 1.0), Theme.elixir], startPoint: .top, endPoint: .bottom) : LinearGradient.whiteText))
+                        .shadow(color: .black, radius: 0, x: 1, y: 1)
+                        .frame(minWidth: 72)
+                        .accessibilityIdentifier("timer")
+                        .accessibilityLabel("\(engine.remainingSeconds) seconds left")
+                    VStack(spacing: 1) {
+                        SectionLabel(text: "You", color: Theme.player.opacity(0.9))
+                        CrownRow(count: engine.crowns(for: .player), color: Theme.player)
+                            .accessibilityIdentifier("playerCrowns")
+                    }
+                }
+                if let phase = phaseText {
+                    PhaseChip(text: phase.0, color: phase.1)
+                        .accessibilityIdentifier("phaseChip")
+                }
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 5)
             .panel(cornerRadius: 20)
-            Spacer()
-            Text(engine.isOvertime ? "OT" : (engine.isDoubleElixir ? "2×" : ""))
-                .font(.system(size: 13, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
-                .frame(width: 38, height: 30)
-                .background {
-                    if engine.isDoubleElixir {
-                        Capsule().fill(LinearGradient(colors: [Color(red: 0.95, green: 0.6, blue: 1.0), Color(red: 0.5, green: 0.12, blue: 0.7)], startPoint: .top, endPoint: .bottom))
-                            .overlay(Capsule().stroke(Art.outline, lineWidth: 2))
-                    }
-                }
+            .animation(.spring(duration: 0.3), value: phaseText?.0)
+            Spacer(minLength: 0)
+
+            Color.clear.frame(width: 40, height: 40)
         }
         .foregroundStyle(.white)
         .padding(.top, 4)
+    }
+
+    private var phaseText: (String, Color)? {
+        if engine.isOvertime { return ("OVERTIME · NEXT TOWER WINS", Theme.enemy) }
+        if engine.isDoubleElixir { return ("2× ELIXIR", Theme.elixir) }
+        return nil
     }
 
     private var timerText: String {
@@ -125,24 +142,46 @@ struct BattleView: View {
         return String(format: "%d:%02d", s / 60, s % 60)
     }
 
+    // MARK: Deploy
+
+    private func deployGesture(scale: CGFloat) -> some Gesture {
+        DragGesture(minimumDistance: 0, coordinateSpace: .local)
+            .onChanged { value in
+                guard engine.selectedCard != nil, engine.result == nil else { return }
+                hover = Vec(x: value.location.x / scale, y: value.location.y / scale)
+            }
+            .onEnded { value in
+                hover = nil
+                let before = engine.playerElixir
+                engine.deployAtTap(Vec(x: value.location.x / scale, y: value.location.y / scale))
+                if engine.playerElixir < before { ArcadeAudio.play(.deploy) }
+            }
+    }
+
+    // MARK: Hand
+
     private var handBar: some View {
         VStack(spacing: 8) {
+            deployHint
             HStack(alignment: .bottom, spacing: 8) {
                 VStack(spacing: 2) {
                     Text("NEXT").font(.system(size: 9, weight: .black, design: .rounded)).foregroundStyle(.white.opacity(0.7))
                     CardFrame(card: Cards.byId(engine.nextCard), showName: false, compact: true)
                         .frame(width: 46)
                         .accessibilityIdentifier("nextCard")
+                        .accessibilityLabel("Next card \(Cards.byId(engine.nextCard).name)")
                 }
                 ForEach(Array(engine.hand.enumerated()), id: \.offset) { index, id in
                     let card = Cards.byId(id)
-                    CardFrame(card: card, selected: engine.selectedHandIndex == index, affordable: engine.canAfford(card))
+                    let selected = engine.selectedHandIndex == index
+                    CardFrame(card: card, selected: selected, affordable: engine.canAfford(card))
                         .id("\(index)-\(id)")
-                        .offset(y: engine.selectedHandIndex == index ? -12 : 0)
-                        .animation(.spring(duration: 0.2), value: engine.selectedHandIndex == index)
-                        .onTapGesture { engine.selectHand(index) }
+                        .offset(y: selected ? -12 : 0)
+                        .animation(.spring(duration: 0.2), value: selected)
+                        .onTapGesture { ArcadeAudio.play(.tap); engine.selectHand(index) }
                         .accessibilityIdentifier("hand-\(index)")
-                        .accessibilityLabel("\(card.name), \(card.cost) elixir")
+                        .accessibilityLabel("\(card.name), \(card.cost) elixir\(selected ? ", selected" : "")")
+                        .accessibilityHint(engine.canAfford(card) ? "Select, then tap the arena to deploy" : "Not enough elixir yet")
                         .accessibilityAddTraits(.isButton)
                 }
             }
@@ -151,5 +190,84 @@ struct BattleView: View {
         }
         .padding(10)
         .panel(cornerRadius: 18)
+    }
+
+    @ViewBuilder
+    private var deployHint: some View {
+        HStack(spacing: 8) {
+            if let card = engine.selectedCard {
+                let short = Int(ceil(Double(card.cost) - engine.playerElixir))
+                ElixirBadge(cost: card.cost, size: 18)
+                Text(card.name.uppercased())
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(Theme.accent)
+                Text("·").foregroundStyle(.white.opacity(0.4))
+                if short > 0 {
+                    Text("Need \(short) more elixir")
+                        .foregroundStyle(Color(red: 1.0, green: 0.6, blue: 0.55))
+                } else if card.kind == .spell {
+                    Text("Tap anywhere, even on enemy towers")
+                } else {
+                    Text("Tap or drag on your half to deploy")
+                }
+            } else {
+                Text(engine.isDoubleElixir ? "Elixir is doubled. Pick a card and push!" : "Pick a card, then tap the arena")
+                    .foregroundStyle(.white.opacity(0.75))
+            }
+        }
+        .font(.system(size: 12, weight: .bold, design: .rounded))
+        .foregroundStyle(.white)
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
+        .frame(maxWidth: .infinity)
+        .frame(height: 18)
+        .animation(.easeOut(duration: 0.15), value: engine.selectedHandIndex)
+        .accessibilityIdentifier("deployHint")
+    }
+
+    // MARK: Pause
+
+    private var pauseMenu: some View {
+        ZStack {
+            Color.black.opacity(0.55).ignoresSafeArea()
+                .onTapGesture { setPaused(false) }
+            VStack(spacing: 14) {
+                DisplayText(text: "PAUSED", size: 40, fill: .whiteText)
+                HStack(spacing: 14) {
+                    CrownRow(count: engine.crowns(for: .player), color: Theme.player, size: 22)
+                    Text(timerText)
+                        .font(.system(size: 22, weight: .black, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.white)
+                    CrownRow(count: engine.crowns(for: .enemy), color: Theme.enemy, size: 22)
+                }
+                ChunkyButton(title: "RESUME", icon: .swords, style: .gold, height: 58, fontSize: 22) { setPaused(false) }
+                    .accessibilityIdentifier("resumeButton")
+                ChunkyButton(title: profile.soundEnabled ? "SOUND ON" : "SOUND OFF", icon: .sound(on: profile.soundEnabled), style: .slate, height: 48, fontSize: 17) {
+                    profile.setSoundEnabled(!profile.soundEnabled)
+                }
+                .accessibilityIdentifier("pauseSoundButton")
+                ChunkyButton(title: "SURRENDER", style: .red, height: 48, fontSize: 17) {
+                    setPaused(false)
+                    onQuit()
+                }
+                .accessibilityIdentifier("surrenderButton")
+                Text("Surrendering counts as a 3-crown defeat.")
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.6))
+            }
+            .padding(22)
+            .frame(maxWidth: 320)
+            .panel(cornerRadius: 24)
+            .padding(.horizontal, 24)
+        }
+        .transition(.opacity)
+        .accessibilityIdentifier("pauseMenu")
+    }
+
+    private func setPaused(_ value: Bool) {
+        guard engine.result == nil else { return }
+        withAnimation(.easeOut(duration: 0.2)) { paused = value }
+        if value { engine.stop() } else { engine.start() }
     }
 }

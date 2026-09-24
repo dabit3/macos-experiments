@@ -20,6 +20,22 @@ visual language; neither uses any Supercell code, art, fonts or names.
 - Enemy AI deploys troops and cluster-targets spells.
 - Trophies, gold, W/L/D record and deck composition persist across launches
   (UserDefaults / SharedPreferences). Surrendering counts as a 3-crown defeat.
+- Trophies map to leagues (Sky Rookie → Cloud Squire → Storm Knight → Sun Champion → Star Legend);
+  win streaks, the sound toggle and the first-run tutorial flag persist too.
+
+## UX
+
+- Home: league badge with progress to the next rank, battle-deck strip (tap to edit),
+  one dominant BATTLE button, record/streak line, sound toggle and a How-to-play sheet
+  that opens automatically on first launch.
+- Deck: tap any card for its stats sheet, then "Swap out" / "Add to deck" starts a guided
+  two-step swap with a step banner, dimmed non-candidates and a cancel affordance; reset
+  asks for confirmation; a Battle button sits at the bottom.
+- Battle: pause button opens a menu (Resume / Sound / Surrender) instead of an unlabeled X;
+  a one-line helper names the selected card and where it can go; dragging on the arena
+  shows a green/red placement ghost before release; a chip announces 2× elixir/overtime.
+- Results: outcome subtitle, league progress with promotion/demotion badge, rewards as
+  "+delta → total", win streak, a contextual tip, and Rematch / Edit deck / Home.
 
 ## iOS
 
@@ -77,7 +93,11 @@ tools only; both applications build directly from the committed resources.
 Both apps expose the same identifiers (iOS `accessibilityIdentifier`, Android `testTag`):
 `battleButton`, `cardsButton`, `backButton`, `resetDeckButton`, `avgElixir`, `deck-<id>`,
 `collection-<id>`, `quitButton`, `timer`, `playerCrowns`, `enemyCrowns`, `nextCard`,
-`hand-0..3`, `elixirBar`, `arena`, `announcement`, `resultTitle`, `rematchButton`, `homeButton`.
+`hand-0..3`, `elixirBar`, `arena`, `announcement`, `resultTitle`, `rematchButton`, `homeButton`,
+plus `soundButton`, `helpButton`, `tutorialDoneButton`, `deckStrip`, `cardDetail`,
+`cardActionButton`, `cancelSwapButton`, `deckBattleButton`, `deployHint`,
+`phaseChip`, `pauseMenu`, `resumeButton`, `pauseSoundButton`, `surrenderButton`,
+`progressPanel`, `rewardsPanel`, `tipPanel`, `editDeckButton`.
 
 ## Clone workflow
 
