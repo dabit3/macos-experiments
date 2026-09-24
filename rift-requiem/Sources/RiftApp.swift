@@ -153,7 +153,10 @@ struct LobbyView: View {
                     .frame(width: 150)
                     .onChange(of: client.roomCode) { _, value in
                         let clean = String(value.uppercased().filter { $0.isLetter || $0.isNumber }.prefix(8))
-                        if clean != value { client.roomCode = clean }
+                        guard clean != value else { return }
+                        DispatchQueue.main.async {
+                            if client.roomCode == value { client.roomCode = clean }
+                        }
                     }
             }
             field("SERVER ADDRESS", text: $client.address, prompt: "ws://host:8787", focus: .server)
