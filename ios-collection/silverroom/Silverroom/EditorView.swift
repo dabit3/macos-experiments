@@ -5,6 +5,15 @@ enum ToolTab: String, CaseIterable {
   case adjust = "Adjust"
   case frame = "Frame"
   case recipes = "Recipes"
+
+  var symbol: String {
+    switch self {
+    case .looks: "camera.filters"
+    case .adjust: "slider.horizontal.3"
+    case .frame: "crop.rotate"
+    case .recipes: "bookmark"
+    }
+  }
 }
 
 enum Adjustment: String, CaseIterable {
@@ -21,14 +30,14 @@ enum Adjustment: String, CaseIterable {
   var neutral: Double { self == .contrast ? 1 : 0 }
   var lowerLabel: String {
     switch self {
-    case .exposure: "−2 EV"
+    case .exposure: "Darker"
     case .contrast: "Softer"
     case .warmth: "Cooler"
     }
   }
   var upperLabel: String {
     switch self {
-    case .exposure: "+2 EV"
+    case .exposure: "Brighter"
     case .contrast: "Stronger"
     case .warmth: "Warmer"
     }
@@ -50,12 +59,14 @@ struct EditorView: View {
   @State private var showSave = false
   @State private var exportFile: ExportFile?
   @State private var saved = false
-  @ScaledMetric(relativeTo: .caption) private var filmWidth: CGFloat = 52
+  @ScaledMetric(relativeTo: .caption) private var filmWidth: CGFloat = 60
 
   init(negative: Negative) {
     self.negative = negative
     _room = StateObject(wrappedValue: Darkroom(settings: negative.settings))
   }
+
+  private var edited: Bool { room.settings != EditSettings() }
 
   var body: some View {
     VStack(spacing: 0) {
@@ -64,8 +75,7 @@ struct EditorView: View {
         GeometryReader { geometry in
           ScrollView {
             VStack(spacing: 0) {
-              photo(height: geometry.size.width * 1.15)
-              historyBar
+              photo(height: geometry.size.width * 1.1)
               tools
             }
           }
@@ -75,12 +85,11 @@ struct EditorView: View {
         GeometryReader { geometry in
           photo(height: geometry.size.height)
         }
-        historyBar
         tools
       }
     }
     .background(Palette.canvas)
-    .foregroundStyle(Palette.silver)
+    .foregroundStyle(Palette.ink)
     .task {
       do { await room.load(data: try library.data(for: negative)) } catch {
         room.error = error.localizedDescription
@@ -99,16 +108,16 @@ struct EditorView: View {
     }
     .sheet(item: $exportFile) { file in ExportView(file: file) }
     .sheet(isPresented: $showSave) {
-      RecipeNameSheet(title: "Save a recipe", initialName: room.settings.film.title) { name in
+      RecipeNameSheet(title: "Save recipe", initialName: room.settings.film.title) { name in
         library.addRecipe(name: name, settings: room.settings)
         saved = true
       }
     }
     .sheet(isPresented: $showReset) {
       NoticeSheet(
-        title: "Reset photograph?",
-        detail: "Restore the original look and framing. You can undo this. Saved recipes are kept.",
-        actionTitle: "Reset all edits"
+        title: "Reset all edits?",
+        detail: "The photo returns to its original look and framing. You can undo this.",
+        actionTitle: "Reset"
       ) {
         room.edit { $0 = EditSettings() }
         comparing = false
@@ -125,8 +134,8 @@ struct EditorView: View {
         })
     ) {
       NoticeSheet(
-        title: "Couldn’t complete that", detail: room.error ?? library.error ?? "",
-        actionTitle: "Dismiss"
+        title: "Something went wrong", detail: room.error ?? library.error ?? "",
+        actionTitle: "OK"
       ) {
         room.error = nil
         library.error = nil
@@ -138,33 +147,27 @@ struct EditorView: View {
   }
 
   private var toolbar: some View {
-    VStack(alignment: .leading, spacing: 4) {
-      HStack(spacing: 10) {
-        RoundControl(symbol: "chevron.left", label: "Back to library") { dismiss() }
-        if typeSize.isAccessibilitySize {
-          Spacer()
-        } else {
-          photographTitle
+    HStack(spacing: 0) {
+      IconButton(symbol: "xmark", label: "Close photo", size: 17) { dismiss() }
+      if !typeSize.isAccessibilitySize {
+        Spacer(minLength: 0)
+        VStack(spacing: 2) {
+          Text(negative.title).font(TypeStyle.label).lineLimit(1)
+          if room.outputSize != .zero {
+            Text("\(Int(room.outputSize.width)) × \(Int(room.outputSize.height))")
+              .font(TypeStyle.micro).foregroundStyle(Palette.muted).monospacedDigit()
+          }
         }
-        exportButton
+        .accessibilityElement(children: .combine)
       }
-      if typeSize.isAccessibilitySize {
-        photographTitle.padding(.leading, 12)
-      }
+      Spacer(minLength: 0)
+      IconButton(symbol: "arrow.uturn.backward", label: "Undo", size: 17) { room.undo() }
+        .disabled(!room.canUndo)
+      IconButton(symbol: "arrow.uturn.forward", label: "Redo", size: 17) { room.redo() }
+        .disabled(!room.canRedo)
+      exportButton
     }
-    .padding(.leading, 8).padding(.trailing, 20).padding(.vertical, 8)
-  }
-
-  private var photographTitle: some View {
-    VStack(alignment: .leading, spacing: 3) {
-      Text(negative.title).font(TypeStyle.heading)
-        .fixedSize(horizontal: false, vertical: true)
-      if room.outputSize != .zero {
-        Text("\(Int(room.outputSize.width)) × \(Int(room.outputSize.height))")
-          .font(TypeStyle.caption).foregroundStyle(Palette.muted).monospacedDigit()
-      }
-    }
-    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(.horizontal, 8).padding(.vertical, 4)
   }
 
   private var exportButton: some View {
@@ -175,73 +178,82 @@ struct EditorView: View {
         if let url = await room.export(directory: directory) { exportFile = ExportFile(url: url) }
       }
     } label: {
-      HStack(spacing: 7) {
-        if room.exporting { ProgressView().tint(Palette.background) }
-        Text(room.exporting ? "Exporting" : "Export").font(TypeStyle.label)
+      Group {
+        if room.exporting {
+          ProgressView().tint(Palette.ink)
+        } else {
+          Image(systemName: "square.and.arrow.up").font(.system(size: 17, weight: .medium))
+        }
       }
-      .padding(.horizontal, 16).frame(minHeight: 44)
-      .foregroundStyle(Palette.background)
-      .background(Palette.silver, in: Capsule())
+      .frame(width: 44, height: 44).contentShape(Rectangle())
     }
+    .buttonStyle(.plain)
     .disabled(room.preview == nil || room.exporting)
     .opacity(room.preview == nil ? 0.4 : 1)
-    .accessibilityLabel(room.exporting ? "Exporting" : "Export photograph")
+    .accessibilityLabel(room.exporting ? "Exporting" : "Export photo")
   }
 
   private func photo(height: CGFloat) -> some View {
-    ZStack {
+    ZStack(alignment: .bottom) {
       Palette.canvas
       if let image = comparing ? room.original : room.preview {
         Image(uiImage: image).resizable().scaledToFit()
           .frame(maxWidth: .infinity, maxHeight: .infinity)
           .accessibilityLabel(
-            comparing
-              ? "Original photograph" : "Edited photograph, \(room.settings.film.title) look")
+            comparing ? "Original photo" : "Edited photo, \(room.settings.film.title) look")
       } else {
-        ProgressView("Opening photograph").font(TypeStyle.label).tint(Palette.silver)
+        ProgressView().tint(Palette.ink)
+      }
+      if comparing {
+        Text("Original").font(TypeStyle.micro).foregroundStyle(Palette.background)
+          .padding(.horizontal, 10).padding(.vertical, 6)
+          .background(Palette.ink, in: Capsule()).padding(.bottom, 14)
+          .accessibilityHidden(true)
       }
     }
-    .frame(height: max(1, height - 16))
-    .padding(.horizontal, 12).padding(.vertical, 8)
+    .frame(height: max(1, height))
     .contentShape(Rectangle())
     .onLongPressGesture(minimumDuration: 0.12, pressing: { comparing = $0 }, perform: {})
+    .overlay(alignment: .bottomTrailing) { canvasControls }
+    .overlay(alignment: .bottomLeading) {
+      if typeSize.isAccessibilitySize { compareControl.padding(10) }
+    }
   }
 
-  private var historyBar: some View {
-    HStack(spacing: 0) {
-      RoundControl(symbol: "arrow.uturn.backward", label: "Undo edit") { room.undo() }
-        .disabled(!room.canUndo)
-      RoundControl(symbol: "arrow.uturn.forward", label: "Redo edit") { room.redo() }
-        .disabled(!room.canRedo)
-      Spacer(minLength: 0)
-      Text(comparing ? "Original" : (typeSize.isAccessibilitySize ? "Compare" : "Hold to compare"))
-        .font(TypeStyle.caption)
-        .foregroundStyle(comparing ? Palette.silver : Palette.muted)
-        .frame(minHeight: 44).contentShape(Rectangle())
-        .onLongPressGesture(minimumDuration: 0.01, pressing: { comparing = $0 }, perform: {})
-        .accessibilityLabel("Compare with original")
-        .accessibilityValue(comparing ? "Showing original" : "Showing edited photograph")
-        .accessibilityHint(
-          "Touch and hold to see the original. Double-tap with VoiceOver to toggle."
-        )
-        .accessibilityAddTraits(.isButton)
-        .accessibilityAction { comparing.toggle() }
-      Spacer(minLength: 0)
-      RoundControl(symbol: "arrow.counterclockwise", label: "Reset edits") { showReset = true }
-        .disabled(room.settings == EditSettings())
+  private var canvasControls: some View {
+    HStack(spacing: 8) {
+      if edited {
+        IconButton(
+          symbol: "arrow.counterclockwise", label: "Reset all edits", size: 16, filled: true
+        ) { showReset = true }
+      }
+      if !typeSize.isAccessibilitySize { compareControl }
     }
-    .padding(.horizontal, 12)
+    .padding(10)
+  }
+
+  private var compareControl: some View {
+    Image(systemName: comparing ? "circle.lefthalf.filled.inverse" : "circle.lefthalf.filled")
+      .font(.system(size: 16, weight: .medium))
+      .frame(width: 44, height: 44)
+      .foregroundStyle(comparing ? Palette.background : Palette.ink)
+      .background(comparing ? Palette.ink : Palette.control, in: Circle())
+      .contentShape(Circle())
+      .onLongPressGesture(minimumDuration: 0.01, pressing: { comparing = $0 }, perform: {})
+      .accessibilityLabel("Compare with original")
+      .accessibilityValue(comparing ? "Showing original" : "Showing edit")
+      .accessibilityHint("Touch and hold to see the original. Double-tap to toggle.")
+      .accessibilityAddTraits(.isButton)
+      .accessibilityAction { comparing.toggle() }
   }
 
   private var tools: some View {
     VStack(spacing: 0) {
-      Hairline()
       if typeSize.isAccessibilitySize {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
           ForEach(ToolTab.allCases, id: \.self) { tabButton($0) }
         }
-        .padding(12)
-        Hairline()
+        .padding(.horizontal, 12).padding(.top, 8)
       }
       Group {
         switch tab {
@@ -251,167 +263,143 @@ struct EditorView: View {
         case .recipes: recipePanel
         }
       }
-      .frame(height: typeSize.isAccessibilitySize ? nil : 218)
-      .padding(.vertical, typeSize.isAccessibilitySize ? 14 : 0)
+      .frame(height: typeSize.isAccessibilitySize ? nil : 176)
+      .padding(.vertical, typeSize.isAccessibilitySize ? 16 : 0)
       if !typeSize.isAccessibilitySize {
-        ViewThatFits(in: .horizontal) {
-          tabButtons
-          ScrollView(.horizontal, showsIndicators: true) { tabButtons }
+        HStack(spacing: 0) {
+          ForEach(ToolTab.allCases, id: \.self) { tabButton($0) }
         }
-        .padding(.horizontal, 12).padding(.top, 4).padding(.bottom, 8)
+        .padding(.horizontal, 8).padding(.bottom, 2)
       }
     }
     .background(Palette.background.ignoresSafeArea(edges: .bottom))
   }
 
-  private var tabButtons: some View {
-    HStack(spacing: 4) {
-      ForEach(ToolTab.allCases, id: \.self) { tabButton($0) }
-    }
-  }
-
   private func tabButton(_ item: ToolTab) -> some View {
-    Button {
+    let selected = tab == item
+    return Button {
       withAnimation(reduceMotion ? nil : .easeOut(duration: 0.16)) { tab = item }
     } label: {
-      Text(item.rawValue).font(TypeStyle.label)
-        .fixedSize().frame(maxWidth: .infinity, minHeight: 46)
-        .padding(.horizontal, 10)
-        .foregroundStyle(tab == item ? Palette.silver : Palette.muted)
-        .background(
-          tab == item ? Palette.panel : .clear, in: RoundedRectangle(cornerRadius: 10))
+      VStack(spacing: 5) {
+        Image(systemName: item.symbol)
+          .font(.system(size: 20, weight: selected ? .semibold : .regular))
+          .frame(height: 24)
+        Text(item.rawValue).font(TypeStyle.micro)
+      }
+      .frame(maxWidth: .infinity, minHeight: 56)
+      .foregroundStyle(selected ? Palette.ink : Palette.muted)
+      .contentShape(Rectangle())
     }
-    .buttonStyle(.plain).accessibilityAddTraits(tab == item ? .isSelected : [])
+    .buttonStyle(.plain).accessibilityAddTraits(selected ? .isSelected : [])
   }
 
   private var filmstrip: some View {
-    VStack(alignment: .leading, spacing: 18) {
-      HStack(alignment: .firstTextBaseline) {
-        Text("Film looks").font(TypeStyle.label)
-        Spacer()
-        Text(room.settings.film.title).font(TypeStyle.caption).foregroundStyle(Palette.muted)
-      }
-      .padding(.horizontal, 20)
-      ScrollViewReader { proxy in
-        ScrollView(.horizontal, showsIndicators: false) {
-          HStack(spacing: 12) {
-            ForEach(Film.allCases) { film in
-              Button {
-                room.edit { $0.film = film }
-              } label: {
-                VStack(spacing: 8) {
-                  Group {
-                    if let image = room.films[film] {
-                      Image(uiImage: image).resizable().scaledToFill()
-                    } else {
-                      Palette.panel
-                    }
+    ScrollViewReader { proxy in
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(alignment: .top, spacing: 10) {
+          ForEach(Film.allCases) { film in
+            let selected = room.settings.film == film
+            Button {
+              room.edit { $0.film = film }
+            } label: {
+              VStack(spacing: 8) {
+                Group {
+                  if let image = room.films[film] {
+                    Image(uiImage: image).resizable().scaledToFill()
+                  } else {
+                    Palette.panel
                   }
-                  .frame(width: min(filmWidth, 72), height: min(filmWidth, 72) * 1.35).clipped()
-                  .clipShape(RoundedRectangle(cornerRadius: 5)).padding(3)
-                  .overlay {
-                    RoundedRectangle(cornerRadius: 8)
-                      .strokeBorder(
-                        room.settings.film == film ? Palette.silver : .clear, lineWidth: 1.5)
-                  }
-                  Text(film.title).font(TypeStyle.caption)
-                    .foregroundStyle(room.settings.film == film ? Palette.silver : Palette.muted)
                 }
+                .frame(width: min(filmWidth, 84), height: min(filmWidth, 84) * 1.25).clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay {
+                  RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(selected ? Palette.ink : .clear, lineWidth: 2)
+                }
+                Text(film.title).font(TypeStyle.caption)
+                  .fontWeight(selected ? .semibold : .regular)
+                  .foregroundStyle(selected ? Palette.ink : Palette.muted)
               }
-              .buttonStyle(.plain).id(film)
-              .accessibilityLabel("\(film.title) look")
-              .accessibilityAddTraits(room.settings.film == film ? .isSelected : [])
             }
-          }
-          .padding(.horizontal, 17)
-        }
-        .onChange(of: room.settings.film) { _, film in
-          withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) {
-            proxy.scrollTo(film, anchor: .center)
+            .buttonStyle(.plain).id(film)
+            .accessibilityLabel("\(film.title) look")
+            .accessibilityAddTraits(selected ? .isSelected : [])
           }
         }
-        .onAppear { proxy.scrollTo(room.settings.film, anchor: .center) }
+        .padding(.horizontal, 16)
       }
-      Text(filmDescription).font(TypeStyle.caption).foregroundStyle(Palette.muted)
-        .padding(.horizontal, 20)
+      .onChange(of: room.settings.film) { _, film in
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) {
+          proxy.scrollTo(film, anchor: .center)
+        }
+      }
+      .onAppear { proxy.scrollTo(room.settings.film, anchor: .center) }
     }
-  }
-
-  private var filmDescription: String {
-    switch room.settings.film {
-    case .original: "Unfiltered color"
-    case .silver: "Soft monochrome · luminous midtones"
-    case .noir: "Deep monochrome · rich shadows"
-    case .dune: "Warm color · gentle contrast"
-    case .faded: "Muted color · lifted blacks"
-    }
+    .frame(maxHeight: .infinity)
   }
 
   private var adjustmentPanel: some View {
-    VStack(spacing: 12) {
+    VStack(spacing: 6) {
       if typeSize.isAccessibilitySize {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
           ForEach(Adjustment.allCases, id: \.self) { adjustmentButton($0) }
         }
       } else {
-        adjustmentButtons
+        HStack(spacing: 2) {
+          ForEach(Adjustment.allCases, id: \.self) { adjustmentButton($0) }
+        }
+        .padding(2)
+        .background(Palette.panel, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
       }
-      HStack(alignment: .firstTextBaseline) {
-        Text(valueText).font(TypeStyle.value).monospacedDigit()
-          .foregroundStyle(
-            adjustmentBinding.wrappedValue == adjustment.neutral ? Palette.silver : Palette.amber)
-        Spacer()
-        Button("Reset value") { adjustmentBinding.wrappedValue = adjustment.neutral }
-          .font(TypeStyle.caption).foregroundStyle(Palette.muted).frame(minHeight: 44)
-          .disabled(adjustmentBinding.wrappedValue == adjustment.neutral)
-          .accessibilityLabel("Reset \(adjustment.rawValue.lowercased()) to neutral")
+      ZStack {
+        Text(valueText).font(TypeStyle.value)
+          .foregroundStyle(isNeutral ? Palette.ink : Palette.accent)
+          .contentTransition(.numericText())
+          .accessibilityHidden(true)
+        if !isNeutral {
+          HStack {
+            Spacer()
+            Button("Reset") { adjustmentBinding.wrappedValue = adjustment.neutral }
+              .font(TypeStyle.label).foregroundStyle(Palette.muted).frame(minHeight: 44)
+              .accessibilityLabel("Reset \(adjustment.rawValue.lowercased())")
+          }
+        }
       }
-      VStack(spacing: 3) {
+      .frame(minHeight: 40)
+      VStack(spacing: 2) {
         AdjustmentSlider(
           value: adjustmentBinding, scale: SliderScale(range: adjustment.range),
           onEditingChanged: room.setAdjusting
         )
         .accessibilityLabel(adjustment.rawValue).accessibilityValue(valueText)
         HStack {
-          ForEach(0..<21) { index in
-            Rectangle().fill(index == 10 ? Palette.silver : Palette.muted.opacity(0.45))
-              .frame(width: 1, height: index.isMultiple(of: 5) ? 9 : 4)
-            if index < 20 { Spacer(minLength: 0) }
-          }
+          Text(adjustment.lowerLabel)
+          Spacer()
+          Text(adjustment.upperLabel)
         }
-        .padding(.horizontal, 3).accessibilityHidden(true)
+        .font(TypeStyle.micro).foregroundStyle(Palette.muted).padding(.horizontal, 2)
       }
-      HStack {
-        Text(adjustment.lowerLabel)
-        Spacer()
-        Text(adjustment == .contrast ? "1.00" : "0")
-        Spacer()
-        Text(adjustment.upperLabel)
-      }
-      .font(TypeStyle.caption).foregroundStyle(Palette.muted)
     }
-    .padding(.horizontal, 24)
+    .padding(.horizontal, 20).padding(.top, 8)
   }
 
-  private var adjustmentButtons: some View {
-    HStack(spacing: 14) {
-      ForEach(Adjustment.allCases, id: \.self) { adjustmentButton($0) }
-    }
-  }
+  private var isNeutral: Bool { adjustmentBinding.wrappedValue == adjustment.neutral }
 
   private func adjustmentButton(_ item: Adjustment) -> some View {
-    Button {
-      adjustment = item
+    let selected = adjustment == item
+    return Button {
+      withAnimation(reduceMotion ? nil : .easeOut(duration: 0.16)) { adjustment = item }
     } label: {
-      VStack(spacing: 5) {
-        Text(item.rawValue).font(TypeStyle.label)
-          .fixedSize(horizontal: false, vertical: true)
-        Circle().fill(adjustment == item ? Palette.silver : .clear).frame(width: 3, height: 3)
-      }
-      .foregroundStyle(adjustment == item ? Palette.silver : Palette.muted)
-      .frame(maxWidth: .infinity, minHeight: 44)
+      Text(item.rawValue).font(TypeStyle.label)
+        .fixedSize(horizontal: false, vertical: true)
+        .foregroundStyle(selected ? Palette.ink : Palette.muted)
+        .frame(maxWidth: .infinity, minHeight: 40)
+        .background(
+          selected ? Palette.control : .clear,
+          in: RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
-    .accessibilityAddTraits(adjustment == item ? .isSelected : [])
+    .buttonStyle(.plain)
+    .accessibilityAddTraits(selected ? .isSelected : [])
   }
 
   private var adjustmentBinding: Binding<Double> {
@@ -436,85 +424,77 @@ struct EditorView: View {
 
   private var valueText: String {
     switch adjustment {
-    case .exposure: String(format: "%+.2f EV", room.settings.exposure)
-    case .contrast: String(format: "%.2f×", room.settings.contrast)
+    case .exposure: String(format: "%+.2f", room.settings.exposure)
+    case .contrast: String(format: "%+.0f", (room.settings.contrast - 1) * 100)
     case .warmth: String(format: "%+.0f", room.settings.warmth * 100)
     }
   }
 
   private var framePanel: some View {
-    VStack(spacing: 16) {
-      HStack(spacing: 14) {
-        ratioButton(square: false)
-        ratioButton(square: true)
-      }
-      HStack {
-        Text("\(room.settings.quarterTurns * 90)° rotation")
-          .font(TypeStyle.caption).foregroundStyle(Palette.muted)
-        Spacer()
-        Button {
-          room.edit { $0.quarterTurns += 1 }
-        } label: {
-          Label("Rotate", systemImage: "rotate.right").font(TypeStyle.label).frame(minHeight: 44)
-        }
-        .accessibilityLabel("Rotate 90 degrees")
-      }
-      Text(
-        room.settings.squareCrop
-          ? "Square crop is centered on the photograph." : "The full photograph is preserved."
-      )
-      .font(TypeStyle.caption).foregroundStyle(Palette.muted)
-      .frame(maxWidth: .infinity, alignment: .leading)
+    let columns = typeSize.isAccessibilitySize ? 1 : 3
+    return LazyVGrid(
+      columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: columns), spacing: 10
+    ) {
+      frameTile(
+        symbol: "rectangle", title: "Original", selected: !room.settings.squareCrop,
+        label: "Original ratio"
+      ) { room.edit { $0.squareCrop = false } }
+      frameTile(
+        symbol: "square", title: "Square", selected: room.settings.squareCrop,
+        label: "Square crop"
+      ) { room.edit { $0.squareCrop = true } }
+      frameTile(
+        symbol: "rotate.right", title: "Rotate \(room.settings.quarterTurns * 90)°",
+        selected: false,
+        label: "Rotate 90 degrees, currently \(room.settings.quarterTurns * 90) degrees"
+      ) { room.edit { $0.quarterTurns += 1 } }
     }
-    .padding(.horizontal, 24)
+    .padding(.horizontal, 20).padding(.top, 12)
   }
 
-  private func ratioButton(square: Bool) -> some View {
-    let selected = room.settings.squareCrop == square
-    return Button {
-      room.edit { $0.squareCrop = square }
-    } label: {
-      VStack(spacing: 10) {
-        RoundedRectangle(cornerRadius: 2).stroke(lineWidth: 1.2)
-          .frame(width: square ? 24 : 34, height: 24).frame(height: 28)
-        Text(square ? "Square" : "Original").font(TypeStyle.label)
+  private func frameTile(
+    symbol: String, title: String, selected: Bool, label: String, action: @escaping () -> Void
+  ) -> some View {
+    Button(action: action) {
+      VStack(spacing: 8) {
+        Image(systemName: symbol).font(.system(size: 22, weight: .regular))
+        Text(title).font(TypeStyle.label).monospacedDigit()
       }
-      .foregroundStyle(selected ? Palette.silver : Palette.muted)
-      .frame(maxWidth: .infinity).padding(.vertical, 14)
-      .background(selected ? Palette.panel : .clear, in: RoundedRectangle(cornerRadius: 10))
+      .foregroundStyle(selected ? Palette.background : Palette.ink)
+      .frame(maxWidth: .infinity, minHeight: 88)
+      .background(
+        selected ? Palette.ink : Palette.panel,
+        in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
-    .accessibilityLabel(square ? "Square crop" : "Original ratio")
+    .buttonStyle(.plain)
+    .accessibilityLabel(label)
     .accessibilityAddTraits(selected ? .isSelected : [])
   }
 
   private var recipePanel: some View {
-    VStack(alignment: .leading, spacing: 14) {
-      HStack {
-        Text(saved ? "Recipe saved" : "Keep this look").font(TypeStyle.heading)
-        Spacer()
-        if saved { Image(systemName: "checkmark").foregroundStyle(Palette.amber) }
-      }
-      Text("Use these adjustments on another photograph.")
-        .font(TypeStyle.label).foregroundStyle(Palette.muted)
+    VStack(spacing: 10) {
       Button {
         showSave = true
       } label: {
-        Text("Save recipe").frame(maxWidth: .infinity)
+        Label(
+          saved ? "Saved" : "Save this look as a recipe", systemImage: saved ? "checkmark" : "plus"
+        )
+        .frame(maxWidth: .infinity)
       }
       .buttonStyle(PrimaryButton())
+      .disabled(saved)
       Button {
         showRecipes = true
       } label: {
         HStack {
-          Text("Saved recipes")
+          Text("Apply a saved recipe")
           Spacer()
-          Text("\(library.state.recipes.count)").foregroundStyle(Palette.muted)
-          Image(systemName: "chevron.right").font(TypeStyle.caption)
+          Text("\(library.state.recipes.count)").foregroundStyle(Palette.muted).monospacedDigit()
         }
-        .font(TypeStyle.label).frame(minHeight: 44)
       }
+      .buttonStyle(SecondaryButton())
     }
-    .padding(.horizontal, 24)
+    .padding(.horizontal, 20).padding(.top, 16)
   }
 }
 
@@ -530,12 +510,13 @@ private struct AdjustmentSlider: View {
       let length = max(1, geometry.size.width - 28)
       let position = CGFloat(scale.fraction(for: value)) * length
       ZStack(alignment: .leading) {
-        Capsule().fill(Palette.line).frame(height: 3).padding(.horizontal, 14)
-        Capsule().fill(Palette.silver)
+        Capsule().fill(Palette.control).frame(height: 3).padding(.horizontal, 14)
+        Rectangle().fill(Palette.muted).frame(width: 1, height: 11).offset(x: 14 + length / 2)
+        Capsule().fill(Palette.accent)
           .frame(width: abs(position - length / 2), height: 3)
           .offset(x: 14 + min(position, length / 2))
-        Circle().fill(Palette.silver)
-          .frame(width: 24, height: 24)
+        Circle().fill(Palette.ink).shadow(color: .black.opacity(0.4), radius: 3, y: 1)
+          .frame(width: 22, height: 22)
           .frame(width: 28, height: 44)
           .offset(x: position)
       }

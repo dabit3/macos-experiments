@@ -3,7 +3,6 @@ import SwiftUI
 struct RecipeShelf: View {
   @EnvironmentObject private var library: LibraryStore
   @Environment(\.dismiss) private var dismiss
-  @Environment(\.dynamicTypeSize) private var typeSize
   @State private var managing: Recipe?
   @State private var previews: [UUID: UIImage] = [:]
   var negative: Negative?
@@ -13,21 +12,17 @@ struct RecipeShelf: View {
     VStack(spacing: 0) {
       SheetHeader(title: "Recipes") { dismiss() }
       ScrollView {
-        VStack(alignment: .leading, spacing: 28) {
-          Text("Your saved looks.").font(TypeStyle.title).padding(.top, 16)
-          Text(
-            onApply == nil
-              ? "Looks and adjustments, ready to use again."
-              : "Previewed on this photograph. Tap a look to apply it."
-          )
-          .font(TypeStyle.label).foregroundStyle(Palette.muted)
+        VStack(alignment: .leading, spacing: 0) {
           if library.state.recipes.isEmpty {
-            VStack(alignment: .leading, spacing: 14) {
-              Hairline()
-              Text("Save your first look").font(TypeStyle.heading).padding(.top, 20)
-              Text("Open a photograph, make your adjustments, then choose Recipes → Save recipe.")
-                .font(TypeStyle.body).foregroundStyle(Palette.muted).lineSpacing(3)
+            VStack(alignment: .leading, spacing: 8) {
+              Text("No recipes yet").font(TypeStyle.title)
+              Text("Edit a photo, then save its look from the Recipes tool to reuse it here.")
+                .font(TypeStyle.body).foregroundStyle(Palette.muted)
             }
+            .padding(.top, 24)
+          } else if onApply != nil {
+            Text("Tap a recipe to apply it. Crop and rotation stay as they are.")
+              .font(TypeStyle.caption).foregroundStyle(Palette.muted).padding(.bottom, 16)
           }
           ForEach(library.state.recipes) { recipe in
             recipeRow(recipe)
@@ -42,19 +37,11 @@ struct RecipeShelf: View {
                 }.value
               }
           }
-          if !library.state.recipes.isEmpty {
-            Text(
-              negative == nil
-                ? "Previews use The cove sample."
-                : "Applying a recipe keeps this photo’s crop and rotation."
-            )
-            .font(TypeStyle.caption).foregroundStyle(Palette.muted)
-          }
         }
-        .padding(.horizontal, 24).padding(.bottom, 30)
+        .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 30)
       }
     }
-    .foregroundStyle(Palette.silver).background(Palette.background)
+    .foregroundStyle(Palette.ink).presentationBackground(Palette.background)
     .presentationDragIndicator(.visible)
     .sheet(item: $managing) { recipe in
       RecipeNameSheet(
@@ -65,51 +52,50 @@ struct RecipeShelf: View {
   }
 
   private func recipeRow(_ recipe: Recipe) -> some View {
-    VStack(alignment: .leading, spacing: 18) {
-      HStack(alignment: .top, spacing: 16) {
-        Button {
-          if let onApply { onApply(recipe) } else { managing = recipe }
-        } label: {
-          HStack(alignment: .top, spacing: 16) {
-            Group {
-              if let preview = previews[recipe.id] {
-                Image(uiImage: preview).resizable().scaledToFill()
-              } else {
-                Palette.panel
-              }
+    HStack(alignment: .center, spacing: 14) {
+      Button {
+        if let onApply { onApply(recipe) } else { managing = recipe }
+      } label: {
+        HStack(alignment: .center, spacing: 14) {
+          Group {
+            if let preview = previews[recipe.id] {
+              Image(uiImage: preview).resizable().scaledToFill()
+            } else {
+              Palette.panel
             }
-            .frame(width: 84, height: 112).clipped()
-            .clipShape(RoundedRectangle(cornerRadius: 6)).accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 10) {
-              Text(recipe.name).font(TypeStyle.heading)
-                .fixedSize(horizontal: false, vertical: true)
-              if !typeSize.isAccessibilitySize { summary(recipe) }
-              if onApply != nil {
-                Text("Apply look").font(TypeStyle.label).underline()
-              }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
           }
+          .frame(width: 64, height: 80).clipped()
+          .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+          .accessibilityHidden(true)
+          VStack(alignment: .leading, spacing: 4) {
+            Text(recipe.name).font(TypeStyle.heading)
+              .fixedSize(horizontal: false, vertical: true)
+            summary(recipe)
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(onApply == nil ? "Edit \(recipe.name)" : "Apply \(recipe.name)")
-        RoundControl(symbol: "ellipsis", label: "Manage \(recipe.name)") { managing = recipe }
+        .contentShape(Rectangle())
       }
-      if typeSize.isAccessibilitySize { summary(recipe) }
-      Hairline()
+      .buttonStyle(.plain)
+      .accessibilityLabel(onApply == nil ? "Edit \(recipe.name)" : "Apply \(recipe.name)")
+      IconButton(symbol: "ellipsis", label: "Edit \(recipe.name)", size: 17, filled: true) {
+        managing = recipe
+      }
     }
+    .padding(.vertical, 12)
+    .overlay(alignment: .bottom) { Hairline() }
   }
 
   private func summary(_ recipe: Recipe) -> some View {
-    VStack(alignment: .leading, spacing: 6) {
-      Text(
-        recipe.settings.film.title + " · " + String(format: "%+.2f EV", recipe.settings.exposure))
-      Text(
-        String(
-          format: "%.2f contrast · %+.0f warmth", recipe.settings.contrast,
-          recipe.settings.warmth * 100))
+    let settings = recipe.settings
+    var parts = [settings.film.title]
+    if settings.exposure != 0 { parts.append(String(format: "Exposure %+.2f", settings.exposure)) }
+    if settings.contrast != 1 {
+      parts.append(String(format: "Contrast %+.0f", (settings.contrast - 1) * 100))
     }
-    .font(TypeStyle.caption).foregroundStyle(Palette.muted)
-    .fixedSize(horizontal: false, vertical: true)
+    if settings.warmth != 0 { parts.append(String(format: "Warmth %+.0f", settings.warmth * 100)) }
+    return Text(parts.joined(separator: " · "))
+      .font(TypeStyle.caption).foregroundStyle(Palette.muted).monospacedDigit()
+      .fixedSize(horizontal: false, vertical: true)
   }
 }

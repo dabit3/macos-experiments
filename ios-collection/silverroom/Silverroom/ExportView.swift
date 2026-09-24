@@ -17,42 +17,43 @@ struct ExportView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      SheetHeader(title: "Export photograph") { dismiss() }
+      SheetHeader(title: "Export") { dismiss() }
       ScrollView {
-        VStack(alignment: .leading, spacing: 24) {
-          Text("Ready to share.").font(TypeStyle.title).padding(.top, 12)
+        VStack(spacing: 20) {
           if let preview {
             Image(uiImage: preview).resizable().scaledToFit()
-              .frame(maxWidth: .infinity).frame(maxHeight: 330)
-              .accessibilityLabel("Your exported photograph")
+              .frame(maxWidth: .infinity).frame(maxHeight: 380)
+              .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+              .accessibilityLabel("Exported photo")
           } else if let error {
             Text(error).font(TypeStyle.body).foregroundStyle(Palette.muted)
           } else {
-            ProgressView("Preparing preview").font(TypeStyle.label)
-              .frame(maxWidth: .infinity, minHeight: 240)
+            ProgressView().tint(Palette.ink).frame(maxWidth: .infinity, minHeight: 240)
           }
-          VStack(spacing: 16) {
-            metadata(
-              "Dimensions",
-              dimensions == .zero ? "—" : "\(Int(dimensions.width)) × \(Int(dimensions.height))")
-            metadata("Format", "JPEG · sRGB")
-            metadata("File size", fileSize.isEmpty ? "—" : fileSize)
+          VStack(spacing: 4) {
+            Text(
+              dimensions == .zero
+                ? "Full resolution" : "\(Int(dimensions.width)) × \(Int(dimensions.height))"
+            )
+            .font(TypeStyle.heading).monospacedDigit()
+            Text("JPEG · sRGB" + (fileSize.isEmpty ? "" : " · \(fileSize)"))
+              .font(TypeStyle.caption).foregroundStyle(Palette.muted).monospacedDigit()
           }
-          Hairline()
-          Text("Full resolution. Original preserved.")
-            .font(TypeStyle.label).foregroundStyle(Palette.muted)
+          .accessibilityElement(children: .combine)
         }
-        .padding(24)
+        .padding(.horizontal, 20).padding(.top, 8)
       }
+    }
+    .safeAreaInset(edge: .bottom, spacing: 0) {
       Button {
         showShare = true
       } label: {
         Label("Save or share", systemImage: "square.and.arrow.up").frame(maxWidth: .infinity)
       }
       .buttonStyle(PrimaryButton())
-      .padding(.horizontal, 24).padding(.top, 12).padding(.bottom, 20)
+      .padding(.horizontal, 20).padding(.top, 10).padding(.bottom, 12)
     }
-    .foregroundStyle(Palette.silver).background(Palette.background)
+    .foregroundStyle(Palette.ink).presentationBackground(Palette.background)
     .presentationDragIndicator(.visible)
     .sheet(isPresented: $showShare) { ShareSheet(url: file.url) }
     .task {
@@ -74,14 +75,6 @@ struct ExportView: View {
     }
   }
 
-  private func metadata(_ title: String, _ value: String) -> some View {
-    HStack(alignment: .firstTextBaseline, spacing: 16) {
-      Text(title).foregroundStyle(Palette.muted)
-      Spacer()
-      Text(value).multilineTextAlignment(.trailing).monospacedDigit()
-    }
-    .font(TypeStyle.label)
-  }
 }
 
 struct ShareSheet: UIViewControllerRepresentable {

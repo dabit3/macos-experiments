@@ -12,38 +12,26 @@ struct LibraryView: View {
 
   var body: some View {
     ScrollView {
-      VStack(alignment: .leading, spacing: 26) {
+      VStack(alignment: .leading, spacing: 20) {
         header
-        HStack(alignment: .firstTextBaseline) {
-          Text("Photographs").font(TypeStyle.heading)
-          Spacer()
-          Text("\(library.state.negatives.count) in your library")
-            .font(TypeStyle.caption).foregroundStyle(Palette.muted)
-        }
-        if let first = library.state.negatives.first {
-          photograph(first, featured: true)
-        }
         LazyVGrid(
           columns: Array(
-            repeating: GridItem(.flexible(), spacing: 16),
+            repeating: GridItem(.flexible(), spacing: 12),
             count: typeSize.isAccessibilitySize ? 1 : 2),
-          alignment: .leading, spacing: 24
+          alignment: .leading, spacing: 20
         ) {
-          ForEach(library.state.negatives.dropFirst()) { negative in
-            photograph(negative, featured: false)
+          ForEach(library.state.negatives) { negative in
+            photograph(negative)
           }
         }
-        Text("Originals and edits stay on this device.")
-          .font(TypeStyle.caption).foregroundStyle(Palette.muted)
-          .frame(maxWidth: .infinity).padding(.vertical, 12)
       }
-      .padding(.horizontal, 20).padding(.top, 16).padding(.bottom, 20)
+      .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 24)
     }
     .background(Palette.background)
-    .foregroundStyle(Palette.silver)
+    .foregroundStyle(Palette.ink)
     .safeAreaInset(edge: .bottom) {
       importControl.buttonStyle(PrimaryButton()).disabled(library.importing)
-        .padding(.horizontal, 20).padding(.top, 12).padding(.bottom, 8)
+        .padding(.horizontal, 16).padding(.top, 10).padding(.bottom, 6)
         .background(Palette.background)
     }
     .fullScreenCover(item: $opened) { negative in EditorView(negative: negative) }
@@ -61,15 +49,14 @@ struct LibraryView: View {
         get: { library.error != nil }, set: { if !$0 { library.error = nil } })
     ) {
       NoticeSheet(
-        title: "Couldn’t complete that", detail: library.error ?? "", actionTitle: "Dismiss"
+        title: "Something went wrong", detail: library.error ?? "", actionTitle: "OK"
       ) { library.error = nil }
     }
     .sheet(item: $deleting) { negative in
       NoticeSheet(
-        title: "Remove photograph?",
-        detail:
-          "This removes \(negative.title) and its edits from Silverroom. Your Photos library is unchanged.",
-        actionTitle: "Remove photograph"
+        title: "Remove \(negative.title)?",
+        detail: "Its edits are removed from Silverroom. Your Photos library is unchanged.",
+        actionTitle: "Remove"
       ) { library.remove(negative) }
     }
   }
@@ -77,32 +64,26 @@ struct LibraryView: View {
   private var importControl: some View {
     let importing = library.importing
     return PhotosPicker(selection: $pickerItem, matching: .images, photoLibrary: .shared()) {
-      HStack(spacing: 10) {
+      HStack(spacing: 8) {
         if importing { ProgressView().tint(Palette.background) } else { Image(systemName: "plus") }
-        Text(importing ? "Opening photograph…" : "Import photograph")
+        Text(importing ? "Opening…" : "Import photo")
       }
       .frame(maxWidth: .infinity)
     }
   }
 
   private var header: some View {
-    let layout =
-      typeSize.isAccessibilitySize
-      ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
-      : AnyLayout(HStackLayout(alignment: .center, spacing: 4))
-    return layout {
-      Text("Silverroom").font(TypeStyle.display).tracking(-1.5)
+    HStack(spacing: 0) {
+      Text("Silverroom").font(TypeStyle.display)
         .frame(maxWidth: .infinity, alignment: .leading)
-      HStack(spacing: 0) {
-        RoundControl(symbol: "bookmark", label: "Saved recipes") { showRecipes = true }
-        RoundControl(symbol: "ellipsis", label: "About Silverroom") { showAbout = true }
-      }
+      IconButton(symbol: "bookmark", label: "Recipes", size: 18) { showRecipes = true }
+      IconButton(symbol: "info.circle", label: "About Silverroom", size: 18) { showAbout = true }
     }
-    .padding(.bottom, 8)
+    .padding(.leading, 4).padding(.top, 4)
   }
 
-  private func photograph(_ negative: Negative, featured: Bool) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
+  private func photograph(_ negative: Negative) -> some View {
+    VStack(alignment: .leading, spacing: 8) {
       Button {
         opened = negative
       } label: {
@@ -112,28 +93,29 @@ struct LibraryView: View {
               .frame(width: geometry.size.width, height: geometry.size.height)
               .clipped()
           } else {
-            Palette.panel.overlay { ProgressView().tint(Palette.silver) }
+            Palette.panel.overlay { ProgressView().tint(Palette.ink) }
           }
         }
-        .aspectRatio(featured ? 0.95 : 0.8, contentMode: .fit)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .aspectRatio(0.8, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
       }
       .buttonStyle(.plain)
-      .accessibilityLabel("Open \(negative.title)\(negative.isSample ? ", sample photograph" : "")")
-      HStack(alignment: .top, spacing: 6) {
-        VStack(alignment: .leading, spacing: 5) {
-          Text(negative.title).font(featured ? TypeStyle.title : TypeStyle.heading)
-            .fixedSize(horizontal: false, vertical: true)
-          Text(negative.isSample ? "Sample photograph" : "Imported photograph")
-            .font(TypeStyle.caption).foregroundStyle(Palette.muted)
-        }
-        Spacer(minLength: 0)
+      .accessibilityLabel("Open \(negative.title)\(negative.isSample ? ", sample photo" : "")")
+      .contextMenu {
         if !negative.isSample {
-          RoundControl(symbol: "minus.circle", label: "Remove \(negative.title)") {
+          Button("Remove from Silverroom", systemImage: "trash", role: .destructive) {
             deleting = negative
           }
         }
       }
+      .accessibilityHint(negative.isSample ? "" : "Touch and hold to remove")
+      HStack(alignment: .firstTextBaseline, spacing: 6) {
+        Text(negative.title).font(TypeStyle.label).lineLimit(2)
+        if negative.isSample {
+          Text("Sample").font(TypeStyle.micro).foregroundStyle(Palette.muted)
+        }
+      }
+      .padding(.horizontal, 2)
     }
     .task(id: negative.settings) { await library.refreshThumbnail(negative) }
   }
@@ -144,38 +126,38 @@ struct AboutView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      SheetHeader(title: "About Silverroom") { dismiss() }
+      SheetHeader(title: "About") { dismiss() }
       ScrollView {
-        VStack(alignment: .leading, spacing: 30) {
-          Text("A private darkroom.").font(TypeStyle.title).padding(.top, 16)
+        VStack(alignment: .leading, spacing: 24) {
           section(
-            "On your device",
-            "Core Image processes every adjustment locally. No accounts, uploads or subscriptions.")
-          section(
-            "Non-destructive editing",
-            "Imported originals stay untouched. Edits are saved automatically. Undo and redo are available during each editing session."
+            "On device",
+            "Every adjustment is processed locally with Core Image. No account, upload or subscription."
           )
           section(
-            "Sample photographs",
-            "The cove and Quiet morning are original AI-generated images, included to explore the tools."
+            "Non-destructive",
+            "Originals stay untouched and edits save automatically. Undo and redo cover the current session."
           )
           section(
-            "Full-resolution export",
-            "Share a high-quality sRGB JPEG to Photos, Files or another app. Crop and rotation determine the dimensions. Camera and location metadata are removed."
+            "Sample photos",
+            "The cove and Quiet morning are original AI-generated images included to try the tools."
           )
-          Text("Silverroom · Version 1.0").font(TypeStyle.caption).foregroundStyle(Palette.muted)
+          section(
+            "Export",
+            "Exports are full-resolution sRGB JPEGs with camera and location metadata removed. Crop and rotation set the final dimensions."
+          )
+          Text("Version 1.0").font(TypeStyle.caption).foregroundStyle(Palette.muted)
         }
-        .padding(24)
+        .padding(20)
       }
     }
-    .foregroundStyle(Palette.silver).background(Palette.background)
+    .foregroundStyle(Palette.ink).presentationBackground(Palette.background)
     .presentationDragIndicator(.visible)
   }
 
   private func section(_ title: String, _ detail: String) -> some View {
-    VStack(alignment: .leading, spacing: 10) {
+    VStack(alignment: .leading, spacing: 6) {
       Text(title).font(TypeStyle.heading)
-      Text(detail).font(TypeStyle.body).foregroundStyle(Palette.muted).lineSpacing(3)
+      Text(detail).font(TypeStyle.body).foregroundStyle(Palette.muted)
     }
   }
 }
