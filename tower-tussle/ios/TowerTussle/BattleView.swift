@@ -119,9 +119,11 @@ struct BattleView: View {
                         .accessibilityIdentifier("phaseChip")
                 }
             }
+            .fixedSize(horizontal: true, vertical: false)
             .padding(.horizontal, 14)
             .padding(.vertical, 5)
             .panel(cornerRadius: 20)
+            .layoutPriority(1)
             .animation(.spring(duration: 0.3), value: phaseText?.0)
             Spacer(minLength: 0)
 

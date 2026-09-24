@@ -568,6 +568,8 @@ struct SectionLabel: View {
         Text(text.uppercased())
             .font(.system(size: 10, weight: .heavy, design: .rounded))
             .tracking(2)
+            .lineLimit(1)
+            .fixedSize()
             .foregroundStyle(color)
             .shadow(color: .black.opacity(0.7), radius: 0, y: 1)
     }
