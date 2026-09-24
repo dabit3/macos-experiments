@@ -1,39 +1,6 @@
 import SwiftUI
 import SpriteKit
 
-enum Palette {
-    static let cream = Color(uiColor: Ink.cream)
-    static let red = Color(uiColor: Ink.red)
-    static let gold = Color(uiColor: Ink.gold)
-    static let black = Color(uiColor: Ink.black)
-}
-
-struct BladePanel: Shape {
-    func path(in rect: CGRect) -> Path {
-        Path { path in
-            path.move(to: CGPoint(x: 10, y: 0))
-            path.addLines([CGPoint(x: rect.maxX, y: 0),
-                           CGPoint(x: rect.maxX - 10, y: rect.maxY),
-                           CGPoint(x: 0, y: rect.maxY)])
-            path.closeSubpath()
-        }
-    }
-}
-
-struct MetalButton: ButtonStyle {
-    var red = false
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.custom("AvenirNextCondensed-Heavy", size: 15))
-            .tracking(1)
-            .padding(.horizontal, 18).padding(.vertical, 9)
-            .foregroundStyle(Palette.cream)
-            .background(BladePanel().fill(red ? Palette.red : Palette.black.opacity(0.9)))
-            .overlay(BladePanel().stroke(Palette.gold, lineWidth: 1))
-            .opacity(configuration.isPressed ? 0.65 : 1)
-    }
-}
-
 @main
 struct RiftApp: App {
     @StateObject private var client = DuelClient()
@@ -52,7 +19,7 @@ struct RiftApp: App {
 
 struct RootView: View {
     @ObservedObject var client: DuelClient
-    @State private var muted = false
+    @ObservedObject private var sound = Sound.shared
     @State private var showGuide = false
 
     var body: some View {
@@ -61,152 +28,372 @@ struct RootView: View {
             if let state = client.state, state.phase != "lobby" {
                 BattleView(client: client)
             } else {
-                lobby
+                LobbyView(client: client, showGuide: $showGuide)
             }
             if !client.error.isEmpty {
-                VStack(spacing: 12) {
-                    Text("SIGNAL INTERRUPTED").font(.title2.bold())
-                    Text(client.error).multilineTextAlignment(.center)
-                    Button("DISMISS") { client.error = "" }.buttonStyle(MetalButton(red: true))
-                }
-                .padding(28).frame(maxWidth: 430)
-                .background(Palette.black).overlay(Rectangle().stroke(Palette.red, lineWidth: 2))
+                Color.black.opacity(0.55).ignoresSafeArea()
+                errorPlate
             }
             if showGuide {
-                guide
+                Color.black.opacity(0.6).ignoresSafeArea()
+                    .onTapGesture { showGuide = false }
+                GuideView { showGuide = false }
             }
         }
         .foregroundStyle(Palette.cream)
         .statusBarHidden()
+        .animation(.easeOut(duration: 0.2), value: client.error.isEmpty)
+        .animation(.easeOut(duration: 0.2), value: showGuide)
     }
 
-    private var lobby: some View {
-        GeometryReader { geometry in
-            ZStack {
-                Image("cathedral").resizable().scaledToFill()
-                    .frame(width: geometry.size.width, height: geometry.size.height).clipped()
-                LinearGradient(colors: [.black.opacity(0.88), .black.opacity(0.3), .black.opacity(0.88)],
-                               startPoint: .leading, endPoint: .trailing)
-                HStack(spacing: 25) {
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("CATHEDRAL ENGINE / NETWORK DUEL").font(.system(size: 10, weight: .bold, design: .monospaced))
-                            .tracking(2).foregroundStyle(Palette.gold)
-                        Text("RIFT\nREQUIEM")
-                            .font(.custom("AvenirNextCondensed-HeavyItalic", size: min(geometry.size.height * 0.15, 64)))
-                            .lineSpacing(-17).shadow(color: .black, radius: 0, x: 4, y: 4)
-                        Rectangle().fill(Palette.red).frame(width: 170, height: 4).padding(.vertical, 8)
-                        Text("BREAK THE CLOCK.\nWRITE YOUR REQUIEM.")
-                            .font(.custom("AvenirNextCondensed-DemiBold", size: 14)).tracking(2)
-                        Spacer(minLength: 10)
-                        HStack {
-                            Button("HOW TO FIGHT") { showGuide = true }
-                            Button(muted ? "SOUND OFF" : "SOUND ON") {
-                                muted.toggle(); Sound.shared.muted = muted
-                            }
-                        }.buttonStyle(MetalButton())
-                        Text("ORIGINAL FIGHTERS • REAL-TIME TWO-PLAYER")
-                            .font(.system(size: 8, weight: .medium, design: .monospaced))
-                            .foregroundStyle(Palette.gold)
-                    }.frame(maxWidth: .infinity, alignment: .leading)
-                    VStack(alignment: .leading, spacing: 9) {
-                        if client.connected {
-                            roomLobby
-                        } else {
-                            connectionForm
-                        }
-                    }
-                    .padding(18).frame(width: min(geometry.size.width * 0.47, 410))
-                    .background(Palette.black.opacity(0.93))
-                    .overlay(BladePanel().stroke(Palette.gold.opacity(0.7), lineWidth: 1))
+    private var errorPlate: some View {
+        VStack(spacing: 14) {
+            Text("SIGNAL INTERRUPTED").font(Type.display(30)).foregroundStyle(Palette.red)
+            Text(client.error).font(Type.body(13)).multilineTextAlignment(.center)
+                .foregroundStyle(Palette.cream.opacity(0.9))
+            HStack(spacing: 10) {
+                if client.state == nil {
+                    Button("RETRY") { client.connect() }.buttonStyle(MetalButton(kind: .primary))
                 }
-                .padding(.horizontal, max(30, geometry.safeAreaInsets.leading))
-                .padding(.vertical, 24)
+                Button("DISMISS") { client.error = "" }.buttonStyle(MetalButton())
             }
-        }.ignoresSafeArea()
+        }
+        .padding(26).frame(maxWidth: 440)
+        .background(BladePanel(cut: 14).fill(Palette.plate))
+        .overlay(BladePanel(cut: 14).stroke(Palette.red, lineWidth: 1.5))
+        .transition(.scale(scale: 0.95).combined(with: .opacity))
     }
+}
+
+struct LobbyView: View {
+    @ObservedObject var client: DuelClient
+    @ObservedObject private var sound = Sound.shared
+    @Binding var showGuide: Bool
+    @FocusState private var focus: Field?
+    @State private var copied = false
+
+    enum Field { case name, room, server }
+
+    var body: some View {
+        ZStack {
+            ZStack {
+                Color.clear.overlay(Image("cathedral").resizable().scaledToFill()).clipped()
+                LinearGradient(colors: [.black.opacity(0.92), .black.opacity(0.55), .black.opacity(0.92)],
+                               startPoint: .leading, endPoint: .trailing)
+                LinearGradient(colors: [.black.opacity(0.6), .clear, .black.opacity(0.7)],
+                               startPoint: .top, endPoint: .bottom)
+            }
+            .ignoresSafeArea()
+            .onTapGesture { focus = nil }
+            GeometryReader { geometry in
+                HStack(spacing: geometry.size.width < 700 ? 12 : 24) {
+                    hero(height: geometry.size.height)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    panel
+                        .frame(width: min(geometry.size.width * 0.6, 470))
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 12)
+            }
+        }
+    }
+
+    private func hero(height: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("CATHEDRAL ENGINE  /  NETWORK DUEL").font(Type.label(9)).tracking(2.5)
+                .foregroundStyle(Palette.gold)
+            Text("RIFT\nREQUIEM")
+                .font(Type.display(min(height * 0.17, 72)))
+                .lineSpacing(-18).shadow(color: Palette.red, radius: 0, x: 4, y: 4)
+                .shadow(color: .black.opacity(0.9), radius: 12)
+            Rectangle().fill(Palette.red).frame(width: 190, height: 4).padding(.vertical, 6)
+            Text("BREAK THE CLOCK.\nWRITE YOUR REQUIEM.").font(Type.demi(14)).tracking(2)
+                .foregroundStyle(Palette.cream.opacity(0.9))
+            Spacer(minLength: 8)
+            HStack(spacing: 8) {
+                Button("HOW TO FIGHT") { showGuide = true }.buttonStyle(MetalButton())
+                Button(sound.muted ? "SOUND OFF" : "SOUND ON") { sound.muted.toggle() }
+                    .buttonStyle(MetalButton(kind: .ghost))
+            }
+            Text("ORIGINAL FIGHTERS  •  REAL-TIME TWO-PLAYER  •  BEST OF THREE")
+                .font(Type.label(8)).foregroundStyle(Palette.gold.opacity(0.85))
+                .lineLimit(1).minimumScaleFactor(0.7)
+        }
+    }
+
+    private var panel: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if client.connected {
+                roomLobby
+            } else {
+                connectionForm
+            }
+        }
+        .padding(16)
+        .background(BladePanel(cut: 16).fill(Palette.plate.opacity(0.96)))
+        .overlay(BladePanel(cut: 16).stroke(Palette.gold.opacity(0.7), lineWidth: 1))
+        .shadow(color: .black.opacity(0.6), radius: 20, y: 8)
+        .animation(.easeOut(duration: 0.25), value: client.connected)
+    }
+
+    // MARK: Connection form
 
     private var connectionForm: some View {
-        Group {
-            Text("SELECT YOUR DUELIST").font(.custom("AvenirNextCondensed-Heavy", size: 21)).tracking(2)
-            HStack(spacing: 10) {
-                selection("rook", title: "ROOK", subtitle: "ENGINE CLEAVER")
-                selection("vesper", title: "VESPER", subtitle: "CRESCENT REAPER")
+        VStack(alignment: .leading, spacing: 9) {
+            SectionLabel(index: "01", title: "CHOOSE YOUR DUELIST")
+            HStack(spacing: 8) {
+                FighterCard(style: "rook", selected: client.style == "rook") { client.style = "rook"; Haptics.tap() }
+                FighterCard(style: "vesper", selected: client.style == "vesper") { client.style = "vesper"; Haptics.tap() }
             }
-            HStack(spacing: 10) {
-                field("GUEST NAME", text: $client.name, prompt: "Guest")
-                field("ROOM CODE", text: $client.roomCode, prompt: "NEW ROOM")
+            SectionLabel(index: "02", title: joining ? "JOIN A DUEL ROOM" : "OPEN A DUEL ROOM")
+            HStack(alignment: .top, spacing: 8) {
+                field("GUEST NAME", text: $client.name, prompt: "Guest", focus: .name)
+                    .frame(maxWidth: .infinity)
+                field("ROOM CODE", text: roomBinding, prompt: "BLANK = NEW", focus: .room, code: true)
+                    .frame(width: 150)
             }
-            field("SERVER ADDRESS", text: $client.address, prompt: "ws://host:8787")
-            Button(client.roomCode.isEmpty ? "CREATE DUEL ROOM  →" : "JOIN DUEL ROOM  →") { client.connect() }
-                .buttonStyle(MetalButton(red: true)).accessibilityIdentifier("connect")
-            Text(client.status).font(.system(size: 8, design: .monospaced)).foregroundStyle(Palette.gold)
-        }
-    }
-
-    private var roomLobby: some View {
-        Group {
-            Text("DUEL ROOM").font(.custom("AvenirNextCondensed-DemiBold", size: 16)).tracking(3)
-            Text(client.code).font(.system(size: 35, weight: .black, design: .monospaced))
-                .foregroundStyle(Palette.gold).accessibilityIdentifier("roomCode")
-            Text("Share this code with the second device.").font(.system(size: 11))
-            Divider().overlay(Palette.gold)
-            ForEach(client.state?.players ?? []) { player in
+            field("SERVER ADDRESS", text: $client.address, prompt: "ws://host:8787", focus: .server)
+            Button {
+                focus = nil
+                client.connect()
+            } label: {
                 HStack {
-                    Text(player.style.uppercased()).font(.custom("AvenirNextCondensed-Heavy", size: 19))
-                    Text(player.name).font(.system(size: 11))
+                    Text(joining ? "JOIN ROOM \(client.roomCode)" : "CREATE DUEL ROOM")
                     Spacer()
-                    Text(player.ready ? "READY" : "STANDBY").font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(player.ready ? Palette.gold : .gray)
+                    Image(systemName: client.connecting ? "hourglass" : "arrow.right")
                 }
             }
-            if client.state?.players.count == 1 {
-                Text("02 / WAITING FOR A CHALLENGER").font(.system(size: 11, design: .monospaced)).padding(.vertical, 10)
+            .buttonStyle(MetalButton(kind: .primary, expand: true))
+            .disabled(client.connecting)
+            .accessibilityIdentifier("connect")
+            StatusPill(tone: client.connecting ? .busy : .idle, text: client.status)
+        }
+    }
+
+    private var joining: Bool { !client.roomCode.isEmpty }
+
+    private var roomBinding: Binding<String> {
+        Binding(get: { client.roomCode },
+                set: { client.roomCode = String($0.uppercased().filter { $0.isLetter || $0.isNumber }.prefix(8)) })
+    }
+
+    private func field(_ label: String, text: Binding<String>, prompt: String, focus target: Field,
+                       code: Bool = false) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(label).font(Type.label(8)).tracking(1.5).foregroundStyle(Palette.gold)
+            HStack(spacing: 4) {
+                TextField(prompt, text: text)
+                    .textInputAutocapitalization(code ? .characters : .never).autocorrectionDisabled()
+                    .keyboardType(target == .server ? .URL : .default)
+                    .submitLabel(target == .server ? .join : .next)
+                    .font(code ? Type.mono(15) : Type.mono(12))
+                    .focused($focus, equals: target)
+                    .onSubmit {
+                        switch target {
+                        case .name: focus = .room
+                        case .room: focus = .server
+                        case .server: focus = nil; client.connect()
+                        }
+                    }
+                    .accessibilityIdentifier(label)
+                if !text.wrappedValue.isEmpty && focus == target {
+                    Button { text.wrappedValue = "" } label: {
+                        Image(systemName: "xmark.circle.fill").font(.system(size: 12))
+                            .foregroundStyle(Palette.muted)
+                    }.buttonStyle(.plain).accessibilityLabel("Clear \(label)")
+                }
             }
-            Button(client.me?.ready == true ? "READY — WAITING" : "READY / DRAW WEAPONS") { client.ready() }
-                .buttonStyle(MetalButton(red: true)).accessibilityIdentifier("ready")
+            .padding(.horizontal, 9).padding(.vertical, 8)
+            .background(Rectangle().fill(.white.opacity(focus == target ? 0.12 : 0.06)))
+            .overlay(Rectangle().stroke(focus == target ? Palette.gold : Palette.cream.opacity(0.15), lineWidth: 1))
+        }
+        .onTapGesture { focus = target }
+    }
+
+    // MARK: Room lobby
+
+    private var roomLobby: some View {
+        let players = client.state?.players ?? []
+        let bothReady = players.count == 2 && players.allSatisfy(\.ready)
+        return VStack(alignment: .leading, spacing: 9) {
+            SectionLabel(index: "01", title: "SHARE THE ROOM CODE")
+            HStack(alignment: .center, spacing: 12) {
+                Text(client.code).font(.system(size: 34, weight: .black, design: .monospaced))
+                    .foregroundStyle(Palette.gold).tracking(3).accessibilityIdentifier("roomCode")
+                Button {
+                    UIPasteboard.general.string = client.code
+                    copied = true
+                    Haptics.notify(.success)
+                    Task { try? await Task.sleep(for: .seconds(1.6)); copied = false }
+                } label: {
+                    Label(copied ? "COPIED" : "COPY", systemImage: copied ? "checkmark" : "doc.on.doc")
+                        .font(Type.label(9))
+                }.buttonStyle(MetalButton(kind: .ghost)).accessibilityIdentifier("copy-code")
+                Spacer()
+                VStack(alignment: .trailing, spacing: 1) {
+                    Text("SECOND DEVICE").font(Type.label(7)).foregroundStyle(Palette.muted)
+                    Text("Enter this code, then JOIN").font(Type.body(10))
+                }
+            }
+            SectionLabel(index: "02", title: "DUELISTS")
+            HStack(spacing: 8) {
+                ForEach(0..<2, id: \.self) { slot in
+                    if let player = players.first(where: { $0.slot == slot }) {
+                        PlayerCard(player: player, isMe: player.id == client.playerID)
+                    } else {
+                        EmptySlot()
+                    }
+                }
+            }
+            SectionLabel(index: "03", title: bothReady ? "DUEL STARTING" : "READY UP")
+            HStack(spacing: 8) {
+                Button {
+                    Haptics.tap(); client.ready()
+                } label: {
+                    HStack {
+                        Image(systemName: client.me?.ready == true ? "checkmark.seal.fill" : "flame.fill")
+                        Text(readyTitle(players: players, bothReady: bothReady))
+                    }
+                }
+                .buttonStyle(MetalButton(kind: .primary, expand: true))
                 .disabled(client.me?.ready == true)
-            Button("LEAVE ROOM") { client.leave() }.buttonStyle(MetalButton())
-            Text(client.status).font(.system(size: 8, design: .monospaced)).foregroundStyle(Palette.gold)
+                .accessibilityIdentifier("ready")
+                Button("LEAVE") { client.leave() }.buttonStyle(MetalButton(kind: .ghost))
+                    .accessibilityIdentifier("leave-room")
+            }
+            StatusPill(tone: .live, text: client.status)
         }
     }
 
-    private func selection(_ style: String, title: String, subtitle: String) -> some View {
-        Button { client.style = style } label: {
-            VStack(spacing: 0) {
-                FighterPreview(style: style).frame(height: 79).clipped().allowsHitTesting(false)
-                Text(title).font(.custom("AvenirNextCondensed-HeavyItalic", size: 18))
-                Text(subtitle).font(.system(size: 7, weight: .bold, design: .monospaced)).padding(.bottom, 5)
-            }.frame(maxWidth: .infinity)
-                .background(client.style == style ? Palette.red.opacity(0.65) : .black)
-                .overlay(Rectangle().stroke(client.style == style ? Palette.gold : .gray.opacity(0.3), lineWidth: 1))
-        }.buttonStyle(.plain).accessibilityIdentifier("select-\(style)")
+    private func readyTitle(players: [Duelist], bothReady: Bool) -> String {
+        if bothReady { return "BOTH READY" }
+        if client.me?.ready == true { return players.count < 2 ? "READY — AWAITING CHALLENGER" : "READY — AWAITING RIVAL" }
+        return "READY / DRAW WEAPONS"
+    }
+}
+
+struct FighterCard: View {
+    let style: String
+    let selected: Bool
+    let action: () -> Void
+
+    private var title: String { style == "rook" ? "ROOK" : "VESPER" }
+    private var weapon: String { style == "rook" ? "ENGINE CLEAVER" : "CRESCENT SCYTHE" }
+    private var traits: [(String, Int)] {
+        style == "rook" ? [("POWER", 3), ("REACH", 2), ("SPEED", 2)] : [("POWER", 2), ("REACH", 3), ("SPEED", 3)]
     }
 
-    private func field(_ label: String, text: Binding<String>, prompt: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(label).font(.system(size: 8, weight: .bold, design: .monospaced)).foregroundStyle(Palette.gold)
-            TextField(prompt, text: text)
-                .textInputAutocapitalization(.never).autocorrectionDisabled()
-                .font(.system(size: 12, design: .monospaced))
-                .padding(7).background(.white.opacity(0.07))
-                .accessibilityIdentifier(label)
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                FighterPreview(style: style).frame(width: 62, height: 84).clipped().allowsHitTesting(false)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).font(Type.display(19))
+                    Text(weapon).font(Type.label(7)).tracking(0.5).foregroundStyle(Palette.gold)
+                    ForEach(traits, id: \.0) { trait in
+                        HStack(spacing: 3) {
+                            Text(trait.0).font(Type.label(6)).frame(width: 30, alignment: .leading)
+                                .foregroundStyle(Palette.muted)
+                            ForEach(0..<3, id: \.self) { pip in
+                                Rectangle().fill(pip < trait.1 ? Palette.red : .white.opacity(0.15))
+                                    .frame(width: 9, height: 4)
+                            }
+                        }
+                    }
+                }
+                Spacer(minLength: 0)
+                if selected {
+                    Image(systemName: "checkmark.circle.fill").font(.system(size: 13)).foregroundStyle(Palette.gold)
+                }
+            }
+            .padding(.horizontal, 8).padding(.vertical, 4)
+            .frame(maxWidth: .infinity)
+            .background(selected ? Palette.darkRed.opacity(0.9) : .black.opacity(0.5))
+            .overlay(Rectangle().stroke(selected ? Palette.gold : .white.opacity(0.15), lineWidth: selected ? 1.5 : 1))
+            .scaleEffect(selected ? 1 : 0.98)
+            .animation(.easeOut(duration: 0.15), value: selected)
         }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("select-\(style)")
+        .accessibilityLabel("\(title), \(weapon)")
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
+}
 
-    private var guide: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("THE DUELIST'S CODE").font(.custom("AvenirNextCondensed-HeavyItalic", size: 30))
-            Text("MOVE / Hold ◀ or ▶. JUMP / Tap ↑. DASH / Tap » on the ground or once in air.")
-            Text("S / Quick slash. H / Heavy weapon: longer reach, more recovery. SP / Travelling special.")
-            Text("GUARD / Hold to block facing attacks. Chip still hurts. Release before attacking.")
-            Text("RC / Requiem Cancel: 25 meter neutral; 50 during an attack. Ends recovery and slows your rival.")
-            Text("Build meter by advancing and trading hits. Chain a hit → RC → weapon for a combo.")
-            Text("Best of three • 60 seconds per round • both players must vote for a rematch.")
-            Text("Rook: engine cleaver / Vesper: longer-reaching crescent scythe.")
-            Button("RETURN TO THE RIFT") { showGuide = false }.buttonStyle(MetalButton(red: true))
+struct PlayerCard: View {
+    let player: Duelist
+    let isMe: Bool
+    var body: some View {
+        HStack(spacing: 6) {
+            FighterPreview(style: player.style).frame(width: 50, height: 70).clipped()
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 4) {
+                    Text(player.style.uppercased()).font(Type.display(18))
+                    if isMe { Chip(text: "YOU") }
+                }
+                Text(player.name).font(Type.body(11)).lineLimit(1).foregroundStyle(Palette.cream.opacity(0.85))
+                Chip(text: player.ready ? "READY" : "STANDBY",
+                     fill: player.ready ? Palette.gold : .white.opacity(0.12),
+                     foreground: player.ready ? Palette.black : Palette.muted)
+            }
+            Spacer(minLength: 0)
         }
-        .font(.system(size: 12)).padding(25).frame(maxWidth: 660)
-        .background(Palette.black).overlay(Rectangle().stroke(Palette.gold, lineWidth: 1))
+        .padding(.horizontal, 8).padding(.vertical, 4)
+        .frame(maxWidth: .infinity)
+        .background(isMe ? Palette.darkRed.opacity(0.7) : .black.opacity(0.5))
+        .overlay(Rectangle().stroke(player.ready ? Palette.gold : .white.opacity(0.15), lineWidth: 1))
+        .animation(.easeOut(duration: 0.2), value: player.ready)
+    }
+}
+
+struct EmptySlot: View {
+    @State private var pulse = false
+    var body: some View {
+        VStack(spacing: 6) {
+            Image(systemName: "person.fill.questionmark").font(.system(size: 20))
+                .foregroundStyle(Palette.muted).opacity(pulse ? 0.4 : 1)
+            Text("WAITING FOR A CHALLENGER").font(Type.label(8)).tracking(1).foregroundStyle(Palette.muted)
+        }
+        .frame(maxWidth: .infinity, minHeight: 78)
+        .overlay(Rectangle().stroke(style: StrokeStyle(lineWidth: 1, dash: [5, 4])).foregroundStyle(Palette.gold.opacity(0.5)))
+        .onAppear { withAnimation(.easeInOut(duration: 0.9).repeatForever()) { pulse = true } }
+    }
+}
+
+struct GuideView: View {
+    let dismiss: () -> Void
+    private let rows: [(String, String, String)] = [
+        ("◀ ▶", "MOVE", "Hold to walk. Walking forward builds Tension."),
+        ("↑  »", "JUMP / DASH", "Dash on the ground, or once per jump in the air."),
+        ("S  H", "SLASH / HEAVY", "Quick slash, or heavy weapon: longer reach, longer recovery."),
+        ("SP", "SPECIAL", "Fires a travelling projectile across the stage."),
+        ("◇", "GUARD", "Hold to block attacks you are facing. Chip damage still lands."),
+        ("RC", "REQUIEM CANCEL", "25% meter in neutral, 50% mid-attack. Ends recovery and slows your rival.")
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("THE DUELIST'S CODE").font(Type.display(30))
+                Spacer()
+                Text("BEST OF 3  •  60s ROUNDS").font(Type.label(9)).foregroundStyle(Palette.gold)
+            }
+            ForEach(rows, id: \.1) { row in
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    Text(row.0).font(Type.display(16)).frame(width: 46, alignment: .leading)
+                        .foregroundStyle(Palette.gold)
+                    Text(row.1).font(Type.label(9)).frame(width: 110, alignment: .leading)
+                    Text(row.2).font(Type.body(12)).foregroundStyle(Palette.cream.opacity(0.85))
+                }
+            }
+            Text("Combo: land a hit → RC → follow with a weapon. Both duelists must vote for a rematch.")
+                .font(Type.body(11)).foregroundStyle(Palette.muted)
+            Button("RETURN TO THE RIFT", action: dismiss).buttonStyle(MetalButton(kind: .primary, expand: true))
+        }
+        .padding(22).frame(maxWidth: 680)
+        .background(BladePanel(cut: 14).fill(Palette.plate))
+        .overlay(BladePanel(cut: 14).stroke(Palette.gold, lineWidth: 1))
+        .transition(.scale(scale: 0.95).combined(with: .opacity))
     }
 }
 
@@ -216,12 +403,12 @@ struct FighterPreview: View {
         SpriteView(scene: scene, options: [.allowsTransparency])
     }
     private var scene: SKScene {
-        let scene = SKScene(size: CGSize(width: 230, height: 160))
+        let scene = SKScene(size: CGSize(width: 150, height: 200))
         scene.backgroundColor = .clear
-        scene.scaleMode = .aspectFill
+        scene.scaleMode = .aspectFit
         let art = FighterArt(style: style)
-        art.position = CGPoint(x: 110, y: -90)
-        art.setScale(0.92)
+        art.position = CGPoint(x: 78, y: -14)
+        art.setScale(0.82)
         art.animate(pose: "idle", frame: 0, time: 0, facing: 1, stunned: false)
         scene.addChild(art)
         return scene
