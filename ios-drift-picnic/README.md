@@ -49,15 +49,19 @@ swift Scripts/GenerateIcon.swift Resources/Assets.xcassets/AppIcon.appiconset/Ap
 ## Play
 
 - Choose **Picnic Cup** (three AI rivals) or **Time Trial** (three solo laps).
-- The kart accelerates automatically. Hold the left/right arrows to steer
-  continuously. Gentle corner assistance helps new drivers, but your inputs
+- The kart accelerates automatically. Hold either half of the steering pad
+  (or slide your thumb between them) to steer; the speed bar sits in its seam.
+  The first race coaches each control just in time, and leaving the road shows
+  an off-track warning. Gentle corner assistance helps new drivers, but your inputs
   control the kart's heading and position; driving over the curbs slows you down.
-- Tap **Drift** before a bend, steer through it, then tap **Boost ready** when
-  the button turns green and gold. An earned drift grants a short speed boost.
+- Tap **Drift** before a bend, steer through it, then tap **Boost!** when
+  the button turns gold. An earned drift grants a short speed boost.
   The inside racing line is shorter; stay inside the painted boundary to retain speed.
 - Drive through a lemonade, then tap its item button for a stronger boost.
-- Complete all checkpoints across three laps. The Cup ranks four racers and
-  shows a podium; Time Trial rewards your fastest three-lap time.
+- Complete all checkpoints across three laps. The HUD shows live standings,
+  lap and split times, a mini-map and overtake/lap callouts. The Cup ranks four
+  racers and shows a podium plus lap splits; Time Trial rewards your fastest
+  three-lap time against your record.
 - Pause offers resume, restart and exit. Backgrounding automatically pauses.
 - Sound can be muted on the title and during play. Best lap, best race times,
   wins and sound preference persist locally across launches.

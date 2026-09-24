@@ -1080,7 +1080,7 @@ final class PicnicWorld {
     return (group, flatBody, wheels)
   }
 
-  func update(race: RaceEngine, racing: Bool, reducedMotion: Bool) {
+  func update(race: RaceEngine, racing: Bool, reducedMotion: Bool, showcase: Double = 0) {
     let dt = max(0, race.elapsed - lastElapsed)
     lastElapsed = race.elapsed
     for (index, kart) in karts.enumerated() {
@@ -1133,12 +1133,12 @@ final class PicnicWorld {
       cameraReady = true
     } else {
       cameraReady = false
-      camera.camera?.usesOrthographicProjection = true
-      camera.camera?.orthographicScale = 79
-      camera.camera?.fieldOfView = 57
-      camera.position = SCNVector3(-70, 105, 105)
+      camera.camera?.usesOrthographicProjection = false
+      camera.camera?.fieldOfView = 44
+      let angle = -0.85 + showcase * 0.05
+      camera.position = SCNVector3(sin(angle) * 118, 46, cos(angle) * 118)
       camera.look(
-        at: SCNVector3(0, 0, 0),
+        at: SCNVector3(4, 0, -6),
         up: SCNVector3(0, 1, 0), localFront: SCNVector3(0, 0, -1))
     }
   }
