@@ -122,7 +122,11 @@ setup instructions. Read-only room telemetry guides steering and assertions.
 - `Sources/Results.swift`: podium results, finish order, rematch and confetti.
 - `Sources/World.swift`: authored 3D models, two courses, chase camera, lighting,
   floating pickups, dash panels, tiered drift sparks, boost flames, shields,
-  racer name tags and an animated garage turntable.
+  racer name tags, an animated garage turntable and rendered 3D racer portraits.
+  Rendering uses physically based materials, HDR bloom, ambient occlusion,
+  soft shadows, reflective water and particle sparks, flames, dust and confetti.
+- `Sources/Art.swift`: procedural textures (asphalt, grass, sand, waves, sky,
+  kerbs, windows, crowds) and particle systems, generated on device and cached.
 - `Sources/Models.swift`: typed protocol, guest connection, ordered input,
   state synchronization and optional independently computed input driver.
 - `Sources/Audio.swift`: original synthesized 16-note melody, bass/drums and event

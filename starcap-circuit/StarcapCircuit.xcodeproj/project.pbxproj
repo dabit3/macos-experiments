@@ -10,6 +10,7 @@
 		229595EB7369F8EE19EEF77E /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BF0786F50D0B92D2E45859 /* App.swift */; };
 		4A41632F011D9F217EBA2D5C /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 143EAA58E1B26BC4D8FB3A53 /* Models.swift */; };
 		6D599CF24D5B650BEDDCEB00 /* HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E1D51E1A5F5A5C7ED6CE26A /* HUD.swift */; };
+		7F528B88ED3CB0C95235CA49 /* Art.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B53645EDE9ABF8DAAAAE3C /* Art.swift */; };
 		87AAA41A20EBAC880A9FBEFD /* Garage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31BE132E32E3BFF567E77EC /* Garage.swift */; };
 		B994991AAB82AE590C05D830 /* Results.swift in Sources */ = {isa = PBXBuildFile; fileRef = D33F79F3ACC6AABA224EAEBC /* Results.swift */; };
 		C026F22476D8CD4856845789 /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C41C225059FA82F89EADBF /* Audio.swift */; };
@@ -21,6 +22,7 @@
 		143EAA58E1B26BC4D8FB3A53 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		16BF0786F50D0B92D2E45859 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		1E1D51E1A5F5A5C7ED6CE26A /* HUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUD.swift; sourceTree = "<group>"; };
+		54B53645EDE9ABF8DAAAAE3C /* Art.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Art.swift; sourceTree = "<group>"; };
 		B31BE132E32E3BFF567E77EC /* Garage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Garage.swift; sourceTree = "<group>"; };
 		D33F79F3ACC6AABA224EAEBC /* Results.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Results.swift; sourceTree = "<group>"; };
 		E6C41C225059FA82F89EADBF /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
@@ -50,6 +52,7 @@
 			isa = PBXGroup;
 			children = (
 				16BF0786F50D0B92D2E45859 /* App.swift */,
+				54B53645EDE9ABF8DAAAAE3C /* Art.swift */,
 				E6C41C225059FA82F89EADBF /* Audio.swift */,
 				B31BE132E32E3BFF567E77EC /* Garage.swift */,
 				1E1D51E1A5F5A5C7ED6CE26A /* HUD.swift */,
@@ -117,6 +120,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				229595EB7369F8EE19EEF77E /* App.swift in Sources */,
+				7F528B88ED3CB0C95235CA49 /* Art.swift in Sources */,
 				C026F22476D8CD4856845789 /* Audio.swift in Sources */,
 				87AAA41A20EBAC880A9FBEFD /* Garage.swift in Sources */,
 				6D599CF24D5B650BEDDCEB00 /* HUD.swift in Sources */,

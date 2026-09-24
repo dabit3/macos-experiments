@@ -69,6 +69,14 @@ struct ConnectionLost: View {
 struct RacerPortrait: View {
   let racer: Int
   var body: some View {
+    if let image = RaceWorld.portraits[racer] {
+      Image(uiImage: image).resizable().scaledToFit()
+    } else {
+      emblem
+    }
+  }
+
+  private var emblem: some View {
     GeometryReader { geo in
       let color = Racer.all[racer].color
       ZStack {

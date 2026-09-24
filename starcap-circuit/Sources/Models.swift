@@ -205,6 +205,7 @@ final class RaceClient: ObservableObject {
     racer = min(2, max(0, Int(value("-racer") ?? "0") ?? 0))
     track = min(1, max(0, Int(value("-track") ?? "0") ?? 0))
     world.build(track: track)
+    world.renderPortraits()
     world.preview(racer: racer)
     timer = Timer.scheduledTimer(withTimeInterval: 1 / 30, repeats: true) { [weak self] _ in
       Task { @MainActor in self?.frame() }

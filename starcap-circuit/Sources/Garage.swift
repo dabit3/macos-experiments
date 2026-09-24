@@ -20,8 +20,8 @@ struct LobbyPanel: View {
         endPoint: .trailing
       ).ignoresSafeArea().allowsHitTesting(false)
       HStack(alignment: .top, spacing: 12) {
-        showcase.frame(width: width * 0.38)
-        panel.frame(maxWidth: .infinity, maxHeight: .infinity)
+        showcase.frame(maxWidth: .infinity)
+        panel.frame(width: width * 0.54).frame(maxHeight: .infinity)
       }.padding(.horizontal, 10).padding(.top, 10).padding(.bottom, 14)
     }
   }
@@ -115,7 +115,7 @@ struct LobbyPanel: View {
           withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { client.racer = r.id }
         } label: {
           VStack(spacing: 2) {
-            RacerPortrait(racer: r.id).frame(height: 70).padding(.top, 8)
+            RacerPortrait(racer: r.id).frame(height: 118).padding(.top, 4)
               .scaleEffect(selected ? 1.1 : 0.95)
             Text(r.name).font(display(18)).foregroundStyle(ink)
             Text(r.subtitle).font(label(9)).foregroundStyle(ink.opacity(0.55))
