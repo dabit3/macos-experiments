@@ -58,7 +58,7 @@ struct EditorView: View {
   @State private var showRecipes = false
   @State private var showSave = false
   @State private var exportFile: ExportFile?
-  @State private var saved = false
+  @State private var savedCount = 0
   @ScaledMetric(relativeTo: .caption) private var filmWidth: CGFloat = 60
 
   init(negative: Negative) {
@@ -97,7 +97,6 @@ struct EditorView: View {
     }
     .task(id: room.settings) {
       library.update(negative, settings: room.settings)
-      saved = false
       await room.develop()
     }
     .sheet(isPresented: $showRecipes) {
@@ -110,7 +109,7 @@ struct EditorView: View {
     .sheet(isPresented: $showSave) {
       RecipeNameSheet(title: "Save recipe", initialName: room.settings.film.title) { name in
         library.addRecipe(name: name, settings: room.settings)
-        saved = true
+        savedCount += 1
       }
     }
     .sheet(isPresented: $showReset) {
@@ -143,31 +142,45 @@ struct EditorView: View {
     }
     .sensoryFeedback(.selection, trigger: room.settings.film)
     .sensoryFeedback(.selection, trigger: tab)
-    .sensoryFeedback(.success, trigger: saved)
+    .sensoryFeedback(.success, trigger: savedCount)
+  }
+
+  private var saved: Bool {
+    library.state.recipes.contains { $0.settings.recipe == room.settings.recipe }
   }
 
   private var toolbar: some View {
-    HStack(spacing: 0) {
-      IconButton(symbol: "xmark", label: "Close photo", size: 17) { dismiss() }
-      if !typeSize.isAccessibilitySize {
+    VStack(spacing: 0) {
+      HStack(spacing: 0) {
+        IconButton(symbol: "xmark", label: "Close photo", size: 17) { dismiss() }
         Spacer(minLength: 0)
-        VStack(spacing: 2) {
-          Text(negative.title).font(TypeStyle.label).lineLimit(1)
-          if room.outputSize != .zero {
-            Text("\(Int(room.outputSize.width)) × \(Int(room.outputSize.height))")
-              .font(TypeStyle.micro).foregroundStyle(Palette.muted).monospacedDigit()
-          }
+        if !typeSize.isAccessibilitySize {
+          photoTitle
+          Spacer(minLength: 0)
         }
-        .accessibilityElement(children: .combine)
+        IconButton(symbol: "arrow.uturn.backward", label: "Undo", size: 17) { room.undo() }
+          .disabled(!room.canUndo)
+        IconButton(symbol: "arrow.uturn.forward", label: "Redo", size: 17) { room.redo() }
+          .disabled(!room.canRedo)
+        exportButton
       }
-      Spacer(minLength: 0)
-      IconButton(symbol: "arrow.uturn.backward", label: "Undo", size: 17) { room.undo() }
-        .disabled(!room.canUndo)
-      IconButton(symbol: "arrow.uturn.forward", label: "Redo", size: 17) { room.redo() }
-        .disabled(!room.canRedo)
-      exportButton
+      if typeSize.isAccessibilitySize {
+        photoTitle.frame(maxWidth: .infinity, alignment: .leading)
+          .padding(.horizontal, 12).padding(.bottom, 8)
+      }
     }
     .padding(.horizontal, 8).padding(.vertical, 4)
+  }
+
+  private var photoTitle: some View {
+    VStack(alignment: typeSize.isAccessibilitySize ? .leading : .center, spacing: 2) {
+      Text(negative.title).font(TypeStyle.label).lineLimit(typeSize.isAccessibilitySize ? 2 : 1)
+      if room.outputSize != .zero {
+        Text("\(Int(room.outputSize.width)) × \(Int(room.outputSize.height))")
+          .font(TypeStyle.micro).foregroundStyle(Palette.muted).monospacedDigit()
+      }
+    }
+    .accessibilityElement(children: .combine)
   }
 
   private var exportButton: some View {
