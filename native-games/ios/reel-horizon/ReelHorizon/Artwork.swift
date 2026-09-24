@@ -813,5 +813,8 @@ struct MapPin: View {
         Text("LVL \(waterway.requiredLevel)").font(Theme.mono(9)).foregroundStyle(Theme.gold)
       }
     }
+    .padding(.horizontal, 7).padding(.vertical, 3)
+    .background(RoundedRectangle(cornerRadius: 7, style: .continuous).fill(Theme.night.opacity(0.88)))
+    .overlay(RoundedRectangle(cornerRadius: 7, style: .continuous).strokeBorder((locked ? Theme.gold : Theme.cyan).opacity(0.5)))
   }
 }

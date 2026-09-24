@@ -27,14 +27,14 @@ struct ShopView: View {
             .padding(.horizontal, 4)
             .accessibilityIdentifier("shop.ownedToggle")
           }
-          .frame(width: 158)
+          .frame(width: 176)
           .panel(padding: 8, radius: 18)
 
           VStack(alignment: .leading, spacing: 8) {
             SectionHeader(title: store.shopCategory.label, icon: Self.iconName(store.shopCategory), trailing: "\(ownedCount) owned · \(items.count) shown", tint: Theme.gold)
               .padding(.horizontal, 4)
             ScrollView {
-              LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 8)], spacing: 8) {
+              LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
                 ForEach(items) { item in
                   ShopItemCard(item: item)
                 }
@@ -52,7 +52,7 @@ struct ShopView: View {
           }
 
           RigPanel()
-            .frame(width: 244)
+            .frame(width: 226)
         }
       }
       .padding(.horizontal, 14)
@@ -76,7 +76,7 @@ struct ShopView: View {
     } label: {
       HStack(spacing: 8) {
         Image(systemName: Self.iconName(category)).font(.system(size: 12, weight: .bold)).frame(width: 18)
-        Text(category.label).font(Theme.display(12)).kerning(0.5).lineLimit(1).minimumScaleFactor(0.8)
+        Text(category.label).font(Theme.display(12)).kerning(0.3).lineLimit(1).minimumScaleFactor(0.7)
         Spacer(minLength: 0)
         Text("\(TackleCatalog.items(in: category).count)").font(Theme.mono(9)).opacity(0.7)
       }
@@ -348,7 +348,7 @@ struct MissionCard: View {
           Spacer()
           Text("\(progress)/\(mission.target)").font(Theme.mono(11)).foregroundStyle(tint)
         }
-        Text(mission.detail).font(Theme.body(11)).foregroundStyle(Theme.inkDim).lineLimit(1)
+        Text(mission.detail).font(Theme.body(11)).foregroundStyle(Theme.inkDim).lineLimit(2).minimumScaleFactor(0.85).fixedSize(horizontal: false, vertical: true)
         HStack(spacing: 10) {
           CurrencyChip(kind: .credits, amount: mission.rewardCredits, size: 11)
           CurrencyChip(kind: .xp, amount: mission.rewardXP, size: 11)
