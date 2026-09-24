@@ -44,11 +44,8 @@ struct HubView: View {
       if compact { tabBar }
     }
     .background(Color.lfBackground.ignoresSafeArea())
-    .sheet(isPresented: $help) {
-      HelpView {
-        help = false
-        profile.data.seenIntro = true
-      }
+    .sheet(isPresented: $help, onDismiss: { profile.data.seenIntro = true }) {
+      HelpView { help = false }
     }
     .onAppear { if !profile.data.seenIntro && !session.options.auto { help = true } }
   }
