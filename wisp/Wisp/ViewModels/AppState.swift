@@ -118,13 +118,23 @@ final class AppState {
     }
 
     func newChat() {
+        settleStreaming()
         current = Conversation(modelID: settings.defaultModelID, systemPrompt: settings.systemPrompt)
         isKept = settings.keepChatsByDefault
     }
 
     func open(_ conversation: Conversation) {
+        settleStreaming()
         current = conversation
         isKept = true
+    }
+
+    /// Freezes an in-flight reply before `current` is replaced, so a kept copy never shows a live cursor.
+    private func settleStreaming() {
+        guard current.messages.contains(where: \.isStreaming) else { return }
+        current.messages.removeAll { $0.isStreaming && $0.content.isEmpty && $0.reasoning.isEmpty }
+        for i in current.messages.indices { current.messages[i].isStreaming = false }
+        persistCurrentIfKept()
     }
 
     func setKept(_ keep: Bool) {
