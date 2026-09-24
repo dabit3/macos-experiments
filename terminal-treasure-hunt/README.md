@@ -49,15 +49,15 @@ only the keyboard inside the terminal:
 6. `cd ~/projects/vault`, then plain `ls` (only `decoy.txt` and `README`) and `ls -a` → `.flag`
    appears next to the decoys.
 7. `cat .flag` → `FLAG{gr3p_th3_l0gs_d3c0de_th3_d0ts}`.
-8. `cat decoy.txt`, then `submit FLAG{n1ce_try_th1s_1s_a_dec0y}` → red `✗ Wrong flag`.
+8. `cat decoy.txt`, then `submit FLAG{n1ce_try_th1s_1s_a_dec0y}` → red `submit: incorrect flag`.
 9. `↑` recalls the failed `submit` line; the decoy is backspaced away and replaced with the real
-   flag → `submit FLAG{gr3p_th3_l0gs_d3c0de_th3_d0ts}` → ASCII fireworks, a **TREASURE FOUND!**
-   banner, the flag in a gold chip, the clue tracker in the title bar reads **SOLVED**.
+   flag → `submit FLAG{gr3p_th3_l0gs_d3c0de_th3_d0ts}` → ASCII fireworks, then a
+   `Flag accepted` line with the flag and command count; the title-bar tracker reads **Solved 5/5**.
 10. `history` → the 13 commands that solved the hunt, numbered.
 
-Expected results: the clue tracker fills one pip per clue (5/5 before submission), every command
+Expected results: the clue tracker fills one segment per clue (5/5 before submission), every command
 above produces the output described, the wrong flag is rejected without ending the game, and the
-right flag triggers the fireworks animation followed by the banner.
+right flag triggers the fireworks animation followed by the `Flag accepted` result.
 
 ### Recording
 
@@ -73,7 +73,7 @@ src/
   components/
     Terminal.tsx              input handling, history, tab completion, scrollback, status bar
     OutputLines.tsx           renders styled output spans
-    Fireworks.tsx             frame-stepped ASCII fireworks + banner
+    Fireworks.tsx             frame-stepped ASCII fireworks + result line
   shell/
     filesystem.ts             in-memory tree, clue chain, path helpers
     shell.ts                  command implementations, pipes, completion, submit
