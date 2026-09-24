@@ -21,595 +21,664 @@ struct MidnightApp: App {
 struct ClubView: View {
     @EnvironmentObject private var session: GameSession
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var showcase = Table()
 
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                RoomBackdrop(lampX: session.game == nil ? 0.3 : 0.42)
-                if let game = session.game {
-                    playView(game)
-                } else {
-                    home
-                }
-                if session.paused && session.game?.finished == false {
-                    pauseOverlay
-                }
-                if session.game?.finished == true {
-                    results
-                }
-                if session.showRules {
-                    rules
-                }
+        ZStack {
+            Theme.background.ignoresSafeArea()
+            if let game = session.game {
+                PlayView(game: game)
+            } else {
+                home
             }
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: session.paused)
+            if session.paused && session.game?.finished == false {
+                pauseOverlay.transition(.opacity)
+            }
+            if session.game?.finished == true {
+                results.transition(.opacity)
+            }
+            if session.showRules {
+                RulesSheet { session.showRules = false }.transition(.opacity)
+            }
         }
-        .tint(Club.gold)
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.2), value: session.paused)
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.2), value: session.showRules)
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.25), value: session.game?.finished)
+        .tint(Theme.accent)
         .statusBarHidden()
     }
 
-    private var home: some View {
-        HStack(spacing: 32) {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 10) {
-                    Diamond().fill(Brass.mid).frame(width: 5, height: 8)
-                    Text("THE AFTER-HOURS CLUB").font(.system(size: 10, weight: .semibold)).tracking(2.8)
-                    Rectangle().fill(Brass.hairline).frame(width: 60, height: 1)
-                }
-                .foregroundStyle(Brass.mid)
-                Text("Midnight\nBilliards")
-                    .font(.system(size: 52, weight: .regular, design: .serif))
-                    .tracking(-1.5)
-                    .lineSpacing(-8)
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [Club.ivory, Club.ivory, Brass.light.opacity(0.85)],
-                            startPoint: .top, endPoint: .bottom)
-                    )
-                    .shadow(color: Brass.mid.opacity(0.25), radius: 18, y: 6)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text("A quiet room. A perfect angle.")
-                    .font(.system(size: 14, design: .serif).italic())
-                    .foregroundStyle(Club.muted)
-                HStack(spacing: 18) {
-                    stat("\(session.wins)", label: "MATCHES WON")
-                    Rectangle().fill(Brass.hairline).frame(width: 1, height: 27)
-                    stat(session.best.formatted(), label: "PERSONAL BEST")
-                }
-                .padding(.top, 8)
-                HStack(spacing: 15) {
-                    Button {
-                        session.showRules = true
-                    } label: {
-                        Label("How to play", systemImage: "questionmark.circle")
-                    }
-                    Button {
-                        session.toggleSound()
-                    } label: {
-                        Image(systemName: session.soundOn ? "speaker.wave.2" : "speaker.slash")
-                    }
-                    .accessibilityLabel(session.soundOn ? "Mute sound" : "Enable sound")
-                }
-                .font(.system(size: 12))
-                .foregroundStyle(Club.muted)
-                .buttonStyle(.plain)
-                .frame(minHeight: 44)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+    // MARK: Home
 
-            VStack(spacing: 12) {
-                HStack(alignment: .bottom, spacing: -6) {
-                    BallBadge(number: 9, size: 42).offset(y: 3)
-                    BallBadge(number: 8, size: 58).zIndex(1)
-                    BallBadge(number: 3, size: 42).offset(y: 3)
-                    Spacer()
-                    VStack(alignment: .trailing, spacing: 3) {
-                        Text("TABLE No. 8").font(.system(size: 9, weight: .semibold)).tracking(2)
-                            .foregroundStyle(Brass.mid)
-                        Text("open from midnight")
-                            .font(.system(size: 11, design: .serif).italic())
-                            .foregroundStyle(Club.muted)
+    private var home: some View {
+        ZStack {
+            GeometryReader { geometry in
+                TableView(table: showcase)
+                    .frame(width: geometry.size.width * 1.05)
+                    .drawingGroup()
+                    .shadow(color: .black.opacity(0.6), radius: 30, y: 20)
+                    .rotationEffect(.degrees(-12))
+                    .offset(x: geometry.size.width * 0.34, y: geometry.size.height * 0.1)
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+                LinearGradient(
+                    stops: [
+                        .init(color: Theme.background, location: 0.3),
+                        .init(color: Theme.background.opacity(0.82), location: 0.55),
+                        .init(color: Theme.background.opacity(0.35), location: 1),
+                    ], startPoint: .leading, endPoint: .trailing)
+                LinearGradient(
+                    colors: [.clear, Theme.background.opacity(0.7)], startPoint: .center, endPoint: .bottom)
+            }
+            .ignoresSafeArea()
+
+            HStack(alignment: .center, spacing: 40) {
+                VStack(alignment: .leading, spacing: 0) {
+                    BallBadge(number: 8, size: 34)
+                    Spacer(minLength: 12)
+                    Text("Midnight\nBilliards")
+                        .font(.ui(42, .heavy))
+                        .tracking(-1.2)
+                        .lineSpacing(-2)
+                        .foregroundStyle(Theme.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(
+                        "Real-physics pool. Play eight-ball against Avery or chase a high score against the clock."
+                    )
+                    .font(.ui(15))
+                    .foregroundStyle(Theme.secondary)
+                    .lineSpacing(2)
+                    .frame(maxWidth: 330, alignment: .leading)
+                    .padding(.top, 10)
+                    Spacer(minLength: 14)
+                    HStack(spacing: 10) {
+                        stat(session.best.formatted(), "Best score")
+                        stat("\(session.wins)", "Wins")
+                        stat(session.totalPots.formatted(), "Balls potted")
+                    }
+                    Spacer(minLength: 14)
+                    HStack(spacing: 8) {
+                        chip("How to play", systemImage: "questionmark.circle") { session.showRules = true }
+                        chip(
+                            session.soundOn ? "Sound on" : "Sound off",
+                            systemImage: session.soundOn ? "speaker.wave.2.fill" : "speaker.slash.fill"
+                        ) { session.toggleSound() }
+                        .accessibilityLabel(session.soundOn ? "Mute sound" : "Enable sound")
                     }
                 }
-                .padding(.horizontal, 8)
-                .padding(.bottom, 4)
-                modeCard(
-                    title: "The house table", subtitle: "8-BALL  /  YOU VS AVERY",
-                    icon: "arrow.up.right", filled: true
-                ) { session.start(.match) }
-                modeCard(
-                    title: "Against the clock", subtitle: "3 MINUTES  /  SOLO POTTING",
-                    icon: "timer", filled: false
-                ) { session.start(.challenge) }
-                HStack(spacing: 8) {
-                    Rectangle().fill(Brass.hairline).frame(height: 1)
-                    Text("OFFLINE · UNHURRIED · ALWAYS YOUR TABLE")
-                        .font(.system(size: 8, weight: .medium))
-                        .tracking(1.3)
-                        .foregroundStyle(Club.muted.opacity(0.8))
-                        .fixedSize()
-                    Rectangle().fill(Brass.hairline).frame(height: 1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                VStack(spacing: 12) {
+                    modeCard(
+                        title: "Play Avery", subtitle: "8-ball match", primary: true
+                    ) { session.start(.match) }
+                    .accessibilityIdentifier("startMatch")
+                    modeCard(
+                        title: "Challenge", subtitle: "3 min · beat your best", primary: false
+                    ) { session.start(.challenge) }
+                    .accessibilityIdentifier("startChallenge")
                 }
-                .padding(.top, 6)
+                .frame(width: 320)
             }
-            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 28)
+            .padding(.vertical, 22)
         }
-        .padding(.horizontal, 22)
-        .padding(.vertical, 14)
     }
 
-    private func stat(_ value: String, label: String) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
-            BrassText(text: value, size: 23)
-            Text(label).font(.system(size: 8, weight: .medium)).tracking(1.2).foregroundStyle(Club.muted)
+    private func stat(_ value: String, _ label: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(value).font(.ui(20, .bold)).monospacedDigit().foregroundStyle(Theme.primary)
+            Text(label).font(.ui(12)).foregroundStyle(Theme.tertiary)
         }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .frame(minWidth: 92, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(.white.opacity(0.05)))
+        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(Theme.stroke))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func chip(_ title: String, systemImage: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Label(title, systemImage: systemImage)
+                .font(.ui(13, .medium))
+                .foregroundStyle(Theme.secondary)
+                .padding(.horizontal, 14)
+                .frame(height: 38)
+                .background(Capsule().fill(.white.opacity(0.05)))
+                .overlay(Capsule().strokeBorder(Theme.stroke))
+                .frame(minHeight: 44)
+        }
+        .buttonStyle(PressStyle())
     }
 
     private func modeCard(
-        title: String, subtitle: String, icon: String, filled: Bool, action: @escaping () -> Void
+        title: String, subtitle: String, primary: Bool, action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             HStack(spacing: 14) {
-                VStack(alignment: .leading, spacing: 7) {
-                    Text(subtitle).font(.system(size: 8, weight: .semibold)).tracking(1.5)
-                        .opacity(0.75)
-                    Text(title).font(.system(size: 22, weight: .regular, design: .serif))
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(primary ? Theme.onAccent.opacity(0.12) : .white.opacity(0.06))
+                    if primary {
+                        RackGlyph().frame(width: 38, height: 34)
+                    } else {
+                        TimerGlyph().frame(width: 34, height: 34)
+                    }
                 }
-                Spacer()
-                Image(systemName: icon).font(.system(size: 15, weight: .medium))
+                .frame(width: 60, height: 60)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title).font(.ui(19, .bold)).tracking(-0.3)
+                    Text(subtitle).font(.ui(13)).opacity(0.72)
+                }
+                .lineLimit(1)
+                .fixedSize()
+                Spacer(minLength: 4)
+                Image(systemName: primary ? "play.fill" : "chevron.right")
+                    .font(.ui(14, .bold))
                     .frame(width: 34, height: 34)
-                    .background(
-                        Circle().stroke(
-                            filled ? Club.ink.opacity(0.35) : Brass.mid.opacity(0.5), lineWidth: 1))
+                    .background(Circle().fill(primary ? Theme.onAccent.opacity(0.14) : .white.opacity(0.08)))
             }
-            .foregroundStyle(filled ? Club.ink : Club.ivory)
-            .padding(.horizontal, 18)
-            .padding(.vertical, 16)
-            .frame(maxWidth: .infinity, minHeight: 82)
+            .foregroundStyle(primary ? Theme.onAccent : Theme.primary)
+            .padding(14)
+            .frame(maxWidth: .infinity, minHeight: 88)
             .background {
-                if filled {
-                    RoundedRectangle(cornerRadius: 14).fill(Brass.gradient)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 11).strokeBorder(
-                                Club.ink.opacity(0.22), lineWidth: 1
-                            )
-                            .padding(3)
-                        )
-                        .shadow(color: Brass.mid.opacity(0.3), radius: 16, y: 8)
+                if primary {
+                    RoundedRectangle(cornerRadius: 22, style: .continuous).fill(Theme.accentFill)
+                        .shadow(color: Theme.accent.opacity(0.3), radius: 20, y: 8)
                 } else {
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(
-                            LinearGradient(
-                                colors: [Color(red: 0.09, green: 0.16, blue: 0.19), Club.panel.opacity(0.7)],
-                                startPoint: .top, endPoint: .bottom)
-                        )
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(Theme.surface.opacity(0.92))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 14).strokeBorder(
-                                LinearGradient(
-                                    colors: [Brass.light.opacity(0.55), Brass.deep.opacity(0.25)],
-                                    startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1)
-                        )
-                        .shadow(color: .black.opacity(0.4), radius: 14, y: 8)
+                            RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(Theme.stroke))
                 }
             }
         }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier(filled ? "startMatch" : "startChallenge")
+        .buttonStyle(PressStyle())
     }
 
-    private func playView(_ game: GameEngine) -> some View {
-        VStack(spacing: 4) {
-            HStack(spacing: 12) {
-                Button {
-                    session.setPaused(true)
-                } label: {
-                    Image(systemName: "pause").font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(Brass.light)
-                        .frame(width: 44, height: 40)
-                        .background(Club.panel.opacity(0.8), in: RoundedRectangle(cornerRadius: 10))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10).strokeBorder(
-                                Brass.mid.opacity(0.45), lineWidth: 1))
-                }
-                .accessibilityLabel("Pause game")
-                .accessibilityIdentifier("pauseGame")
-                if game.mode == .match {
-                    player(
-                        name: "YOU", group: game.humanGroup, remaining: game.remaining(for: 0),
-                        active: game.turn == 0)
-                    BallBadge(number: 8, size: 22)
-                    player(
-                        name: "AVERY", group: game.group(for: 1), remaining: game.remaining(for: 1),
-                        active: game.turn == 1)
-                } else {
-                    HStack(alignment: .firstTextBaseline, spacing: 8) {
-                        BrassText(text: "\(game.score)", size: 30)
-                        Text("POINTS").font(.system(size: 10, weight: .medium)).tracking(1)
-                            .foregroundStyle(Club.muted)
-                        if game.streak > 1 {
-                            Text("×\(min(5, game.streak))").font(.system(size: 11, weight: .bold))
-                                .foregroundStyle(Club.ink)
-                                .padding(.horizontal, 6).padding(.vertical, 2)
-                                .background(Capsule().fill(Brass.gradient))
-                        }
-                    }
-                    Spacer()
-                    Text("BEST  \(session.best.formatted())").font(.system(size: 11, weight: .medium))
-                        .tracking(0.7)
-                        .foregroundStyle(Club.muted)
-                    let seconds = Int(ceil(game.secondsRemaining))
-                    Text(String(format: "%d:%02d", seconds / 60, seconds % 60))
-                        .font(.system(size: 22, weight: .light, design: .monospaced))
-                        .foregroundStyle(seconds < 30 ? Color(red: 1, green: 0.57, blue: 0.41) : Brass.light)
-                        .padding(.horizontal, 12)
-                        .frame(height: 36)
-                        .background(Capsule().fill(Club.ink.opacity(0.7)))
-                        .overlay(
-                            Capsule().strokeBorder(Brass.mid.opacity(seconds < 30 ? 0.9 : 0.45), lineWidth: 1)
-                        )
-                        .accessibilityIdentifier("challengeTimer")
-                }
-                Spacer(minLength: 0)
-                if game.mode == .challenge {
-                    Text("MIDNIGHT").font(.system(size: 9, weight: .medium, design: .serif)).tracking(2.5)
-                        .foregroundStyle(Brass.mid.opacity(0.8))
-                }
-            }
-            .foregroundStyle(Club.ivory)
-            HStack(spacing: 12) {
-                VStack(spacing: 0) {
-                    Spacer(minLength: 0)
-                    TableView(
-                        table: game.table, angle: session.angle, power: session.power,
-                        aiming: !game.shooting && !game.ballInHand && !game.finished,
-                        ballInHand: game.ballInHand, kitchen: game.kitchen,
-                        calledPocket: game.calledPocket, requireCall: game.requiresCall,
-                        onTouch: session.touchTable)
-                    Spacer(minLength: 0)
-                    Text(game.detail)
-                        .font(.system(size: 11.5, design: .serif).italic())
-                        .foregroundStyle(Club.muted)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
-                        .frame(height: 25)
-                }
-                controls(game).frame(width: 176)
-            }
-        }
-        .padding(.horizontal, 8)
-        .padding(.top, 4)
-        .padding(.bottom, 3)
-    }
-
-    private func player(name: String, group: BallGroup?, remaining: [Int], active: Bool) -> some View {
-        HStack(spacing: 7) {
-            Diamond().fill(active ? Brass.light : Club.muted.opacity(0.25)).frame(width: 5, height: 8)
-                .shadow(color: active ? Brass.mid.opacity(0.9) : .clear, radius: 4)
-            VStack(alignment: .leading, spacing: 5) {
-                Text(group.map { "\(name) · \($0.rawValue.uppercased())" } ?? name)
-                    .font(.system(size: 11, weight: .semibold)).tracking(0.7)
-                    .foregroundStyle(active ? Club.ivory : Club.muted)
-                if group != nil {
-                    HStack(spacing: 3) {
-                        if remaining.isEmpty {
-                            BallBadge(number: 8, size: 18)
-                            Text("CALL POCKET").font(.system(size: 10, weight: .medium)).foregroundStyle(
-                                Brass.light)
-                        } else {
-                            ForEach(remaining, id: \.self) { BallBadge(number: $0, size: 18) }
-                        }
-                    }
-                } else {
-                    Text("OPEN TABLE").font(.system(size: 10, weight: .medium)).tracking(0.7).foregroundStyle(
-                        Club.muted)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private func controls(_ game: GameEngine) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Text(game.mode == .match ? "HOUSE TABLE" : "SOLO SESSION")
-                    .font(.system(size: 9.5, weight: .semibold)).tracking(1.4).foregroundStyle(Brass.mid)
-                Spacer()
-                Button {
-                    session.toggleSound()
-                } label: {
-                    Image(systemName: session.soundOn ? "speaker.wave.2" : "speaker.slash")
-                        .font(.system(size: 12)).foregroundStyle(Brass.light).frame(width: 44, height: 34)
-                }
-                .accessibilityLabel(session.soundOn ? "Mute sound" : "Enable sound")
-            }
-            Text(game.status)
-                .font(.system(size: 21, weight: .regular, design: .serif))
-                .foregroundStyle(Club.ivory)
-                .lineLimit(2)
-                .minimumScaleFactor(0.8)
-                .frame(height: 46, alignment: .topLeading)
-            BrassRule()
-            if game.finished {
-                Text("Session complete")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Club.muted)
-                Spacer(minLength: 0)
-            } else if game.ballInHand && game.turn == 0 {
-                Text("BALL IN HAND").font(.system(size: 11, weight: .semibold)).tracking(0.8).foregroundStyle(
-                    Brass.light)
-                Text("Tap clear felt to move the cue ball.")
-                    .font(.system(size: 12)).foregroundStyle(Club.muted)
-                Spacer(minLength: 0)
-                actionButton("Place cue ball", icon: "checkmark") { session.confirmPlacement() }
-                    .accessibilityIdentifier("confirmPlacement")
-            } else {
-                HStack {
-                    Text("POWER").font(.system(size: 9.5, weight: .medium)).tracking(1.4)
-                    Spacer()
-                    Text("\(Int(session.power * 100))%").font(
-                        .system(size: 12, weight: .medium, design: .monospaced)
-                    ).foregroundStyle(Brass.light)
-                }.foregroundStyle(Club.muted)
-                PowerGauge(power: $session.power, enabled: !(game.shooting || game.turn == 1))
-                    .accessibilityIdentifier("shotPower")
-                HStack(spacing: 0) {
-                    Button {
-                        session.angle -= .pi / 720
-                    } label: {
-                        Image(systemName: "minus").frame(width: 44, height: 44)
-                    }.accessibilityLabel("Aim counterclockwise")
-                    VStack(spacing: 2) {
-                        Text("FINE AIM").font(.system(size: 9, weight: .medium)).tracking(0.8)
-                        Text(String(format: "%.2f°", session.angle * 180 / .pi))
-                            .font(.system(size: 10.5, weight: .medium, design: .monospaced))
-                            .foregroundStyle(Brass.light)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .accessibilityIdentifier("aimAngle")
-                    Button {
-                        session.angle += .pi / 720
-                    } label: {
-                        Image(systemName: "plus").frame(width: 44, height: 44)
-                    }.accessibilityLabel("Aim clockwise")
-                }
-                .font(.system(size: 12))
-                .foregroundStyle(Club.ivory)
-                .background(Club.ink.opacity(0.55), in: RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8).strokeBorder(Brass.deep.opacity(0.4), lineWidth: 1)
-                )
-                .disabled(game.shooting || game.turn == 1)
-                HStack(spacing: 10) {
-                    Button {
-                        session.spin = session.spin == 0 ? 0.75 : session.spin > 0 ? -0.75 : 0
-                    } label: {
-                        HStack(spacing: 9) {
-                            SpinDial(spin: session.spin, size: 32)
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text("SPIN").font(.system(size: 8, weight: .medium)).tracking(1.2)
-                                    .foregroundStyle(Club.muted)
-                                Text(session.spin == 0 ? "Center" : session.spin > 0 ? "Follow" : "Draw")
-                                    .font(.system(size: 12, weight: .medium)).foregroundStyle(Club.ivory)
-                            }
-                            .lineLimit(1)
-                            .fixedSize()
-                        }
-                        .frame(height: 44)
-                    }
-                    .accessibilityLabel(
-                        "Spin: \(session.spin == 0 ? "center" : session.spin > 0 ? "follow" : "draw"). Tap to change."
-                    )
-                    .disabled(game.shooting || game.turn == 1)
-                    Spacer(minLength: 6)
-                    VStack(alignment: .trailing, spacing: 1) {
-                        Text("SHOTS").font(.system(size: 8, weight: .medium)).tracking(1.2)
-                            .foregroundStyle(Club.muted)
-                        Text("\(game.shots)").font(.system(size: 13, weight: .regular, design: .serif))
-                            .monospacedDigit().foregroundStyle(Club.ivory)
-                    }
-                    .lineLimit(1)
-                    .fixedSize()
-                }
-                Spacer(minLength: 0)
-                if game.canShoot && game.turn == 0 {
-                    actionButton("Take shot", icon: "arrow.right") { session.strike() }
-                        .accessibilityIdentifier("takeShot")
-                } else {
-                    HStack(spacing: 8) {
-                        Image(systemName: game.shooting ? "circle.dotted" : "scope")
-                        Text(
-                            game.shooting
-                                ? "Balls rolling" : game.turn == 1 ? "Avery’s turn" : "Call a pocket"
-                        )
-                        .font(.system(size: 13, weight: .medium))
-                    }
-                    .foregroundStyle(Club.ivory)
-                    .frame(maxWidth: .infinity, minHeight: 44)
-                    .background(Club.ink.opacity(0.6), in: RoundedRectangle(cornerRadius: 9))
-                    .overlay(RoundedRectangle(cornerRadius: 9).strokeBorder(Brass.mid.opacity(0.35)))
-                    .accessibilityIdentifier("shotStatus")
-                }
-            }
-        }
-        .padding(13)
-        .decoFrame(radius: 15, strength: 0.8)
-    }
-
-    private func actionButton(_ title: String, icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack {
-                Text(title).font(.system(size: 13, weight: .semibold))
-                Spacer(minLength: 5)
-                Image(systemName: icon).font(.system(size: 13))
-            }
-            .foregroundStyle(Club.ink)
-            .padding(.horizontal, 13)
-            .frame(maxWidth: .infinity, minHeight: 44)
-            .background(RoundedRectangle(cornerRadius: 9).fill(Brass.gradient))
-            .overlay(
-                RoundedRectangle(cornerRadius: 7).strokeBorder(Club.ink.opacity(0.22), lineWidth: 1).padding(
-                    2)
-            )
-            .shadow(color: Brass.mid.opacity(0.28), radius: 10, y: 5)
-        }
-        .buttonStyle(.plain)
-    }
+    // MARK: Overlays
 
     private var pauseOverlay: some View {
-        modal {
-            HStack(spacing: 36) {
-                VStack(alignment: .leading, spacing: 12) {
-                    eyebrow("A MOMENT BETWEEN SHOTS")
-                    Text("Take your time.").font(.system(size: 37, weight: .regular, design: .serif))
-                        .foregroundStyle(Club.ivory)
-                    Text("Your table will be right here.")
-                        .font(.system(size: 14, design: .serif).italic()).foregroundStyle(Club.muted)
+        Modal {
+            HStack(alignment: .top, spacing: 28) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Paused").font(.ui(30, .bold)).tracking(-0.6).foregroundStyle(Theme.primary)
+                    if let game = session.game {
+                        Text(game.mode == .match ? "Eight-ball vs. Avery" : "Timed Challenge")
+                            .font(.ui(15)).foregroundStyle(Theme.secondary)
+                        Spacer(minLength: 12)
+                        HStack(spacing: 10) {
+                            if game.mode == .challenge {
+                                SummaryStat(value: game.score.formatted(), label: "Score")
+                                SummaryStat(value: clock(game.secondsRemaining), label: "Left")
+                            } else {
+                                SummaryStat(value: "\(game.remaining(for: 0).count)", label: "Your balls")
+                                SummaryStat(value: "\(game.remaining(for: 1).count)", label: "Avery’s")
+                            }
+                            SummaryStat(value: "\(game.shots)", label: "Shots")
+                        }
+                    }
                 }
-                VStack(spacing: 10) {
-                    actionButton("Back to the table", icon: "play.fill") { session.setPaused(false) }
-                    secondaryButton("How to play") { session.showRules = true }
-                    BrassRule().padding(.vertical, 2)
-                    secondaryButton("Start a fresh rack") {
-                        if let mode = session.game?.mode { session.start(mode) }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                VStack(spacing: 8) {
+                    Button {
+                        session.setPaused(false)
+                    } label: {
+                        Label("Resume", systemImage: "play.fill")
                     }
-                    secondaryButton("Leave the room") {
-                        session.game = nil; session.paused = false
+                    .buttonStyle(PrimaryButtonStyle())
+                    Button("Restart") { if let mode = session.game?.mode { session.start(mode) } }
+                        .buttonStyle(SecondaryButtonStyle())
+                    Button("How to play") { session.showRules = true }
+                        .buttonStyle(SecondaryButtonStyle())
+                    Button("Main menu") {
+                        session.game = nil
+                        session.paused = false
                     }
-                }.frame(width: 195)
+                    .buttonStyle(SecondaryButtonStyle())
+                }
+                .frame(width: 210)
             }
+            .frame(height: 216)
         }
     }
 
     private var results: some View {
-        modal {
+        Modal {
             if let game = session.game {
-                HStack(spacing: 30) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        eyebrow(
-                            game.mode == .challenge
-                                ? (session.newBest ? "A NEW PERSONAL BEST" : "SESSION COMPLETE")
-                                : "THE LAST BALL")
-                        Text(game.resultTitle)
-                            .font(.system(size: 35, weight: .regular, design: .serif))
-                            .foregroundStyle(Club.ivory)
-                        Text(game.resultDetail).font(.system(size: 12.5, design: .serif).italic())
-                            .foregroundStyle(Club.muted)
+                HStack(alignment: .top, spacing: 28) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        if game.mode == .challenge && session.newBest {
+                            Label("New personal best", systemImage: "star.fill")
+                                .font(.ui(12, .semibold))
+                                .foregroundStyle(Theme.onAccent)
+                                .padding(.horizontal, 10)
+                                .frame(height: 26)
+                                .background(Capsule().fill(Theme.accentFill))
+                        }
+                        Text(game.resultTitle).font(.ui(30, .bold)).tracking(-0.6).foregroundStyle(
+                            Theme.primary)
                         if game.mode == .challenge {
-                            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                BrassText(text: game.score.formatted(), size: 60)
-                                Text("POINTS").font(.system(size: 10, weight: .medium)).tracking(2)
-                                    .foregroundStyle(Club.muted)
-                            }
+                            Text(game.score.formatted())
+                                .font(.ui(58, .heavy))
+                                .tracking(-1.5)
+                                .monospacedDigit()
+                                .foregroundStyle(Theme.accent)
+                                .contentTransition(.numericText())
+                            Text("points").font(.ui(14)).foregroundStyle(Theme.secondary).offset(y: -6)
                         } else {
-                            BallBadge(number: 8, size: 57).padding(.top, 4)
+                            Text(game.resultDetail).font(.ui(15)).foregroundStyle(Theme.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        Spacer(minLength: 8)
+                        HStack(spacing: 10) {
+                            if game.mode == .challenge {
+                                SummaryStat(value: "\(game.pots)", label: "Potted")
+                                SummaryStat(value: "\(game.shots)", label: "Shots")
+                                SummaryStat(value: "\(game.longestStreak)", label: "Best streak")
+                                SummaryStat(value: session.best.formatted(), label: "Personal best")
+                            } else {
+                                SummaryStat(value: "\(game.shots)", label: "Shots")
+                                SummaryStat(value: "\(session.wins)", label: "Total wins")
+                            }
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    VStack(spacing: 12) {
-                        Text(
-                            game.mode == .challenge
-                                ? "BEST  \(session.best.formatted())" : "\(session.wins) MATCHES WON"
-                        )
-                        .font(.system(size: 10, weight: .medium)).tracking(1.3).foregroundStyle(Brass.mid)
-                        actionButton("Play again", icon: "arrow.clockwise") { session.start(game.mode) }
-                        secondaryButton("Back to the club") { session.game = nil }
-                    }.frame(width: 185)
+                    VStack(spacing: 8) {
+                        if game.mode == .match {
+                            BallBadge(number: 8, size: 64).padding(.bottom, 14)
+                        }
+                        Spacer(minLength: 0)
+                        Button {
+                            session.start(game.mode)
+                        } label: {
+                            Label("Play again", systemImage: "arrow.clockwise")
+                        }
+                        .buttonStyle(PrimaryButtonStyle())
+                        Button("Main menu") { session.game = nil }
+                            .buttonStyle(SecondaryButtonStyle())
+                    }
+                    .frame(width: 190)
                 }
+                .frame(height: 216)
             }
         }
     }
 
-    private var rules: some View {
-        modal {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        eyebrow("A FEW HOUSE RULES")
-                        Text("Make yourself at home.").font(
-                            .system(size: 29, weight: .regular, design: .serif)
-                        ).foregroundStyle(Club.ivory)
-                    }
-                    Spacer()
+    private func clock(_ seconds: Double) -> String {
+        let value = Int(ceil(max(0, seconds)))
+        return String(format: "%d:%02d", value / 60, value % 60)
+    }
+}
+
+// MARK: Gameplay
+
+struct PlayView: View {
+    @EnvironmentObject private var session: GameSession
+    let game: GameEngine
+
+    var body: some View {
+        VStack(spacing: 6) {
+            hud
+            HStack(spacing: 10) {
+                VStack(spacing: 10) {
                     Button {
-                        session.showRules = false
+                        session.showSpin.toggle()
                     } label: {
-                        Image(systemName: "xmark").frame(width: 44, height: 44)
-                    }.accessibilityLabel("Close rules")
+                        VStack(spacing: 5) {
+                            CueFace(spin: session.spin, size: 42)
+                            Text(spinLabel).font(.ui(11, .semibold)).foregroundStyle(Theme.secondary)
+                                .lineLimit(1).fixedSize()
+                        }
+                        .frame(width: 60, height: 70)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(PressStyle())
+                    .disabled(!session.canAim)
+                    .opacity(session.canAim ? 1 : 0.4)
+                    .accessibilityLabel("Spin: \(spinLabel). Tap to change.")
+                    .accessibilityIdentifier("spinControl")
+                    FineAimWheel(angle: $session.angle, enabled: session.canAim)
+                        .frame(width: 44)
+                        .accessibilityIdentifier("aimAngle")
+                    Text("Fine").font(.ui(11, .semibold)).foregroundStyle(Theme.tertiary)
+                }
+                .frame(width: 60)
+                TableView(
+                    table: game.table, angle: session.angle,
+                    power: game.turn == 1 ? session.power : 0.12 + (session.pull ?? 0) * 0.88,
+                    aiming: !game.shooting && !game.finished && !(game.ballInHand && game.turn == 1),
+                    ballInHand: game.ballInHand, kitchen: game.kitchen,
+                    calledPocket: game.calledPocket, requireCall: game.requiresCall,
+                    onTouch: session.touchTable
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                PowerCue(
+                    pull: $session.pull, lastPower: session.lastPower, enabled: session.canPull,
+                    onShoot: session.strike
+                )
+                .frame(width: 60)
+                .accessibilityIdentifier("shotPower")
+            }
+            .overlay(alignment: .topLeading) {
+                if session.showSpin {
+                    SpinPicker(spin: $session.spin) { session.showSpin = false }
+                        .offset(x: 70)
+                        .transition(.scale(scale: 0.92, anchor: .topLeading).combined(with: .opacity))
+                }
+            }
+            .animation(.easeOut(duration: 0.16), value: session.showSpin)
+        }
+        .padding(.horizontal, 6)
+        .padding(.top, 6)
+        .padding(.bottom, 4)
+    }
+
+    private var spinLabel: String {
+        session.spin == 0 ? "Center" : session.spin > 0 ? "Follow" : "Draw"
+    }
+
+    private var hud: some View {
+        HStack(spacing: 12) {
+            HUDButton(systemImage: "pause.fill", label: "Pause game") { session.setPaused(true) }
+                .accessibilityIdentifier("pauseGame")
+            if game.mode == .match {
+                PlayerTag(
+                    name: "You", group: game.humanGroup, remaining: game.remaining(for: 0),
+                    active: game.turn == 0, alignment: .leading)
+                statusPill
+                PlayerTag(
+                    name: "Avery", group: game.group(for: 1), remaining: game.remaining(for: 1),
+                    active: game.turn == 1, alignment: .trailing)
+            } else {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(game.score.formatted())
+                        .font(.ui(26, .heavy)).tracking(-0.6).monospacedDigit()
+                        .foregroundStyle(Theme.primary)
+                        .contentTransition(.numericText())
+                    if game.streak > 1 {
+                        Text("×\(min(5, game.streak))")
+                            .font(.ui(13, .heavy))
+                            .foregroundStyle(Theme.onAccent)
+                            .padding(.horizontal, 7).frame(height: 20)
+                            .background(Capsule().fill(Theme.accentFill))
+                    }
+                }
+                .frame(minWidth: 130, alignment: .leading)
+                .animation(.easeOut(duration: 0.25), value: game.score)
+                statusPill
+                timer
+            }
+            HUDButton(
+                systemImage: session.soundOn ? "speaker.wave.2.fill" : "speaker.slash.fill",
+                label: session.soundOn ? "Mute sound" : "Enable sound"
+            ) { session.toggleSound() }
+        }
+        .frame(height: 46)
+    }
+
+    private var statusPill: some View {
+        VStack(spacing: 1) {
+            Text(game.status)
+                .font(.ui(15, .semibold))
+                .foregroundStyle(Theme.primary)
+            Text(game.detail)
+                .font(.ui(12))
+                .foregroundStyle(Theme.secondary)
+        }
+        .lineLimit(1)
+        .minimumScaleFactor(0.85)
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("shotStatus")
+    }
+
+    private var timer: some View {
+        let seconds = Int(ceil(game.secondsRemaining))
+        let urgent = seconds <= 30
+        return HStack(spacing: 10) {
+            VStack(alignment: .trailing, spacing: 0) {
+                Text("Best").font(.ui(11)).foregroundStyle(Theme.tertiary)
+                Text(session.best.formatted()).font(.ui(13, .semibold)).monospacedDigit()
+                    .foregroundStyle(Theme.secondary)
+            }
+            Text(String(format: "%d:%02d", seconds / 60, seconds % 60))
+                .font(.ui(20, .bold)).monospacedDigit()
+                .foregroundStyle(urgent ? Theme.hot : Theme.primary)
+                .padding(.horizontal, 12)
+                .frame(height: 38)
+                .background(Capsule().fill(urgent ? Theme.hot.opacity(0.14) : .white.opacity(0.06)))
+                .overlay(Capsule().strokeBorder(urgent ? Theme.hot.opacity(0.5) : Theme.stroke))
+                .accessibilityIdentifier("challengeTimer")
+        }
+        .frame(minWidth: 130, alignment: .trailing)
+    }
+}
+
+struct PlayerTag: View {
+    let name: String
+    let group: BallGroup?
+    let remaining: [Int]
+    let active: Bool
+    let alignment: HorizontalAlignment
+
+    var body: some View {
+        VStack(alignment: alignment, spacing: 4) {
+            HStack(spacing: 6) {
+                if alignment == .trailing { groupLabel }
+                Text(name).font(.ui(14, .bold)).foregroundStyle(active ? Theme.primary : Theme.secondary)
+                if alignment == .leading { groupLabel }
+            }
+            HStack(spacing: 3) {
+                if group == nil {
+                    ForEach(0..<7, id: \.self) { _ in
+                        Circle().strokeBorder(Theme.tertiary.opacity(0.6), lineWidth: 1).frame(
+                            width: 12, height: 12)
+                    }
+                } else if remaining.isEmpty {
+                    BallBadge(number: 8, size: 14)
+                    Text("Call a pocket").font(.ui(11, .semibold)).foregroundStyle(Theme.accent)
+                } else {
+                    ForEach(remaining, id: \.self) { BallBadge(number: $0, size: 14, plain: true) }
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .frame(width: 176, height: 46, alignment: alignment == .leading ? .leading : .trailing)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(active ? Color.white.opacity(0.08) : .clear)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(active ? Theme.accent.opacity(0.7) : Theme.stroke, lineWidth: active ? 1.2 : 1)
+        )
+        .animation(.easeOut(duration: 0.2), value: active)
+        .accessibilityElement(children: .combine)
+    }
+
+    private var groupLabel: some View {
+        Text(group?.rawValue ?? "Open")
+            .font(.ui(11, .medium))
+            .foregroundStyle(Theme.tertiary)
+    }
+}
+
+struct SummaryStat: View {
+    let value: String
+    let label: String
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(value).font(.ui(18, .bold)).monospacedDigit().foregroundStyle(Theme.primary)
+            Text(label).font(.ui(11)).foregroundStyle(Theme.tertiary).lineLimit(1).fixedSize()
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 9)
+        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(.white.opacity(0.05)))
+        .accessibilityElement(children: .combine)
+    }
+}
+
+struct Modal<Content: View>: View {
+    @ViewBuilder let content: Content
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.55).ignoresSafeArea()
+            content
+                .padding(24)
+                .frame(maxWidth: 600)
+                .panel(radius: 28)
+                .padding(16)
+        }
+    }
+}
+
+struct RulesSheet: View {
+    let onClose: () -> Void
+    @State private var tab = 0
+
+    var body: some View {
+        Modal {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack {
+                    Text("How to play").font(.ui(24, .bold)).tracking(-0.4).foregroundStyle(Theme.primary)
+                    Spacer()
+                    HStack(spacing: 2) {
+                        segment("Controls", 0)
+                        segment("Eight-ball", 1)
+                        segment("Challenge", 2)
+                    }
+                    .padding(3)
+                    .background(Capsule().fill(.white.opacity(0.06)))
+                    HUDButton(systemImage: "xmark", label: "Close rules", action: onClose)
                 }
                 ScrollView {
-                    HStack(alignment: .top, spacing: 24) {
-                        VStack(alignment: .leading, spacing: 13) {
-                            rule(
-                                "01", "Find the line",
-                                "Tap or drag on the felt to aim. The white line predicts cue contact; gold shows the object-ball or bank direction. Fine aim adjusts ¼°."
-                            )
-                            rule(
-                                "02", "Feel the shot",
-                                "Set power, then Take shot. Tap the cue-ball control for center, follow or draw. Aim resets toward a suggested angle after each shot; refine it before shooting."
-                            )
-                            rule(
-                                "03", "Beat the clock",
-                                "Three minutes. Each ball earns 100 × your consecutive potting-shot streak, up to 5×. A miss resets it. Scratch: −50 and ball in hand. Clear a rack: +500. The last shot settles after time."
-                            )
-                        }
-                        VStack(alignment: .leading, spacing: 13) {
-                            rule(
-                                "04", "Own your group",
-                                "The table stays open after the break. The first group potted on a legal later shot becomes yours. If both fall, the first ball decides. Pot your group to keep the turn."
-                            )
-                            rule(
-                                "05", "Keep it clean",
-                                "Hit your group first (not the eight on an open table); then a ball must reach a rail or pocket. A scratch or foul gives the other player ball in hand. The break needs a pot or four object balls to rails; break fouls place behind the head string."
-                            )
-                            rule(
-                                "06", "Call the eight",
-                                "Clear your seven, tap a pocket to call it, then pot the eight there. An early eight, wrong pocket or scratch on the eight loses. An eight on the break is respotted. House rules: only the eight needs a called pocket."
-                            )
+                    VStack(alignment: .leading, spacing: 12) {
+                        ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+                            HStack(alignment: .top, spacing: 12) {
+                                Image(systemName: item.0)
+                                    .font(.ui(14, .semibold))
+                                    .foregroundStyle(Theme.accent)
+                                    .frame(width: 32, height: 32)
+                                    .background(Circle().fill(Theme.accent.opacity(0.12)))
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(item.1).font(.ui(15, .semibold)).foregroundStyle(Theme.primary)
+                                    Text(item.2).font(.ui(13)).foregroundStyle(Theme.secondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxHeight: 210)
+                .frame(height: 200)
             }
         }
     }
 
-    private func rule(_ number: String, _ title: String, _ text: String) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
-            HStack(alignment: .firstTextBaseline, spacing: 7) {
-                Text(number).font(.system(size: 11, weight: .regular, design: .serif)).foregroundStyle(
-                    Brass.mid)
-                Text(title).font(.system(size: 12, weight: .semibold)).foregroundStyle(Club.ivory)
-            }
-            Text(text).font(.system(size: 11)).foregroundStyle(Club.muted).fixedSize(
-                horizontal: false, vertical: true)
-        }.frame(maxWidth: .infinity, alignment: .leading)
+    private func segment(_ title: String, _ index: Int) -> some View {
+        Button {
+            tab = index
+        } label: {
+            Text(title)
+                .font(.ui(13, .semibold))
+                .foregroundStyle(tab == index ? Theme.onAccent : Theme.secondary)
+                .padding(.horizontal, 12)
+                .frame(height: 30)
+                .background(
+                    Capsule().fill(tab == index ? AnyShapeStyle(Theme.accentFill) : AnyShapeStyle(.clear)))
+        }
+        .buttonStyle(PressStyle())
     }
 
-    private func eyebrow(_ title: String) -> some View {
-        HStack(spacing: 8) {
-            Diamond().fill(Brass.mid).frame(width: 4, height: 7)
-            Text(title).font(.system(size: 9, weight: .medium)).tracking(1.8).foregroundStyle(Brass.mid)
+    private var items: [(String, String, String)] {
+        switch tab {
+        case 0:
+            return [
+                (
+                    "hand.point.up.left", "Aim",
+                    "Drag anywhere on the table. The dotted line shows where the cue ball meets its target; the gold line shows where that ball goes."
+                ),
+                ("dial.low", "Fine-tune", "Roll the wheel on the left for tiny adjustments."),
+                (
+                    "arrow.down.to.line", "Shoot",
+                    "Pull the cue on the right down to set power, then let go. Slide back up to cancel."
+                ),
+                (
+                    "circle.circle", "Spin",
+                    "Tap the cue ball on the left. Follow keeps it rolling forward; draw pulls it back."
+                ),
+                ("hand.draw", "Ball in hand", "Drag the cue ball to a new spot, then shoot."),
+            ]
+        case 1:
+            return [
+                (
+                    "circle.grid.3x3", "Claim a group",
+                    "The table is open after the break. Your first legal pot decides solids or stripes."
+                ),
+                (
+                    "arrow.triangle.turn.up.right.circle", "Keep your turn",
+                    "Hit one of your balls first and pot it to shoot again."
+                ),
+                (
+                    "exclamationmark.triangle", "Fouls",
+                    "Scratching, hitting the wrong ball first, or no ball reaching a rail gives your opponent ball in hand."
+                ),
+                (
+                    "8.circle", "Win",
+                    "Clear your group, tap a pocket to call it, then sink the 8-ball there. Sinking it early or scratching on it loses."
+                ),
+            ]
+        default:
+            return [
+                (
+                    "timer", "Three minutes",
+                    "Pot as many balls as you can. A shot in progress always finishes."
+                ),
+                ("flame", "Streaks", "Each pot is worth 100 × your streak, up to 5×. Missing resets it."),
+                ("arrow.uturn.backward.circle", "Scratch", "Costs 50 points and gives you ball in hand."),
+                ("sparkles", "Clear the rack", "+500 and a fresh rack."),
+            ]
         }
     }
+}
 
-    private func secondaryButton(_ title: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title).font(.system(size: 12, weight: .medium)).foregroundStyle(Club.ivory)
-                .frame(maxWidth: .infinity, minHeight: 38)
-                .background(Club.ivory.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8).strokeBorder(Brass.mid.opacity(0.28), lineWidth: 1))
-        }.buttonStyle(.plain)
+struct RackGlyph: View {
+    var body: some View {
+        Canvas { context, size in
+            let radius = size.width / 8.4
+            let colors = [8, 1, 9, 3, 11, 2]
+            var index = 0
+            for row in 0..<3 {
+                for column in 0...row {
+                    let x = size.width / 2 + (Double(column) - Double(row) / 2) * radius * 2.1
+                    let y = radius + Double(row) * radius * 1.85
+                    let rect = CGRect(x: x - radius, y: y - radius, width: radius * 2, height: radius * 2)
+                    context.fill(
+                        Path(ellipseIn: rect), with: .color(Club.ballColor(colors[index % colors.count])))
+                    context.fill(
+                        Path(ellipseIn: rect),
+                        with: .radialGradient(
+                            Gradient(colors: [.white.opacity(0.45), .clear, .black.opacity(0.35)]),
+                            center: CGPoint(x: x - radius * 0.35, y: y - radius * 0.4), startRadius: 0,
+                            endRadius: radius * 1.3))
+                    index += 1
+                }
+            }
+        }
     }
+}
 
-    private func modal<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+struct TimerGlyph: View {
+    var body: some View {
         ZStack {
-            Rectangle().fill(.ultraThinMaterial).ignoresSafeArea()
-            Club.ink.opacity(0.5).ignoresSafeArea()
-            content()
-                .padding(28)
-                .frame(maxWidth: 660)
-                .decoFrame(radius: 20)
-                .padding(14)
+            Circle().stroke(.white.opacity(0.14), lineWidth: 4)
+            Circle().trim(from: 0, to: 0.7)
+                .stroke(Theme.accent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+            Text("3:00").font(.ui(9, .bold)).monospacedDigit().foregroundStyle(Theme.primary)
         }
     }
 }

@@ -11,6 +11,9 @@ final class GameSession: ObservableObject {
     @Published var spin = 0.0
     @Published var paused = false
     @Published var showRules = false
+    @Published var showSpin = false
+    @Published var pull: Double?
+    @Published var lastPower = 0.0
     @Published var soundOn = UserDefaults.standard.object(forKey: "sound") as? Bool ?? true
     @Published var best = UserDefaults.standard.integer(forKey: "bestScore")
     @Published var wins = UserDefaults.standard.integer(forKey: "matchWins")
@@ -29,6 +32,9 @@ final class GameSession: ObservableObject {
         angle = 0
         power = 0.82
         spin = 0
+        pull = nil
+        lastPower = 0
+        showSpin = false
         paused = false
         aiDelay = 0
         previousPots = 0
@@ -59,8 +65,8 @@ final class GameSession: ObservableObject {
             UserDefaults.standard.set(totalPots, forKey: "totalPots")
             if engine.turn == 0 {
                 angle = engine.bestShot().angle
-                if !engine.ballInHand && !engine.requiresCall && !engine.finished {
-                    engine.detail = "Suggested line · refine your aim and power before shooting."
+                if !engine.ballInHand && !engine.requiresCall && !engine.finished && engine.mode == .match {
+                    engine.detail = "Cue points at a suggested line · fine-tune with the wheel."
                 }
             }
         }
@@ -95,38 +101,47 @@ final class GameSession: ObservableObject {
         game = engine
     }
 
-    func strike() {
-        guard let engine = game, engine.turn == 0, engine.canShoot, !paused else { return }
+    var canAim: Bool {
+        guard let engine = game else { return false }
+        return engine.turn == 0 && !engine.shooting && !engine.finished && !paused
+    }
+
+    var canPull: Bool {
+        guard let engine = game, canAim else { return false }
+        return !engine.requiresCall || engine.calledPocket != nil
+    }
+
+    func strike(_ shotPower: Double) {
+        guard canPull, var engine = game else { return }
         if engine.mode == .challenge && engine.secondsRemaining <= 0 { return }
-        game?.shoot(angle: angle, power: power, spin: spin)
+        engine.ballInHand = false
+        game = engine
+        guard engine.canShoot else { return }
+        power = shotPower
+        lastPower = shotPower
+        showSpin = false
+        game?.shoot(angle: angle, power: shotPower, spin: spin)
         previousPots = 0
         if soundOn { audio.play(.cue) }
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
     }
 
-    func touchTable(_ point: Vector) {
-        guard var engine = game, !engine.shooting, !engine.finished, engine.turn == 0 else { return }
-        if engine.ballInHand {
+    func touchTable(_ point: Vector, start: Vector) {
+        guard var engine = game, canAim else { return }
+        showSpin = false
+        if engine.ballInHand && (start - engine.table.cue.position).length < 30 {
             if engine.table.canPlace(point, kitchen: engine.kitchen) {
                 engine.table.placeCue(point)
                 game = engine
             }
         } else if engine.requiresCall,
-            let pocket = Table.pockets.firstIndex(where: { ($0 - point).length < 35 })
+            let pocket = Table.pockets.firstIndex(where: { ($0 - start).length < 35 })
         {
             engine.calledPocket = pocket
             game = engine
         } else {
             angle = (point - engine.table.cue.position).angle
         }
-    }
-
-    func confirmPlacement() {
-        game?.ballInHand = false
-        game?.status = "Your table"
-        game?.detail =
-            game?.requiresCall == true
-            ? "Tap a pocket to call the eight." : "Cue ball placed. Find your angle."
     }
 
     func toggleSound() {
