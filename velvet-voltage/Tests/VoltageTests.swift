@@ -18,7 +18,52 @@ final class VoltageTests: XCTestCase {
     }
     XCTAssertEqual(session.score.nextDistrict, 1)
     session.launch()
-    XCTAssertEqual(session.banner, "HIT 02 · THE SPIRE")
+    XCTAssertEqual(session.banner, "NEXT · THE SPIRE")
+  }
+
+  func testPlungerPowerScalesLaunchSpeedWithinBounds() {
+    let soft = PinballEngine()
+    let hard = PinballEngine()
+    let wild = PinballEngine()
+    soft.launch(power: 0)
+    hard.launch(power: 1)
+    wild.launch(power: 7)
+    XCTAssertEqual(soft.velocity.y, PinballEngine.launchSpeeds.lowerBound)
+    XCTAssertEqual(hard.velocity.y, PinballEngine.launchSpeeds.upperBound)
+    XCTAssertEqual(wild.velocity, hard.velocity)
+    for engine in [soft, hard] {
+      for _ in 0..<18000 where engine.inFlight {
+        _ = engine.advance(1 / 120)
+        XCTAssertGreaterThan(engine.ball.x, 0)
+        XCTAssertLessThan(engine.ball.x, 390)
+      }
+      XCTAssertFalse(engine.inFlight)
+    }
+  }
+
+  @MainActor
+  func testCoachingEndsAfterFirstFlipAndPlungerIgnoredInFlight() {
+    let suite = "voltage-coach-\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suite)!
+    defer { defaults.removePersistentDomain(forName: suite) }
+    let session = GameSession(defaults: defaults)
+    session.sound = false
+    session.haptics = false
+    session.newGame()
+    XCTAssertTrue(session.coaching)
+    session.pullPlunger(0.6)
+    XCTAssertEqual(session.plungerPull, 0.6)
+    session.launch(power: session.plungerPull)
+    XCTAssertEqual(session.plungerPull, 0)
+    XCTAssertEqual(session.banner, "TOUCH EITHER SIDE TO FLIP")
+    session.pullPlunger(1)
+    XCTAssertEqual(session.plungerPull, 0)
+    session.setFlipper(left: true, pressed: true)
+    XCTAssertTrue(session.leftHeld)
+    XCTAssertFalse(session.coaching)
+    XCTAssertEqual(session.banner, "NEXT · THE ARCADE")
+    session.newGame()
+    XCTAssertFalse(session.coaching)
   }
 
   func testBallRemainsInsideSideRailsThroughoutAPlayedGame() {

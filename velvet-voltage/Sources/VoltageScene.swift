@@ -22,7 +22,10 @@ final class VoltageScene: SKScene {
   private var trail: [SKShapeNode] = []
   private let mural = SKSpriteNode(imageNamed: "MidnightCity")
   private let cityGlow = SKShapeNode(ellipseOf: CGSize(width: 170, height: 220))
+  private let plunger = SKNode()
+  private var districtLamps: [SKShapeNode] = []
   private var lastTime = 0.0
+  private var attractClock = 0.0
   private var trailClock = 0
   private var lastCircuit = 0
   private var progressLabel = SKLabelNode()
@@ -99,7 +102,7 @@ final class VoltageScene: SKScene {
     mural.size = CGSize(width: 378, height: 590)
     mural.position = CGPoint(x: 195, y: 315)
     mural.color = Ink.background
-    mural.colorBlendFactor = 0.25
+    mural.colorBlendFactor = 0.2
     crop.addChild(mural)
     addChild(crop)
     for x in [11.0, 379.0] {
@@ -117,7 +120,19 @@ final class VoltageScene: SKScene {
     cityGlow.blendMode = .add
     cityGlow.alpha = 0
     addChild(cityGlow)
+    for x in [90.0, 195.0, 300.0] {
+      let lamp = SKShapeNode(ellipseOf: CGSize(width: 110, height: 150))
+      lamp.position = CGPoint(x: x, y: 470)
+      lamp.fillColor = Ink.cream.withAlphaComponent(0.05)
+      lamp.strokeColor = .clear
+      lamp.glowWidth = 26
+      lamp.blendMode = .add
+      lamp.alpha = 0
+      addChild(lamp)
+      districtLamps.append(lamp)
+    }
     buildInlays()
+    buildPlunger()
     for rail in PinballEngine.rails {
       let points = [CGPoint(x: rail.a.x, y: rail.a.y), CGPoint(x: rail.b.x, y: rail.b.y)]
       line(points.map { CGPoint(x: $0.x + 2, y: $0.y - 4) }, color: .black, width: 10)
@@ -149,10 +164,6 @@ final class VoltageScene: SKScene {
     leftNode = makeFlipper()
     rightNode = makeFlipper()
     for x in [114.0, 276.0] { screw(x: x, y: 101, z: 8) }
-    line(
-      [CGPoint(x: 144, y: 34), CGPoint(x: 246, y: 34)],
-      color: Ink.brass.withAlphaComponent(0.6), width: 1)
-    label("T H E   N I G H T   I S   Y O U R S", x: 195, y: 20, size: 9, color: Ink.brass)
     for index in 0..<10 {
       let dot = circle(
         radius: CGFloat(1 + Double(index) * 0.4), at: .zero,
@@ -177,6 +188,28 @@ final class VoltageScene: SKScene {
       stroke: .clear, parent: ballNode)
     ballNode.zPosition = 10
     addChild(ballNode)
+  }
+
+  private func buildPlunger() {
+    plunger.zPosition = 6
+    plunger.position = CGPoint(x: 343, y: 200)
+    addChild(plunger)
+    line(
+      [CGPoint(x: 0, y: 8), CGPoint(x: 0, y: -80)], color: Ink.background.withAlphaComponent(0.7),
+      width: 6, parent: plunger)
+    line(
+      [CGPoint(x: 0, y: 8), CGPoint(x: 0, y: -80)], color: Ink.brass, width: 3, parent: plunger)
+    let knob = SKShapeNode(rectOf: CGSize(width: 18, height: 14), cornerRadius: 4)
+    knob.position = CGPoint(x: 0, y: -84)
+    knob.fillColor = Ink.coral
+    knob.strokeColor = Ink.cream.withAlphaComponent(0.7)
+    knob.lineWidth = 0.8
+    plunger.addChild(knob)
+    let hint = label("PULL", x: 0, y: -108, size: 9, color: Ink.cyan, parent: plunger)
+    hint.name = "hint"
+    let arrow = label("\u{2193}", x: 0, y: -122, size: 12, color: Ink.cyan, parent: plunger)
+    arrow.name = "hint"
+    plunger.isHidden = true
   }
 
   private func buildInlays() {
@@ -289,6 +322,22 @@ final class VoltageScene: SKScene {
       session.consume(events)
     }
     let engine = session.engine
+    attractClock += dt
+    let waiting = session.screen == .playing && !engine.inFlight && !session.paused
+    plunger.isHidden = !waiting
+    if waiting {
+      plunger.position.y = 200 - session.plungerPull * 70
+      for child in plunger.children where child.name == "hint" {
+        child.alpha = session.plungerPull > 0.05 ? 0 : 0.6 + 0.4 * sin(attractClock * 4)
+      }
+    }
+    let hits = engine.score.circuits > 0 ? 3 : engine.score.nextDistrict
+    for (index, lamp) in districtLamps.enumerated() {
+      let target: CGFloat = index < hits ? 1 : (session.screen == .home ? 0.35 : 0)
+      lamp.alpha += (target - lamp.alpha) * min(1, dt * 4)
+    }
+    let dim = session.screen == .playing ? max(0, 0.45 - 0.15 * Double(hits)) : 0.2
+    mural.colorBlendFactor += (dim - mural.colorBlendFactor) * min(1, dt * 3)
     progressLabel.text =
       engine.score.circuits > 0
       ? "\(engine.score.circuits) CIRCUIT\(engine.score.circuits == 1 ? "" : "S") LIVE"
@@ -300,7 +349,8 @@ final class VoltageScene: SKScene {
     }
     drawFlipper(leftNode, rail: engine.flipper(left: true))
     drawFlipper(rightNode, rail: engine.flipper(left: false))
-    ballNode.position = CGPoint(x: engine.ball.x, y: engine.ball.y)
+    ballNode.position = CGPoint(
+      x: engine.ball.x, y: engine.ball.y - (waiting ? session.plungerPull * 70 : 0))
     ballNode.isHidden = session.screen == .home || session.screen == .tutorial
     if session.screen == .playing, !session.paused {
       trailClock += 1
@@ -312,18 +362,20 @@ final class VoltageScene: SKScene {
     for dot in trail {
       dot.isHidden = !engine.inFlight || session.reducedMotion || session.screen != .playing
     }
+    let attract = session.screen == .home || session.screen == .tutorial
+    let attractIndex = Int(attractClock / 0.7) % 3
     for (index, ring) in districtRings.enumerated() {
-      let active = index == engine.score.nextDistrict
+      let active = attract ? index == attractIndex : index == engine.score.nextDistrict
       ring.strokeColor = active ? Ink.cyan : Ink.brass.withAlphaComponent(0.8)
       ring.glowWidth = active ? 3.5 : 0
     }
+    if attract {
+      cityGlow.alpha = session.reducedMotion ? 0.5 : 0.45 + 0.25 * sin(attractClock * 1.3)
+    } else if engine.score.circuits == 0, !cityGlow.hasActions() {
+      cityGlow.alpha = 0
+    }
     if lastCircuit != engine.score.circuits {
       lastCircuit = engine.score.circuits
-      mural.removeAllActions()
-      mural.run(
-        .colorize(
-          withColorBlendFactor: lastCircuit > 0 ? 0 : 0.25,
-          duration: session.reducedMotion ? 0 : 0.8))
       cityGlow.removeAllActions()
       cityGlow.alpha = lastCircuit > 0 ? 1 : 0
       if lastCircuit > 0, !session.reducedMotion {
