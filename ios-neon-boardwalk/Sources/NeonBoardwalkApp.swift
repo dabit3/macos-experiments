@@ -353,9 +353,10 @@ struct BoardwalkView: View {
     HStack(spacing: 6) {
       Image(systemName: "circle.inset.filled").foregroundStyle(Palette.gold)
         .shadow(color: Palette.gold.opacity(0.6), radius: 4)
-      Text("\(game.engine.coins)").font(.system(size: 18, weight: .bold, design: .rounded))
+      Text(game.engine.coins.formatted()).font(.system(size: 18, weight: .bold, design: .rounded))
         .monospacedDigit()
-        .contentTransition(.numericText())
+        .lineLimit(1)
+        .fixedSize()
     }
     .padding(.horizontal, 13)
     .frame(height: 44)
@@ -530,7 +531,8 @@ struct BoardwalkView: View {
           color: Palette.mint)
         dockDivider
         dockStat(
-          "COINS", value: "\(game.engine.coins)", icon: "circle.inset.filled", color: Palette.gold)
+          "COINS", value: game.engine.coins.formatted(), icon: "circle.inset.filled",
+          color: Palette.gold)
         dockDivider
         dockStat(
           "BEST", value: "\(game.record.bestDistance.formatted()) m", icon: "laurel.leading",
@@ -652,7 +654,8 @@ struct BoardwalkView: View {
       }
       HStack(spacing: 0) {
         dockStat(
-          "COINS", value: "\(game.engine.coins)", icon: "circle.inset.filled", color: Palette.gold)
+          "COINS", value: game.engine.coins.formatted(), icon: "circle.inset.filled",
+          color: Palette.gold)
         dockDivider
         dockStat(
           "DODGED", value: game.engine.obstaclesCleared.formatted(), icon: "bolt.fill",
