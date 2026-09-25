@@ -1,0 +1,25 @@
+{
+  "name": "launch-video-one-take",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Devin on macOS launch video: One Take (Remotion)",
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render Main out/one-take.mp4 --codec h264 --crf 14 --pixel-format yuv420p --muted",
+    "poster": "remotion still Main out/one-take-poster.png --frame=1290",
+    "still": "remotion still Main",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.521",
+    "@remotion/google-fonts": "4.0.521",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "remotion": "4.0.521"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
+    "typescript": "5.8.3"
+  }
+}
