@@ -35,6 +35,29 @@ Use the default `A-SKETCH` layer for test geometry. Model coordinates are millim
 - Escaped SVG text, visible-layer filtering and coordinate inversion.
 - ASCII DXF header, units, layer visibility, closed polylines, arcs and text.
 
+## Programmatic computer-use recording
+
+`npm run test:computer` executes native mouse/keyboard inputs against foreground
+Chrome and records the desktop. Read-only CDP observations assert the visible
+properties and persisted state; independent parsers check real downloaded files.
+See [setup and reproduction instructions](scripts/COMPUTER-USE.md) for the
+Linux/X11, fullscreen/CDP, capture and compositor prerequisites. These tools are
+needed only for this optional desktop test harness, not the app.
+
+The 2026-09-15 run passed all seven stages: sample reset, exact rectangle,
+property edits and undo/redo, MOVE/circle, planting visibility, SVG/DXF/JSON
+exports and persisted reload. It tested production app revision `09baeb472`
+at 1920×1080; no runtime exceptions, console errors or request-loading failures
+were observed. Earlier resize, import and snapping coverage was not repeated.
+
+The resulting 78.084-second VP9 WebM places every full app frame on the **left**
+and the programmatic list of steps on the **right**, synchronized to timestamped
+test and assertion events. The current step and actual pass/fail results update
+as execution progresses. The step pane is disclosed postprocessed compositing.
+No footage is cropped, cut or accelerated; no MP4 is delivered.
+The step-list revision reuses the preserved real run and its event log; it does
+not represent a new browser run.
+
 ## Browser golden path
 
 1. At 1440×900, restore the sample. Confirm the complete residence and drafting chrome are visible: ribbon groups, document tab, UCS, view cube, command line, Properties and Layer Properties.

@@ -8,8 +8,9 @@
     "preview": "vite preview --host 0.0.0.0 --port 4173",
     "build": "tsc -b && vite build",
     "typecheck": "tsc --noEmit",
-    "lint": "oxlint src",
-    "test": "vitest run"
+    "lint": "oxlint src scripts",
+    "test": "vitest run",
+    "test:computer": "node scripts/computer-use-test.mjs"
   },
   "dependencies": {
     "lucide-react": "0.468.0",
