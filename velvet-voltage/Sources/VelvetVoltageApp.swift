@@ -504,8 +504,9 @@ struct FlipperPad: View {
         if !left { Spacer(minLength: 0) }
         Image(systemName: left ? "hand.point.up.left.fill" : "hand.point.up.right.fill")
           .font(.system(size: 11, weight: .semibold))
-        Text(left ? "LEFT HALF · FLIP" : "FLIP · RIGHT HALF")
+        Text(left ? "LEFT · FLIP" : "FLIP · RIGHT")
           .font(.caps(11)).tracking(1.4)
+          .lineLimit(1).minimumScaleFactor(0.8)
         if left { Spacer(minLength: 0) }
       }
       .foregroundStyle(held ? Color(Ink.coral) : Color(Ink.brass).opacity(0.8))
