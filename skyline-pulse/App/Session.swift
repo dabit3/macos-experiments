@@ -137,6 +137,7 @@ final class Session: ObservableObject {
       print("EVIDENCE joined id=\(playerID) room=\(roomCode)")
     case "error":
       error = message.message ?? "Connection error"
+      if state == nil { status = "OFFLINE" }
     case "pong":
       if let sent = message.sent, let now = message.now {
         let elapsed = localNow - sent

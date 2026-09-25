@@ -16,7 +16,9 @@ final class HighwayScene: SKScene {
   private var feedback: AVAudioPlayer?
   private var lastFeedbackTime = 0.0
   private var judgmentLabel = SKLabelNode(fontNamed: "AvenirNext-Heavy")
-  private var comboLabel = SKLabelNode(fontNamed: "AvenirNext-UltraLight")
+  private var comboLabel = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+  private var comboTitle = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+  private var lastCombo = -1
   private var countdown = SKLabelNode(fontNamed: "AvenirNext-Heavy")
   private let gold = UIColor(red: 1, green: 0.79, blue: 0.22, alpha: 1)
   private let cyan = UIColor(red: 0.22, green: 0.94, blue: 1, alpha: 1)
@@ -73,6 +75,7 @@ final class HighwayScene: SKScene {
   private func buildStage() {
     removeAllChildren()
     lastSize = size
+    lastCombo = -1
     let w = size.width
     let h = size.height
     for i in 0..<100 {
@@ -166,16 +169,18 @@ final class HighwayScene: SKScene {
     effects.zPosition = 20
     addChild(moving)
     addChild(effects)
-    comboLabel = SKLabelNode(fontNamed: "AvenirNext-UltraLight")
-    comboLabel.fontSize = h * 0.095
+    comboLabel = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+    comboLabel.fontSize = h * 0.11
     comboLabel.fontColor = .white
+    comboLabel.alpha = 0.9
     comboLabel.position = CGPoint(x: center, y: h * 0.45)
     comboLabel.zPosition = 30
     addChild(comboLabel)
-    let comboTitle = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+    comboTitle = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
     comboTitle.text = "C O M B O"
     comboTitle.fontSize = h * 0.018
-    comboTitle.position = CGPoint(x: center, y: h * 0.55)
+    comboTitle.fontColor = gold
+    comboTitle.position = CGPoint(x: center, y: h * 0.56)
     comboTitle.zPosition = 30
     addChild(comboTitle)
     judgmentLabel = SKLabelNode(fontNamed: "AvenirNext-Heavy")
@@ -195,6 +200,7 @@ final class HighwayScene: SKScene {
     autoStarted.removeAll()
     autoEnded.removeAll()
     lastJudgment = ""
+    lastCombo = -1
     fingers.removeAll()
     effects.removeAllChildren()
   }
@@ -300,7 +306,18 @@ final class HighwayScene: SKScene {
         moving.addChild(arrow)
       }
     }
-    comboLabel.text = "\(session.me?.combo ?? 0)"
+    let combo = session.me?.combo ?? 0
+    if combo != lastCombo {
+      lastCombo = combo
+      comboLabel.text = combo > 0 ? "\(combo)" : ""
+      comboTitle.isHidden = combo == 0
+      comboLabel.fontColor = combo >= 50 ? gold : .white
+      if combo > 0 {
+        comboLabel.removeAllActions()
+        comboLabel.setScale(1.18)
+        comboLabel.run(.scale(to: 1, duration: 0.12))
+      }
+    }
     if time < 0 {
       countdown.text = time < -0.7 ? "\(Int(ceil(-time)))" : "READY"
     } else {
@@ -310,7 +327,12 @@ final class HighwayScene: SKScene {
       lastJudgment = last.id
       judgmentLabel.text =
         last.judgment == "critical" ? "JUSTICE CRITICAL" : last.judgment.uppercased()
-      judgmentLabel.fontColor = last.judgment == "miss" ? .systemPink : gold
+      switch last.judgment {
+      case "critical": judgmentLabel.fontColor = gold
+      case "justice": judgmentLabel.fontColor = .yellow
+      case "attack": judgmentLabel.fontColor = cyan
+      default: judgmentLabel.fontColor = UIColor(red: 1, green: 0.30, blue: 0.42, alpha: 1)
+      }
       judgmentLabel.removeAllActions()
       judgmentLabel.alpha = 1
       judgmentLabel.run(.sequence([.wait(forDuration: 0.4), .fadeOut(withDuration: 0.35)]))
