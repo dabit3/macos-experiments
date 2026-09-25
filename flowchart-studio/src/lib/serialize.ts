@@ -98,7 +98,7 @@ function esc(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
-const SVG_FONT = "'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif"
+const SVG_FONT = "'Inter Variable', 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif"
 
 export function toSVG(diagram: Diagram, edgeStyle: EdgeStyle): string {
   const bounds = diagramBounds(diagram, 48) ?? { x: 0, y: 0, w: 400, h: 240 }
@@ -109,7 +109,7 @@ export function toSVG(diagram: Diagram, edgeStyle: EdgeStyle): string {
   parts.push(`<title>Flowchart Studio export</title>`)
   parts.push(`<rect x="${bounds.x}" y="${bounds.y}" width="${bounds.w}" height="${bounds.h}" fill="#ffffff"/>`)
 
-  parts.push('<g class="edges" fill="none" stroke="#5c667a" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">')
+  parts.push('<g class="edges" fill="none" stroke="#5c667a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">')
   for (const edge of diagram.edges) {
     const ends = edgeEndpoints(diagram, edge)
     if (!ends) continue
@@ -133,12 +133,12 @@ export function toSVG(diagram: Diagram, edgeStyle: EdgeStyle): string {
   for (const node of diagram.nodes) {
     const meta = kindMeta(node.kind)
     parts.push(`<g class="node node-${node.kind}" data-id="${esc(node.id)}">`)
-    parts.push(`<path d="${shapePath(node)}" fill="${meta.color}14" stroke="${meta.color}" stroke-width="1.75"/>`)
+    parts.push(`<path d="${shapePath(node)}" fill="#ffffff" stroke="${meta.color}" stroke-width="1.5"/>`)
     const lines = wrapLabel(node.label, node.kind === 'decision' ? 14 : 18)
     const lineH = 17
     const startY = node.y + node.h / 2 - ((lines.length - 1) * lineH) / 2
     parts.push(
-      `<text x="${node.x + node.w / 2}" y="${startY}" fill="#0f172a" font-size="14" font-weight="600" text-anchor="middle" dominant-baseline="central">`,
+      `<text x="${node.x + node.w / 2}" y="${startY}" fill="#0f172a" font-size="13.5" font-weight="550" text-anchor="middle" dominant-baseline="central">`,
     )
     lines.forEach((line, i) => {
       parts.push(`<tspan x="${node.x + node.w / 2}" dy="${i === 0 ? 0 : lineH}">${esc(line)}</tspan>`)

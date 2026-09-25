@@ -13,7 +13,8 @@ import { Toolbar } from './components/Toolbar'
 import type { Tool } from './components/Toolbar'
 import { Minimap } from './components/Minimap'
 import { Inspector } from './components/Inspector'
-import { ShapeIcon } from './components/Icons'
+import { Icon, ShapeIcon } from './components/Icons'
+import { Shortcuts } from './components/Shortcuts'
 import './App.css'
 
 const STORAGE_KEY = 'flowchart-studio:document'
@@ -77,6 +78,8 @@ export default function App() {
   const [editing, setEditing] = useState<Editing | null>(null)
   const [paletteDrag, setPaletteDrag] = useState<PaletteDrag | null>(null)
   const [toast, setToast] = useState<string | null>(null)
+  const [showShortcuts, setShowShortcuts] = useState(false)
+  const closeShortcuts = useCallback(() => setShowShortcuts(false), [])
   const svgRef = useRef<SVGSVGElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const toastTimer = useRef<number | null>(null)
@@ -342,6 +345,9 @@ export default function App() {
         case '!':
           fitToView()
           break
+        case '?':
+          setShowShortcuts(true)
+          break
         default:
           break
       }
@@ -381,10 +387,6 @@ export default function App() {
         onEdgeStyleChange={setEdgeStyle}
         snapToGrid={snapToGrid}
         onSnapChange={setSnapToGrid}
-        zoom={viewport.zoom}
-        onZoomIn={() => zoomBy(1.2)}
-        onZoomOut={() => zoomBy(1 / 1.2)}
-        onFit={() => fitToView()}
         canUndo={history.canUndo}
         canRedo={history.canRedo}
         onUndo={history.undo}
@@ -399,7 +401,7 @@ export default function App() {
         onNew={newDiagram}
       />
       <div className="workspace">
-        <Palette onDragStart={onPaletteDragStart} />
+        <Palette onDragStart={onPaletteDragStart} onShowShortcuts={() => setShowShortcuts(true)} />
         <div className="stage">
           <Canvas
             diagram={diagram}
@@ -444,34 +446,50 @@ export default function App() {
               }))
             }}
             onDelete={deleteSelection}
+            sourceLabel={selectedEdge ? diagram.nodes.find((n) => n.id === selectedEdge.source)?.label : undefined}
+            targetLabel={selectedEdge ? diagram.nodes.find((n) => n.id === selectedEdge.target)?.label : undefined}
           />
           <Minimap diagram={diagram} viewport={viewport} canvasSize={canvasSize} onViewportChange={setViewport} />
-          <div className="statusbar">
-            <span>
-              <b>{diagram.nodes.length}</b> nodes · <b>{diagram.edges.length}</b> edges
-              {hasSelection && (
+          <div className="zoom-controls" role="group" aria-label="Zoom">
+            <button type="button" className="zc-btn" title="Zoom out (−)" aria-label="Zoom out" onClick={() => zoomBy(1 / 1.2)} data-action="zoom-out">
+              <Icon name="zoom-out" size={17} />
+            </button>
+            <button type="button" className="zc-value" title="Fit diagram to view (Shift+1)" onClick={() => fitToView()} data-action="zoom-fit">
+              {Math.round(viewport.zoom * 100)}%
+            </button>
+            <button type="button" className="zc-btn" title="Zoom in (+)" aria-label="Zoom in" onClick={() => zoomBy(1.2)} data-action="zoom-in">
+              <Icon name="zoom-in" size={17} />
+            </button>
+            <span className="zc-divider" />
+            <button type="button" className="zc-btn" title="Fit to view (Shift+1)" aria-label="Fit to view" onClick={() => fitToView()} data-action="fit">
+              <Icon name="fit" size={17} />
+            </button>
+          </div>
+          {(hasSelection || spaceHeld || tool === 'pan') && (
+            <div className="status-chip" role="status">
+              {spaceHeld || tool === 'pan' ? (
+                'Drag to pan the canvas'
+              ) : (
                 <>
-                  {' '}
-                  · <b>{selection.nodes.length}</b> {selection.nodes.length === 1 ? 'node' : 'nodes'}
-                  {selection.edges.length > 0 && (
-                    <>
-                      {' '}
-                      + <b>{selection.edges.length}</b> {selection.edges.length === 1 ? 'edge' : 'edges'}
-                    </>
-                  )}{' '}
-                  selected
+                  {[
+                    [selection.nodes.length, 'node'] as const,
+                    [selection.edges.length, 'edge'] as const,
+                  ]
+                    .filter(([count]) => count > 0)
+                    .map(([count, noun], i) => (
+                      <span key={noun}>
+                        {i > 0 && ' + '}
+                        <b>{count}</b> {count === 1 ? noun : `${noun}s`}
+                      </span>
+                    ))}
+                  {' selected'}
                 </>
               )}
-            </span>
-            <span className="status-hint">
-              {spaceHeld || tool === 'pan'
-                ? 'Drag to pan the canvas'
-                : 'Drag a shape from the palette · drag a port onto another node to connect · double-click to rename'}
-            </span>
-            <span className="status-zoom">{Math.round(viewport.zoom * 100)}%</span>
-          </div>
+            </div>
+          )}
           {toast && (
             <div className="toast" role="status">
+              <Icon name="check" size={15} />
               {toast}
             </div>
           )}
@@ -483,6 +501,7 @@ export default function App() {
           <span>{ghostMeta.name}</span>
         </div>
       )}
+      {showShortcuts && <Shortcuts onClose={closeShortcuts} />}
       <input
         ref={fileInputRef}
         type="file"

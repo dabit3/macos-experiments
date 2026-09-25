@@ -1,0 +1,111 @@
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.28);
+  animation: backdrop-in 140ms ease;
+}
+
+.dialog {
+  width: min(760px, calc(100vw - 48px));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: var(--shadow-lg);
+  animation: dialog-in 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 14px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dialog-head h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.dialog-close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.dialog-close:hover {
+  background: var(--control);
+  color: var(--text-strong);
+}
+
+.dialog-close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.shortcut-groups {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  padding: 20px 24px 24px;
+}
+
+.shortcut-groups h3 {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.shortcut-groups dl {
+  margin: 0;
+}
+
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.shortcut-row:last-child {
+  border-bottom: none;
+}
+
+.shortcut-row dt {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.shortcut-row dd {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+}

@@ -76,7 +76,7 @@ export function Minimap({ diagram, viewport, canvasSize, onViewportChange }: Min
               height={Math.max(2, n.h * scale)}
               rx={n.kind === 'start' || n.kind === 'end' ? 4 : 1.5}
               fill={kindMeta(n.kind).color}
-              opacity={0.85}
+              opacity={0.55}
             />
           )
         })}
