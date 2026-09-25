@@ -48,6 +48,8 @@ final class RaceAudio {
     case "zap": base = 170
     case "boost": base = 340
     case "win": base = 660
+    case "go": base = 523
+    case "dash": base = 440
     default: base = 880
     }
     let data = wave(seconds: name == "win" ? 1.1 : 0.32) { t in
