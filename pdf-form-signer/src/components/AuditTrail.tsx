@@ -28,13 +28,13 @@ export function AuditTrail({ events, onExport }: AuditTrailProps) {
         {events.length === 0 && <li className="audit__empty">Actions you take will be logged here.</li>}
         {events.map((e) => (
           <li key={e.id} className="audit__item" data-kind={e.kind}>
-            <time className="audit__time" dateTime={e.time}>
-              {formatTime(e.time)}
-            </time>
-            <div className="audit__msg">
+            <div className="audit__meta">
               <span className={`audit__badge audit__badge--${e.kind}`}>{e.kind}</span>
-              {e.message}
+              <time className="audit__time" dateTime={e.time}>
+                {formatTime(e.time)}
+              </time>
             </div>
+            <div className="audit__msg">{e.message}</div>
           </li>
         ))}
       </ol>
