@@ -14,7 +14,7 @@ timestamped event for every navigation, field commit, initials/signature stroke,
 failure and PDF event, and can be exported as JSON.
 
 Everything runs in the browser: no backend, no network calls at runtime, all assets bundled
-(including the Inter, Source Serif 4 and Dancing Script typefaces, see `src/fonts/FONTS.md`).
+(including the Inter and Dancing Script typefaces, see `src/fonts/FONTS.md`).
 
 ## Run it
 
