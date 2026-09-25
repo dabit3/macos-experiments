@@ -20,6 +20,7 @@ struct VoltageView: View {
 
   var body: some View {
     GeometryReader { geometry in
+      let compact = geometry.size.width < 380
       ZStack {
         RadialGradient(
           colors: [Color(Ink.panel), Color(Ink.background)],
@@ -30,23 +31,12 @@ struct VoltageView: View {
         } else {
           VStack(spacing: 0) {
             if game.screen == .playing { scoreboard } else { masthead }
-            ZStack {
-              if let scene {
-                SpriteView(scene: scene, options: [.allowsTransparency])
-                  .aspectRatio(390 / 620, contentMode: .fit)
-                  .accessibilityLabel(
-                    "Pinball table. The glowing target is district \(game.score.nextDistrict + 1)."
-                  )
-                  .accessibilityIdentifier("pinballTable")
-              }
-              if game.screen == .tutorial { tutorial }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            if game.screen == .playing { controls } else if game.screen == .home { homeFooter }
+            playArea
+            if game.screen == .home { homeFooter }
           }
-          .padding(.horizontal, geometry.size.width < 380 ? 16 : 22)
-          .padding(.top, 10)
-          .padding(.bottom, 8)
+          .padding(.horizontal, compact ? 14 : 20)
+          .padding(.top, 8)
+          .padding(.bottom, 6)
         }
         if game.paused, game.screen == .playing { pauseOverlay }
       }
@@ -68,6 +58,114 @@ struct VoltageView: View {
     }
   }
 
+  // MARK: Table and controls
+
+  private var playArea: some View {
+    ZStack {
+      VStack(spacing: 8) {
+        if let scene {
+          SpriteView(scene: scene, options: [.allowsTransparency])
+            .aspectRatio(390 / 620, contentMode: .fit)
+            .accessibilityLabel(
+              "Pinball table. The glowing target is district \(game.score.nextDistrict + 1)."
+            )
+            .accessibilityIdentifier("pinballTable")
+        }
+        if game.screen == .playing { flipperPads }
+      }
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
+      if game.screen == .playing {
+        TouchDeck(game: game)
+        accessibleControls
+      }
+      if game.screen == .tutorial { tutorial }
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+  }
+
+  private var flipperPads: some View {
+    HStack(spacing: 10) {
+      FlipperPad(left: true, held: game.leftHeld)
+      launchCue
+      FlipperPad(left: false, held: game.rightHeld)
+    }
+    .frame(height: 46)
+    .animation(.easeOut(duration: 0.12), value: game.inFlight)
+  }
+
+  private var launchCue: some View {
+    VStack(spacing: 5) {
+      if game.inFlight {
+        Text(game.coaching ? "TOUCH\nA SIDE" : "FLIP")
+          .foregroundStyle(Color(Ink.brass))
+      } else {
+        GeometryReader { proxy in
+          ZStack(alignment: .leading) {
+            Capsule().fill(Color(Ink.cyan).opacity(0.18))
+            Capsule().fill(Color(Ink.cyan))
+              .frame(width: max(4, proxy.size.width * game.plungerPull))
+          }
+        }
+        .frame(height: 4)
+        .padding(.horizontal, 10)
+        Text(game.plungerPull > 0.05 ? "POWER \(Int(game.plungerPull * 100))" : "PULL ↓")
+          .contentTransition(.numericText())
+      }
+    }
+    .font(.custom("AvenirNextCondensed-Bold", size: 11)).tracking(1.4)
+    .multilineTextAlignment(.center)
+    .foregroundStyle(game.inFlight ? Color(Ink.brass) : Color(Ink.cyan))
+    .frame(width: 84)
+    .frame(maxHeight: .infinity)
+    .background(
+      RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(0.45))
+    )
+    .overlay(
+      RoundedRectangle(cornerRadius: 12).stroke(
+        (game.inFlight ? Color(Ink.brass) : Color(Ink.cyan)).opacity(game.inFlight ? 0.35 : 0.8),
+        lineWidth: 1)
+    )
+    .accessibilityHidden(true)
+  }
+
+  private var accessibleControls: some View {
+    HStack(spacing: 0) {
+      Color.clear
+        .accessibilityElement()
+        .accessibilityLabel("Left flipper")
+        .accessibilityHint("Touch the left half of the table to flip.")
+        .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier("leftFlipper")
+        .accessibilityAction { tapFlipper(left: true) }
+      Color.clear
+        .frame(width: 66)
+        .accessibilityElement()
+        .accessibilityLabel(game.inFlight ? "Ball in play" : "Launch ball")
+        .accessibilityHint("Pull down and release, or tap anywhere on the table.")
+        .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier("launchButton")
+        .accessibilityAction { game.launch() }
+      Color.clear
+        .accessibilityElement()
+        .accessibilityLabel("Right flipper")
+        .accessibilityHint("Touch the right half of the table to flip.")
+        .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier("rightFlipper")
+        .accessibilityAction { tapFlipper(left: false) }
+    }
+    .allowsHitTesting(false)
+  }
+
+  private func tapFlipper(left: Bool) {
+    game.setFlipper(left: left, pressed: true)
+    Task { @MainActor in
+      try? await Task.sleep(for: .milliseconds(200))
+      game.setFlipper(left: left, pressed: false)
+    }
+  }
+
+  // MARK: Home
+
   private var masthead: some View {
     VStack(spacing: 0) {
       HStack {
@@ -86,134 +184,164 @@ struct VoltageView: View {
   }
 
   private var homeFooter: some View {
-    VStack(spacing: 10) {
-      HStack {
+    VStack(spacing: 12) {
+      HStack(alignment: .firstTextBaseline) {
         VStack(alignment: .leading, spacing: 3) {
           eyebrow("HOUSE RECORD")
-          Text("\(game.best.formatted()) V")
-            .font(.custom("AvenirNextCondensed-DemiBold", size: 19))
+          Text(game.best > 0 ? "\(game.best.formatted()) V" : "UNCLAIMED")
+            .font(.custom("AvenirNextCondensed-DemiBold", size: 21))
             .foregroundStyle(Color(Ink.cream))
         }
         Spacer()
-        Text("THREE BALLS.\nONE CITY TO WAKE.")
-          .font(.custom("AvenirNextCondensed-DemiBold", size: 11)).tracking(1.2)
-          .multilineTextAlignment(.trailing).foregroundStyle(Color(Ink.brass))
+        VStack(alignment: .trailing, spacing: 3) {
+          eyebrow("CIRCUITS LIT")
+          Text("\(game.lifetimeCircuits)")
+            .font(.custom("AvenirNextCondensed-DemiBold", size: 21))
+            .foregroundStyle(Color(Ink.cream))
+        }
       }
-      primary("LIGHT UP THE NIGHT", icon: "arrow.up.right", identifier: "playButton") {
-        game.start()
+      primary("PLAY", icon: "bolt.fill", identifier: "playButton") { game.start() }
+      Button {
+        game.showTutorial()
+      } label: {
+        Text("HOW TO PLAY")
+          .font(.custom("AvenirNextCondensed-DemiBold", size: 12)).tracking(1.8)
+          .frame(maxWidth: .infinity, minHeight: 44)
       }
-      Text("A LITTLE CITY. A LOT OF ELECTRICITY.")
-        .font(.custom("AvenirNextCondensed-Medium", size: 9)).tracking(1.8)
-        .foregroundStyle(Color(Ink.brass)).padding(.top, 2)
+      .foregroundStyle(Color(Ink.brass))
+      .accessibilityIdentifier("howToPlayButton")
     }
+    .padding(.top, 8)
   }
 
+  // MARK: HUD
+
   private var scoreboard: some View {
-    VStack(spacing: 9) {
-      HStack(alignment: .center) {
-        VStack(alignment: .leading, spacing: 8) {
-          eyebrow("PLAYER 01  /  VOLTAGE")
+    VStack(spacing: 8) {
+      HStack(alignment: .center, spacing: 12) {
+        VStack(alignment: .leading, spacing: 6) {
+          eyebrow("VOLTAGE")
           DotMatrixScore(value: game.score.points, color: Color(Ink.cream))
-            .frame(height: 31)
+            .frame(height: 30)
             .accessibilityIdentifier("scoreValue")
         }
-        VStack(spacing: 4) {
-          Text("\(game.score.multiplier)×").font(.custom("Baskerville-Italic", size: 25))
+        Spacer(minLength: 0)
+        VStack(alignment: .trailing, spacing: 5) {
+          Text("\(game.score.multiplier)×").font(.custom("Baskerville-Italic", size: 24))
             .foregroundStyle(Color(Ink.cyan))
-          HStack(spacing: 4) {
+            .accessibilityLabel("Multiplier \(game.score.multiplier) times")
+          HStack(spacing: 5) {
             ForEach(1...3, id: \.self) { ball in
               Circle().fill(
                 ball >= game.ballNumber ? Color(Ink.cream) : Color(Ink.brass).opacity(0.25)
-              )
-              .frame(width: 6, height: 6)
+              ).frame(width: 7, height: 7)
             }
+            Text("BALL \(game.ballNumber)")
+              .font(.custom("AvenirNextCondensed-DemiBold", size: 11)).tracking(1)
+              .foregroundStyle(Color(Ink.cream))
           }
-          Text("BALL \(game.ballNumber)/3").font(
-            .system(size: 11, weight: .medium, design: .monospaced)
-          )
-          .foregroundStyle(Color(Ink.cream)).accessibilityIdentifier("ballCount")
+          .accessibilityElement(children: .ignore)
+          .accessibilityLabel("Ball \(game.ballNumber) of 3")
+          .accessibilityIdentifier("ballCount")
         }
         Button {
           game.pause()
         } label: {
           Image(systemName: "pause.fill").font(.system(size: 14)).frame(width: 44, height: 44)
-            .background(Color(Ink.brass).opacity(0.08), in: Circle())
+            .background(Color(Ink.brass).opacity(0.1), in: Circle())
         }.accessibilityLabel("Pause game").accessibilityIdentifier("pauseButton")
       }
-      .padding(13)
+      .padding(.horizontal, 14).padding(.vertical, 11)
       .background(
         LinearGradient(
           colors: [Color.black.opacity(0.8), Color(Ink.panel)], startPoint: .top, endPoint: .bottom),
-        in: RoundedRectangle(cornerRadius: 9)
+        in: RoundedRectangle(cornerRadius: 10)
       )
       .overlay(
-        RoundedRectangle(cornerRadius: 9).stroke(Color(Ink.brass).opacity(0.55), lineWidth: 0.7))
-      HStack {
-        Image(systemName: "bolt.fill").font(.system(size: 9))
-        Text(game.banner).font(.custom("AvenirNextCondensed-DemiBold", size: 12)).tracking(1.1)
-          .foregroundStyle(Color(Ink.cyan)).lineLimit(1).minimumScaleFactor(0.7)
-        Spacer()
-      }.foregroundStyle(Color(Ink.cyan)).padding(.horizontal, 4)
+        RoundedRectangle(cornerRadius: 10).stroke(Color(Ink.brass).opacity(0.55), lineWidth: 0.7))
+      circuitStrip
     }
   }
 
-  private var controls: some View {
-    VStack(spacing: 8) {
-      if !game.inFlight {
-        Button {
-          game.launch()
-        } label: {
-          HStack {
-            Text(game.ballNumber == 1 ? "LAUNCH BALL" : "LAUNCH BALL \(game.ballNumber)")
-            Spacer()
-            Image(systemName: "arrow.up.forward")
-          }
-          .font(.custom("AvenirNextCondensed-Bold", size: 14)).tracking(2)
-          .padding(.horizontal, 20).frame(height: 42)
-        }.buttonStyle(MachineButtonStyle(color: Color(Ink.cyan))).accessibilityIdentifier(
-          "launchButton")
-      } else {
-        Text("TAP OR HOLD A SIDE TO FLIP")
-          .font(.custom("AvenirNextCondensed-Medium", size: 10)).tracking(1.4)
-          .foregroundStyle(Color(Ink.brass)).frame(height: 42)
-      }
-      HStack(spacing: 12) {
-        FlipperControl(left: true, game: game)
-        FlipperControl(left: false, game: game)
+  private var circuitStrip: some View {
+    VStack(spacing: 4) {
+      Text(game.banner)
+        .font(.custom("AvenirNextCondensed-DemiBold", size: 14)).tracking(1.6)
+        .foregroundStyle(Color(Ink.cyan)).lineLimit(1).minimumScaleFactor(0.7)
+        .frame(maxWidth: .infinity)
+        .contentTransition(.opacity)
+        .accessibilityIdentifier("bannerText")
+      districtRow
+    }
+    .padding(.horizontal, 6)
+    .animation(.easeInOut(duration: 0.2), value: game.banner)
+    .accessibilityElement(children: .combine)
+  }
+
+  private var districtRow: some View {
+    HStack(spacing: 10) {
+      ForEach(0..<3, id: \.self) { index in
+        let lit = index < game.score.nextDistrict
+        let next = index == game.score.nextDistrict && game.inFlight
+        HStack(spacing: 5) {
+          Circle()
+            .fill(lit || next ? Color(Ink.cyan) : Color(Ink.brass).opacity(0.3))
+            .frame(width: 7, height: 7)
+            .shadow(color: Color(Ink.cyan).opacity(next ? 0.9 : 0), radius: 4)
+          Text(["ARCADE", "SPIRE", "RIVIERA"][index])
+            .font(.custom("AvenirNextCondensed-DemiBold", size: 12)).tracking(1.2)
+            .foregroundStyle(
+              next ? Color(Ink.cyan) : lit ? Color(Ink.cream) : Color(Ink.brass).opacity(0.7))
+        }
+        if index < 2 {
+          Image(systemName: "chevron.right").font(.system(size: 8, weight: .bold))
+            .foregroundStyle(Color(Ink.brass).opacity(0.5))
+        }
       }
     }
   }
+
+  // MARK: Tutorial
 
   private var tutorial: some View {
-    VStack(alignment: .leading, spacing: 19) {
-      eyebrow("A QUICK WORD FROM THE HOUSE")
-      Text("Make the\ncity hum.").font(.custom("Baskerville-Italic", size: 43)).foregroundStyle(
+    VStack(alignment: .leading, spacing: 18) {
+      HStack {
+        eyebrow("HOW TO PLAY")
+        Spacer()
+        Button("Close") { game.screen = .home }
+          .font(.custom("AvenirNextCondensed-DemiBold", size: 12))
+          .accessibilityIdentifier("tutorialClose")
+      }
+      Text("Make the\ncity hum.").font(.custom("Baskerville-Italic", size: 42)).foregroundStyle(
         Color(Ink.cream))
-      DecoRule().frame(height: 8)
+      ControlDiagram().frame(height: 96)
       lesson(
-        "01", title: "Launch. Then play both sides.",
-        text: "Tap the flipper pads to flip. Hold a pad to keep its flipper raised.")
+        "01", title: "Pull down to launch.",
+        text: "Drag down anywhere on the table and let go. A quick tap fires at full power.")
       lesson(
-        "02", title: "Follow the cyan light.",
+        "02", title: "Touch either side to flip.",
         text:
-          "Hit Arcade → Spire → Riviera. A full circuit lights the skyline and raises your multiplier."
+          "The whole left half is your left flipper; the right half is your right. Hold to keep one raised."
       )
       lesson(
-        "03", title: "Three balls. Make them count.",
-        text: "A ball below the flippers is lost. Keep your circuit progress and launch the next.")
+        "03", title: "Follow the cyan light.",
+        text:
+          "Hit Arcade → Spire → Riviera in order. Each circuit lights more of the city and raises your multiplier."
+      )
       primary("LET’S PLAY", icon: "arrow.right", identifier: "tutorialStart") { game.newGame() }
     }
-    .padding(24)
+    .padding(22)
     .background(Color(Ink.background).opacity(0.98), in: RoundedRectangle(cornerRadius: 14))
     .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color(Ink.brass).opacity(0.8), lineWidth: 1))
     .shadow(color: .black, radius: 25, y: 12)
+    .padding(.vertical, 8)
   }
 
   private func lesson(_ number: String, title: String, text: String) -> some View {
     HStack(alignment: .top, spacing: 12) {
       Text(number).font(.system(size: 12, weight: .medium, design: .monospaced)).foregroundStyle(
         Color(Ink.cyan))
-      VStack(alignment: .leading, spacing: 5) {
+      VStack(alignment: .leading, spacing: 4) {
         Text(title).font(.system(size: 14, weight: .semibold))
         Text(text).font(.system(size: 12)).foregroundStyle(Color(Ink.cream).opacity(0.7)).fixedSize(
           horizontal: false, vertical: true)
@@ -221,15 +349,21 @@ struct VoltageView: View {
     }
   }
 
+  // MARK: Pause and results
+
   private var pauseOverlay: some View {
     ZStack {
       Color(Ink.background).opacity(0.94).ignoresSafeArea()
       VStack(spacing: 21) {
-        eyebrow("TAKE A BREATHER")
+        eyebrow("PAUSED")
         DecoRule().frame(height: 10)
         Text("The night\ncan wait.").font(.custom("Baskerville-Italic", size: 51))
-          .multilineTextAlignment(
-            .center)
+          .multilineTextAlignment(.center)
+        HStack(spacing: 24) {
+          stat("VOLTAGE", "\(game.score.points.formatted())")
+          stat("BALL", "\(game.ballNumber) / 3")
+          stat("POWER", "\(game.score.multiplier)×")
+        }
         primary("RESUME", icon: "play.fill", identifier: "resumeButton") { game.paused = false }
         Button("Restart game") { confirmRestart = true }.frame(minHeight: 44)
           .accessibilityIdentifier("restartButton")
@@ -242,28 +376,45 @@ struct VoltageView: View {
     }
   }
 
+  private func stat(_ title: String, _ value: String) -> some View {
+    VStack(spacing: 3) {
+      eyebrow(title)
+      Text(value).font(.custom("AvenirNextCondensed-DemiBold", size: 18))
+    }
+  }
+
   private var results: some View {
     VStack(spacing: 16) {
       ScorePoster(score: game.score, best: game.best, newRecord: game.newRecord)
         .frame(maxHeight: .infinity)
       VStack(spacing: 10) {
-        primary("ONE MORE NIGHT", icon: "arrow.clockwise", identifier: "replayButton") {
+        primary("PLAY AGAIN", icon: "arrow.clockwise", identifier: "replayButton") {
           game.newGame()
         }
-        HStack {
+        HStack(spacing: 10) {
           Button {
             share()
           } label: {
             Label("SHARE POSTER", systemImage: "square.and.arrow.up")
-              .font(.system(size: 11, weight: .semibold, design: .monospaced)).frame(
-                maxWidth: .infinity, minHeight: 44)
-          }.accessibilityIdentifier("shareButton")
+              .font(.custom("AvenirNextCondensed-DemiBold", size: 12)).tracking(1.4)
+              .frame(maxWidth: .infinity, minHeight: 48)
+          }
+          .background(Color(Ink.brass).opacity(0.1), in: RoundedRectangle(cornerRadius: 9))
+          .overlay(
+            RoundedRectangle(cornerRadius: 9).stroke(Color(Ink.brass).opacity(0.5), lineWidth: 0.7)
+          )
+          .accessibilityIdentifier("shareButton")
           Button {
             game.screen = .home
           } label: {
-            Image(systemName: "house").frame(width: 48, height: 44)
-          }.accessibilityLabel("Return home").accessibilityIdentifier("homeButton")
-        }.foregroundStyle(Color(Ink.brass))
+            Image(systemName: "house").frame(width: 52, height: 48)
+          }
+          .background(Color(Ink.brass).opacity(0.1), in: RoundedRectangle(cornerRadius: 9))
+          .overlay(
+            RoundedRectangle(cornerRadius: 9).stroke(Color(Ink.brass).opacity(0.5), lineWidth: 0.7)
+          )
+          .accessibilityLabel("Return home").accessibilityIdentifier("homeButton")
+        }.foregroundStyle(Color(Ink.cream))
       }
     }.padding(24)
   }
@@ -295,7 +446,7 @@ struct VoltageView: View {
         }
         Section {
           Text(
-            "Hit the cyan district in order: Arcade, Spire, Riviera. Bumpers earn 100 × multiplier; ordered hits add 250 ×. A circuit adds 1,500 × and raises the multiplier up to 5×. Three balls per game."
+            "Pull down anywhere on the table to launch; touch the left or right half to flip. Hit the cyan district in order: Arcade, Spire, Riviera. Bumpers earn 100 × multiplier; ordered hits add 250 ×. A circuit adds 1,500 × and raises the multiplier up to 5×. Three balls per game."
           )
           .font(.footnote)
           Text(
@@ -333,56 +484,55 @@ struct VoltageView: View {
   }
 }
 
-struct FlipperControl: View {
+struct FlipperPad: View {
   let left: Bool
-  @ObservedObject var game: GameSession
-  @State private var pressed = false
+  let held: Bool
   var body: some View {
-    HStack(spacing: 9) {
-      Image(systemName: left ? "arrow.up.left" : "arrow.up.right")
-        .font(.system(size: 13, weight: .semibold))
-      Text(left ? "LEFT FLIPPER" : "RIGHT FLIPPER")
-        .font(.custom("AvenirNextCondensed-DemiBold", size: 12)).tracking(1.2)
-    }
-    .frame(maxWidth: .infinity).frame(height: 56)
-    .foregroundStyle(pressed ? Color(Ink.background) : Color(Ink.cream))
-    .background(
-      LinearGradient(
-        colors: pressed
-          ? [Color(Ink.coral), Color(Ink.coral)] : [Color(Ink.panel), Color(Ink.background)],
-        startPoint: .top, endPoint: .bottom
-      ), in: RoundedRectangle(cornerRadius: 10)
-    )
-    .overlay(
-      RoundedRectangle(cornerRadius: 10).stroke(Color(Ink.brass).opacity(0.65), lineWidth: 1)
-    )
-    .overlay(alignment: .bottom) {
-      Capsule().fill(Color(Ink.coral)).frame(width: 30, height: 2).padding(.bottom, 7)
-    }
-    .offset(y: pressed ? 2 : 0)
-    .contentShape(Rectangle())
-    .gesture(
-      DragGesture(minimumDistance: 0).onChanged { _ in
-        pressed = true
-        game.setFlipper(left: left, pressed: true)
-      }.onEnded { _ in
-        pressed = false
-        game.setFlipper(left: left, pressed: false)
+    VStack(spacing: 6) {
+      HStack(spacing: 6) {
+        if !left { Spacer(minLength: 0) }
+        Image(systemName: left ? "hand.point.up.left.fill" : "hand.point.up.right.fill")
+          .font(.system(size: 11, weight: .semibold))
+        Text(left ? "LEFT HALF · FLIP" : "FLIP · RIGHT HALF")
+          .font(.custom("AvenirNextCondensed-DemiBold", size: 11)).tracking(1.4)
+        if left { Spacer(minLength: 0) }
       }
-    )
-    .onChange(of: game.paused) { _, _ in pressed = false }
-    .onChange(of: game.inFlight) { _, value in if !value { pressed = false } }
-    .accessibilityElement()
-    .accessibilityLabel(left ? "Left flipper" : "Right flipper")
-    .accessibilityAddTraits(.isButton)
-    .accessibilityIdentifier(left ? "leftFlipper" : "rightFlipper")
-    .accessibilityAction {
-      game.setFlipper(left: left, pressed: true)
-      Task { @MainActor in
-        try? await Task.sleep(for: .milliseconds(200))
-        game.setFlipper(left: left, pressed: false)
+      .foregroundStyle(held ? Color(Ink.coral) : Color(Ink.brass).opacity(0.8))
+      Capsule()
+        .fill(held ? Color(Ink.coral) : Color(Ink.brass).opacity(0.35))
+        .frame(height: held ? 4 : 2)
+        .shadow(color: Color(Ink.coral).opacity(held ? 0.9 : 0), radius: 6)
+    }
+    .padding(.horizontal, 6)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .animation(.easeOut(duration: 0.08), value: held)
+    .accessibilityHidden(true)
+  }
+}
+
+struct ControlDiagram: View {
+  var body: some View {
+    GeometryReader { proxy in
+      let w = proxy.size.width
+      let h = proxy.size.height
+      ZStack {
+        RoundedRectangle(cornerRadius: 10).fill(Color(Ink.panel))
+        RoundedRectangle(cornerRadius: 10).stroke(Color(Ink.brass).opacity(0.6), lineWidth: 1)
+        Rectangle().fill(Color(Ink.brass).opacity(0.4)).frame(width: 1, height: h - 20)
+        HStack {
+          Label("LEFT FLIPPER", systemImage: "hand.tap")
+          Spacer()
+          Label("RIGHT FLIPPER", systemImage: "hand.tap")
+        }
+        .font(.custom("AvenirNextCondensed-DemiBold", size: 10)).tracking(1)
+        .foregroundStyle(Color(Ink.coral)).padding(.horizontal, 16).offset(y: h * 0.28)
+        VStack(spacing: 2) {
+          Image(systemName: "arrow.down").font(.system(size: 13, weight: .bold))
+          Text("PULL TO LAUNCH").font(.custom("AvenirNextCondensed-DemiBold", size: 9)).tracking(1)
+        }.foregroundStyle(Color(Ink.cyan)).position(x: w * 0.5, y: h * 0.32)
       }
     }
+    .accessibilityHidden(true)
   }
 }
 

@@ -89,11 +89,15 @@ final class PinballEngine {
   var rightPressed = false
   var ballsRemaining: Int { max(0, 3 - ballsUsed) }
 
-  func launch() {
+  static let launchSpeeds = 760.0...920.0
+
+  func launch(power: Double = 1) {
     guard !inFlight, !finished else { return }
     ballsUsed += 1
     ball = Vector(x: 343, y: 220)
-    velocity = Vector(x: 0, y: 890)
+    let range = Self.launchSpeeds
+    let speed = range.lowerBound + (range.upperBound - range.lowerBound) * min(1, max(0, power))
+    velocity = Vector(x: 0, y: speed)
     inFlight = true
   }
 

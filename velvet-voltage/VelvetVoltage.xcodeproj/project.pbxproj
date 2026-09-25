@@ -13,6 +13,7 @@
 		963A13EB5E200F67B3576C13 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 325F44F7F1DA57191CA0557E /* Assets.xcassets */; };
 		B4DE0411CE28CC8622843FF6 /* VoltageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBB0A392AEB9F49E38746D /* VoltageTests.swift */; };
 		F00D21B12D2A2CDAF6BB8078 /* VoltageScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 904EC0BFE854FB1718C97679 /* VoltageScene.swift */; };
+		F896479545C4D921FB8075C4 /* TouchDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8102A37376403587C4BB6697 /* TouchDeck.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,6 +29,7 @@
 /* Begin PBXFileReference section */
 		325F44F7F1DA57191CA0557E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3BCABC49320BE54D57F33B49 /* VelvetVoltageTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = VelvetVoltageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8102A37376403587C4BB6697 /* TouchDeck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchDeck.swift; sourceTree = "<group>"; };
 		862B701B475A43D8EA6DEE8F /* GameSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSession.swift; sourceTree = "<group>"; };
 		88DBB0A392AEB9F49E38746D /* VoltageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoltageTests.swift; sourceTree = "<group>"; };
 		904EC0BFE854FB1718C97679 /* VoltageScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoltageScene.swift; sourceTree = "<group>"; };
@@ -43,6 +45,7 @@
 				325F44F7F1DA57191CA0557E /* Assets.xcassets */,
 				862B701B475A43D8EA6DEE8F /* GameSession.swift */,
 				9ECADCE935BDA7596A721EC6 /* Physics.swift */,
+				8102A37376403587C4BB6697 /* TouchDeck.swift */,
 				DCC9559DB50396C5AA099889 /* VelvetVoltageApp.swift */,
 				904EC0BFE854FB1718C97679 /* VoltageScene.swift */,
 			);
@@ -171,6 +174,7 @@
 			files = (
 				02CEEF97F38DA4292A4F4F4D /* GameSession.swift in Sources */,
 				05ACF82DF178758FE1783FA4 /* Physics.swift in Sources */,
+				F896479545C4D921FB8075C4 /* TouchDeck.swift in Sources */,
 				44988A860DB75837B014B2AD /* VelvetVoltageApp.swift in Sources */,
 				F00D21B12D2A2CDAF6BB8078 /* VoltageScene.swift in Sources */,
 			);

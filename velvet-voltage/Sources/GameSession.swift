@@ -19,6 +19,10 @@ final class GameSession: ObservableObject {
   @Published var lifetimeCircuits: Int
   @Published var gamesPlayed: Int
   @Published var newRecord = false
+  @Published var leftHeld = false
+  @Published var rightHeld = false
+  @Published var plungerPull = 0.0
+  @Published var coaching = false
   @Published var sound: Bool { didSet { defaults.set(sound, forKey: "sound") } }
   @Published var haptics: Bool { didSet { defaults.set(haptics, forKey: "haptics") } }
   var reducedMotion = false
@@ -46,7 +50,12 @@ final class GameSession: ObservableObject {
     }
   }
 
+  func showTutorial() {
+    screen = .tutorial
+  }
+
   func newGame() {
+    coaching = !defaults.bool(forKey: "learned")
     defaults.set(true, forKey: "learned")
     engine = PinballEngine()
     score = ScoreCard()
@@ -56,22 +65,41 @@ final class GameSession: ObservableObject {
     recordedResult = false
     startingBest = best
     newRecord = false
-    banner = "LAUNCH TO LIGHT THE CITY"
+    leftHeld = false
+    rightHeld = false
+    plungerPull = 0
+    banner = "PULL DOWN OR TAP TO LAUNCH"
     screen = .playing
   }
 
-  func launch() {
-    guard screen == .playing, !paused else { return }
-    engine.launch()
+  func launch(power: Double = 1) {
+    guard screen == .playing, !paused, !engine.inFlight else { return }
+    engine.launch(power: power)
+    plungerPull = 0
     inFlight = engine.inFlight
     ballNumber = engine.ballsUsed
-    banner = "HIT 0\(score.nextDistrict + 1) · \(Self.districtNames[score.nextDistrict])"
+    banner = coaching ? "TOUCH EITHER SIDE TO FLIP" : targetBanner
     feedback(frequency: 240)
+  }
+
+  func pullPlunger(_ pull: Double) {
+    guard screen == .playing, !paused, !engine.inFlight else { return }
+    plungerPull = min(1, max(0, pull))
   }
 
   func setFlipper(left: Bool, pressed: Bool) {
     guard screen == .playing, !paused else { return }
-    if left { engine.leftPressed = pressed } else { engine.rightPressed = pressed }
+    if left {
+      engine.leftPressed = pressed
+      leftHeld = pressed
+    } else {
+      engine.rightPressed = pressed
+      rightHeld = pressed
+    }
+    if pressed, coaching, engine.inFlight {
+      coaching = false
+      banner = targetBanner
+    }
   }
 
   func pause() {
@@ -79,6 +107,13 @@ final class GameSession: ObservableObject {
     paused = true
     engine.leftPressed = false
     engine.rightPressed = false
+    leftHeld = false
+    rightHeld = false
+    plungerPull = 0
+  }
+
+  private var targetBanner: String {
+    "NEXT · \(Self.districtNames[score.nextDistrict])"
   }
 
   func consume(_ events: [TableEvent]) {
@@ -89,20 +124,25 @@ final class GameSession: ObservableObject {
         best = max(best, score.points)
         defaults.set(best, forKey: "best")
         if completed {
-          banner = "CIRCUIT LIVE · \(score.multiplier)× POWER"
+          banner = "CIRCUIT COMPLETE · \(score.multiplier)× POWER"
         } else {
-          banner = "HIT 0\(score.nextDistrict + 1) · \(Self.districtNames[score.nextDistrict])"
+          banner = targetBanner
         }
         feedback(frequency: completed ? 880 : Double(400 + index * 160))
       case .flipper:
         feedback(frequency: 150)
       case .drain:
         inFlight = false
+        leftHeld = false
+        rightHeld = false
+        coaching = false
         if engine.finished {
           finish()
         } else {
           ballNumber = engine.ballsUsed + 1
-          banner = "BALL LOST · \(engine.ballsRemaining) REMAIN"
+          banner =
+            engine.ballsRemaining == 1
+            ? "LAST BALL · MAKE IT COUNT" : "BALL LOST · PULL TO RELAUNCH"
           feedback(frequency: 100)
         }
       case .rail:

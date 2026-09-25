@@ -37,8 +37,12 @@ xcrun simctl launch booted com.nader.velvetvoltage
 
 ## House rules
 
-- Tap **Launch**, then tap or hold the two large coral flipper zones.
-- The cyan bumper is your next district: Arcade → Spire → Riviera.
+- Pull down anywhere on the table and let go to launch; a quick tap fires at full power.
+- The whole left half of the table is the left flipper, the right half is the right flipper.
+  Hold to keep a flipper raised; both sides work at once.
+- First game only: a short in-play coach tells you when to flip.
+- The cyan bumper is your next district: Arcade → Spire → Riviera. Each ordered hit
+  lights more of the city; a circuit lights it all.
 - Any bumper pays 100 × multiplier. Ordered hits add 250 ×.
 - A circuit adds 1,500 ×, lights the city, and raises the multiplier (maximum 5×).
 - A ball below the flippers drains. Three drains end the game.
