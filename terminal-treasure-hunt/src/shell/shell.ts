@@ -24,7 +24,7 @@ const CLUE_MARKERS: Array<[number, string]> = [
   [1, 'CLUE #1'],
   [2, 'CLUE #2'],
   [3, 'CLUE #3'],
-  [4, 'Nicely decoded'],
+  [4, 'CLUE #4'],
   [5, FLAG],
 ]
 
@@ -496,7 +496,7 @@ export class Shell {
     const page = MAN_PAGES[name]
     if (!page) return fail(`No manual entry for ${name}`)
     const lines: Line[] = [
-      [span(`${page.name.toUpperCase()}(1)`, 'muted'), span(`${' '.repeat(Math.max(1, 40 - page.name.length))}Treasure Hunt Manual`, 'muted')],
+      [span(`${page.name.toUpperCase()}(1)`, 'muted'), span(`${' '.repeat(Math.max(1, 40 - page.name.length))}User Commands`, 'muted')],
       plain(''),
       [span('NAME', 'heading')],
       plain(`       ${page.name} - ${page.summary}`),
@@ -516,10 +516,10 @@ export class Shell {
   private submit(io: CommandIO): CommandOutput {
     const guess = io.args.join(' ').trim()
     if (!guess) return fail('usage: submit FLAG{...}')
-    if (this.solved) return ok([styled('The hunt is already over. You already won, hunter.', 'success')])
+    if (this.solved) return ok([styled('submit: already solved', 'muted')])
     if (guess !== FLAG) {
-      const shape = /^FLAG\{.*\}$/.test(guess) ? 'Right shape, wrong contents. Decoys are listed; the real one is not.' : 'The flag looks like FLAG{...}.'
-      return { lines: [[span('✗ ', 'error'), span('Wrong flag. ', 'error'), span(shape, 'muted')]], status: 1 }
+      const hint = /^FLAG\{.*\}$/.test(guess) ? 'decoys show up in a plain listing; the real flag does not' : 'expected FLAG{...}'
+      return { lines: [[span('submit: incorrect flag', 'error'), span(` \u2014 ${hint}`, 'muted')]], status: 1 }
     }
     this.solved = true
     this.solvedAfterCommands = this.history.length

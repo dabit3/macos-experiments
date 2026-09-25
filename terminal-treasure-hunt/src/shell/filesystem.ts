@@ -29,34 +29,31 @@ interface Seed {
   mtime?: string
 }
 
-const readme = `Welcome to the Terminal Treasure Hunt, ${USER}.
+const readme = `TREASURE HUNT
 
-Somewhere in this home directory a flag of the form FLAG{...} is buried.
-Find it using only the shell, then hand it in with:
+A flag of the form FLAG{...} is somewhere in this home directory.
+Find it with the shell, then submit it:
 
     submit FLAG{...}
 
 CLUE #1
-  The hunt begins with things that hide in plain sight. On a Unix
-  system, files whose names start with a dot are not shown by a plain
-  \`ls\`. There is such a hidden directory right here in ~.
+  Files whose names start with a dot are hidden from a plain
+  \`ls\`. There is a hidden directory right here in ~.
 
   Try:  ls -a
 
-Type \`help\` at any time for the list of commands, or \`man <command>\`
-for details on one of them.
+\`help\` lists the commands. \`man <command>\` explains one.
 `
 
-const huntNote = `CLUE #2 -- you found the hidden directory. Good eye.
+const huntNote = `CLUE #2
 
-A careless worker process logged the location of the vault key.
-Every log on this machine lives under ~/var/log, and there are a lot
-of them. Search all of them at once for the word "vault" -- the
-logger did not agree with itself about capitalisation.
+A worker process logged where it copied the vault key.
+All logs live under ~/var/log. Search every one of them for
+"vault"; the logger was inconsistent about capitalisation.
 
   Try:  grep -ri vault var/log
 
-The line you want was written by the worker, not by nginx.
+The line you want comes from the worker, not from nginx.
 `
 
 const workerLog = `2026-03-14 03:10:02 INFO  [worker-1] boot: queue=default concurrency=4
@@ -70,7 +67,7 @@ const workerLog = `2026-03-14 03:10:02 INFO  [worker-1] boot: queue=default conc
 2026-03-14 03:12:07 ERROR [worker-2] job 4f1cc (import) failed: ENOENT data/import.csv
 2026-03-14 03:12:07 INFO  [worker-2] job 4f1cc scheduled for retry in 60s
 2026-03-14 03:13:07 INFO  [worker-2] job 4f1cc (import) took 890ms
-2026-03-14 03:14:15 WARN  [worker-2] CLUE #3: VAULT key copied to projects/archive/deep/deeper/key.b64 (encoded, obviously)
+2026-03-14 03:14:15 WARN  [worker-2] CLUE #3: VAULT key copied to projects/archive/deep/deeper/key.b64 (base64)
 2026-03-14 03:14:16 INFO  [worker-2] job 4f1cd (cleanup) took 44ms
 2026-03-14 03:15:00 INFO  [worker-1] heartbeat ok
 2026-03-14 03:15:00 INFO  [worker-2] heartbeat ok
@@ -151,39 +148,29 @@ const dpkgLog = `2026-03-13 22:41:07 startup archives unpack
 2026-03-13 22:41:14 startup packages configure
 `
 
-const keyB64 = `TmljZWx5IGRlY29kZWQsIGh1bnRlci4KClRoZSBmaW5hbCBwaWVjZSBzaXRz
-IGluc2lkZSB+L3Byb2plY3RzL3ZhdWx0LCBidXQgdGhlIHZhdWx0IGhpZGVz
-IGl0cwpyZWFsIGNvbnRlbnRzOiBhIHBsYWluIGxpc3Rpbmcgc2hvd3Mgb25s
-eSBkZWNveXMuIEFzayBmb3IgKmFsbCogZmlsZXMKKHRoZSBvbmVzIHN0YXJ0
-aW5nIHdpdGggYSBkb3QpIGFuZCByZWFkIHRoZSBvbmUgeW91IGZpbmQuCgog
-ICAgY2Qgfi9wcm9qZWN0cy92YXVsdCAmJiBscyAtYQo=
+const keyB64 = `Q0xVRSAjNAoKVGhlIGxhc3QgcGllY2UgaXMgaW4gfi9wcm9qZWN0cy92YXVs
+dCwgYnV0IGEgcGxhaW4gbGlzdGluZwpzaG93cyBvbmx5IGRlY295cy4gTGlz
+dCBldmVyeSBlbnRyeSwgaW5jbHVkaW5nIHRoZSBvbmVzIHRoYXQKc3RhcnQg
+d2l0aCBhIGRvdCwgYW5kIHJlYWQgdGhlIG9uZSB5b3UgZmluZC4KCiAgICBj
+ZCB+L3Byb2plY3RzL3ZhdWx0ICYmIGxzIC1hCg==
 `
 
 const vaultReadme = `THE VAULT
 =========
 
-You made it this far. Nothing in this listing is what it seems.
+Only decoys show up in a plain listing.
 `
 
-const vaultDecoy = `Congratulations! You found the treasure!
+const vaultDecoy = `vault contents
 
     ${DECOY_FLAG}
-
-...or did you? Decoys are listed. Real treasure is not.
 `
 
-const vaultFlag = ` _____ _             _ _       _
-|  ___(_)_ __   __ _| | |_   _| |
-| |_  | | '_ \\ / _\` | | | | | | |
-|  _| | | | | | (_| | | | |_| |_|
-|_|   |_|_| |_|\\__,_|_|_|\\__, (_)
-                         |___/
-
-You looked where nobody looks. This is the real one:
+const vaultFlag = `vault contents (real)
 
     ${FLAG}
 
-Now hand it in:
+Submit it with:
 
     submit ${FLAG}
 `
@@ -219,8 +206,8 @@ PATH="$HOME/bin:$PATH"
 
 - [x] rotate the vault key
 - [x] move the encoded copy somewhere deep
-- [ ] delete the worker log line that mentions it (oops)
-- [ ] buy more coffee
+- [ ] delete the worker log line that mentions it
+- [ ] renew the TLS cert for treasure.local
 `,
     mtime: 'Mar 13 18:40',
   },
@@ -228,9 +215,9 @@ PATH="$HOME/bin:$PATH"
     path: `${HOME}/notes/ideas.txt`,
     content: `ideas
 -----
-* a treasure hunt that runs entirely in a fake shell
-* teach people ls -a, grep -r and base64 -d without them noticing
-* fireworks made of ASCII when they win
+* move logs off the home directory
+* rotate worker credentials weekly
+* replace backup.sh with a proper cron job
 `,
     mtime: 'Mar 11 14:03',
   },
@@ -242,7 +229,7 @@ Attendees: ${USER}, mara, dev
 
 - import job keeps failing on missing CSV (owner: dev)
 - nginx is getting probed for /vault and /.env, nothing exposed
-- reminder: never put secrets in logs (everyone nods)
+- reminder: never put secrets in logs
 `,
     mtime: 'Mar 12 16:20',
   },
@@ -252,7 +239,7 @@ Attendees: ${USER}, mara, dev
 <html>
   <head><title>treasure.local</title><link rel="stylesheet" href="style.css"></head>
   <body>
-    <h1>Nothing to see here.</h1>
+    <h1>treasure.local</h1>
     <script src="app.js"></script>
   </body>
 </html>
@@ -268,7 +255,7 @@ h1 { font-weight: 600; letter-spacing: 0.02em; }
   },
   {
     path: `${HOME}/projects/website/app.js`,
-    content: `console.log('the flag is not in the frontend, nice try');
+    content: `document.querySelector('h1').dataset.ready = 'true'
 `,
     mtime: 'Feb 28 11:05',
   },
@@ -276,7 +263,7 @@ h1 { font-weight: 600; letter-spacing: 0.02em; }
     path: `${HOME}/projects/archive/old-report.txt`,
     content: `Q4 report (archived)
 
-Revenue: fine. Costs: fine. Coffee: insufficient.
+Revenue up 4%. Infra costs flat. Import pipeline still flaky.
 `,
     mtime: 'Jan 09 10:00',
   },
@@ -298,20 +285,20 @@ Revenue: fine. Costs: fine. Coffee: insufficient.
     content: `127.0.0.1   localhost
 127.0.1.1   ${HOST}
 10.0.0.12   workstation
-10.0.0.44   probe.suspicious.internal
+10.0.0.44   scanner.internal
 `,
     mtime: 'Mar 01 08:00',
   },
   {
     path: `${HOME}/etc/motd`,
-    content: `Welcome to ${HOST}. Unauthorised treasure hunting is mandatory.
+    content: `Welcome to ${HOST} (Ubuntu 24.04 LTS).
 `,
     mtime: 'Mar 01 08:00',
   },
   {
     path: `${HOME}/etc/passwd`,
     content: `root:x:0:0:root:/root:/bin/bash
-${USER}:x:1000:1000:Treasure Hunter:/home/${USER}:/bin/bash
+${USER}:x:1000:1000:hunter:/home/${USER}:/bin/bash
 www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
 `,
     mtime: 'Mar 01 08:00',
@@ -322,8 +309,7 @@ www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
 [hunt]
 clues = 5
 flag_format = FLAG{...}
-fireworks = ascii
-determinism = absolute
+vault = ~/projects/vault
 `,
     mtime: 'Mar 14 03:00',
   },
@@ -346,7 +332,7 @@ tar czf /tmp/vault-$(date +%F).tgz "$HOME/projects/vault"
   },
   {
     path: `${HOME}/docs/manual.txt`,
-    content: `TERMINAL TREASURE HUNT -- field manual
+    content: `Field notes
 
   ls -a        show hidden entries (names beginning with a dot)
   ls -la       long listing including hidden entries
@@ -362,13 +348,10 @@ Tab completes commands and paths. Up/Down walk the history.
   {
     path: `${HOME}/docs/faq.txt`,
     content: `Q: Is this a real shell?
-A: No. It is a browser pretending very hard.
+A: No. Every command runs in the browser against an in-memory filesystem.
 
-Q: Is the flag in this file?
-A: No.
-
-Q: Where is it then?
-A: Read README.txt and follow the clues.
+Q: Where do I start?
+A: cat ~/README.txt
 `,
     mtime: 'Mar 05 09:31',
   },
@@ -380,8 +363,8 @@ A: Read README.txt and follow the clues.
         ~~~    /  \\      .:::.     /  \\   .    ~~~
        ~~     /    \\   .  ':'  .  /    \\        ~~
        ~~    /______\\      X     /______\\       ~~
-        ~~~         .    (here?)        .      ~~~
-          ~~~~   . . .    no.  . . .        ~~~~
+        ~~~         .               .      ~~~
+          ~~~~   . . .         . . .        ~~~~
              ~~~~                        ~~~~
                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 `,

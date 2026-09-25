@@ -158,27 +158,27 @@ export function Terminal() {
   return (
     <div className="terminal-window" onMouseUp={() => window.getSelection()?.toString() === '' && focusInput()}>
       <header className="titlebar">
-        <div className="traffic-lights" aria-hidden="true">
-          <span className="light red" />
-          <span className="light yellow" />
-          <span className="light green" />
-        </div>
         <div className="titlebar-title">
-          <span className="titlebar-icon" aria-hidden="true">
-            ▣
+          <span className="titlebar-app">Treasure Hunt</span>
+          <span className="titlebar-sep" aria-hidden="true" />
+          <span className="titlebar-path">
+            {USER}@{HOST}: {cwdLabel}
           </span>
-          {USER}@{HOST}: {cwdLabel}
         </div>
-        <div className={`progress ${solved ? 'progress-solved' : ''}`} title={`${cluesFound} of ${TOTAL_CLUES} clues found`}>
-          <span className="progress-label">{solved ? 'SOLVED' : `Clues ${cluesFound}/${TOTAL_CLUES}`}</span>
-          <div className="pips" aria-label={`${cluesFound} of ${TOTAL_CLUES} clues found`}>
+        <div
+          className={`progress ${solved ? 'progress-solved' : ''}`}
+          role="status"
+          aria-label={solved ? 'Solved' : `${cluesFound} of ${TOTAL_CLUES} clues found`}
+        >
+          <span className="progress-label">{solved ? 'Solved' : 'Clues'}</span>
+          <div className="segments" aria-hidden="true">
             {Array.from({ length: TOTAL_CLUES }, (_, i) => (
-              <span className={`pip ${i < cluesFound ? 'pip-on' : ''}`} key={i} />
+              <span className={`segment ${solved || i < cluesFound ? 'segment-on' : ''}`} key={i} />
             ))}
-            <span className={`pip pip-flag ${solved ? 'pip-on' : ''}`} title="flag submitted">
-              ⚑
-            </span>
           </div>
+          <span className="progress-count">
+            {solved ? TOTAL_CLUES : cluesFound}/{TOTAL_CLUES}
+          </span>
         </div>
       </header>
 
@@ -237,14 +237,10 @@ export function Terminal() {
       </div>
 
       <footer className="statusbar">
-        <div className="status-left">
-          <span className="status-chip status-cwd" title="current directory">
-            {shell.cwd}
-          </span>
-          <span className="status-hint">
-            <kbd>Tab</kbd> complete · <kbd>↑</kbd>
-            <kbd>↓</kbd> history · <kbd>Ctrl</kbd>+<kbd>L</kbd> clear
-          </span>
+        <div className="status-hint">
+          <span><kbd>Tab</kbd> complete</span>
+          <span><kbd>↑</kbd><kbd>↓</kbd> history</span>
+          <span><kbd>Ctrl</kbd><kbd>L</kbd> clear</span>
         </div>
         <div className="quick-commands" aria-label="Quick commands">
           {QUICK_COMMANDS.map((cmd) => (
@@ -282,18 +278,14 @@ function Prompt({ text }: { text: string }) {
 function BootBanner({ fileCount }: { fileCount: number }) {
   return (
     <div className="boot">
-      <pre className="boot-logo">{`  ████████╗████████╗██╗  ██╗
-  ╚══██╔══╝╚══██╔══╝██║  ██║
-     ██║      ██║   ███████║
-     ██║      ██║   ██╔══██║
-     ██║      ██║   ██║  ██║
-     ╚═╝      ╚═╝   ╚═╝  ╚═╝`}</pre>
-      <div className="boot-title">Terminal Treasure Hunt</div>
-      <div className="boot-sub">
-        a fake shell with a hidden flag · {fileCount} files and directories · 1 flag · 0 real shells involved
+      <div className="boot-dim">Last login: Sat Mar 14 03:09:41 2026 from 10.0.0.12</div>
+      <div className="boot-title">Treasure Hunt</div>
+      <div className="boot-text">
+        A flag of the form FLAG{'{…}'} is hidden somewhere in {fileCount} files and directories under ~.
       </div>
-      <div className="boot-start">
-        Start with <code>cat README.txt</code>. Type <code>help</code> for the list of commands.
+      <div className="boot-text">
+        Start with <span className="boot-code">cat README.txt</span>. <span className="boot-code">help</span> lists every
+        command.
       </div>
     </div>
   )

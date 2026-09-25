@@ -1,24 +1,19 @@
 :root {
-  --bg-0: #05080d;
-  --bg-1: #0b1017;
-  --window: #0d1117;
-  --chrome: #161b22;
-  --border: rgba(240, 246, 252, 0.09);
-  --text: #e6edf3;
-  --muted: #7d8590;
-  --dim: #484f58;
-  --green: #3fb950;
-  --green-bright: #56d364;
-  --blue: #79c0ff;
-  --purple: #d2a8ff;
-  --orange: #ffa657;
-  --red: #ff7b72;
-  --gold: #f2cc60;
-  --mono:
-    'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', Menlo, Consolas, 'DejaVu Sans Mono',
-    monospace;
-  --sans:
-    Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --bg: #0c0c0d;
+  --chrome: #111113;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-strong: rgba(255, 255, 255, 0.12);
+  --text: #d4d4d8;
+  --bright: #fafafa;
+  --muted: #8b8b93;
+  --dim: #5b5b63;
+  --accent: #e8b86b;
+  --blue: #8fb3e8;
+  --green: #9ccf8a;
+  --red: #e5787a;
+  --violet: #b9a3e3;
+  --mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 *,
@@ -35,18 +30,17 @@ body,
 }
 
 body {
-  background:
-    radial-gradient(1200px 600px at 15% -10%, rgba(63, 185, 80, 0.14), transparent 60%),
-    radial-gradient(900px 500px at 110% 110%, rgba(121, 192, 255, 0.12), transparent 60%),
-    linear-gradient(180deg, var(--bg-1), var(--bg-0));
+  background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
 }
 
 ::selection {
-  background: rgba(121, 192, 255, 0.35);
+  background: rgba(232, 184, 107, 0.28);
+  color: var(--bright);
 }
 
 code,
