@@ -1,0 +1,517 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0219797027FB268267C25448 /* Artwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB6608A223ECA7520A165664 /* Artwork.swift */; };
+		0BF74EF5332F6E93097D6DD8 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64279BE1DC7AB940F465025C /* Protocol.swift */; };
+		15A23BD0EB684B2913EA015B /* Artwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB6608A223ECA7520A165664 /* Artwork.swift */; };
+		1C33EFB1D0971B3516735905 /* GameViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F2CA4B4217136E782AD1F3 /* GameViews.swift */; };
+		1C3814DB222DA52440E7FFB1 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ECE732B0F2F033B7350FB5D6 /* Inter-Medium.ttf */; };
+		1DBC3947FCD2F34B4CDA24E2 /* macOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF85B8EFE41467F8B43293C3 /* macOS.xcassets */; };
+		2054E86E9AB37D6615CC1F2B /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38A9374191B2AD4C587E338D /* Position.swift */; };
+		289507A1EB22C7A6555DC2BB /* RoomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCA91FD79964081A4946F35 /* RoomViews.swift */; };
+		32A1BA76F2DFEEA5F0C89C0D /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CF74B529BD61AE3ADB5DC0A /* Inter-Regular.ttf */; };
+		401ACFF1E522E668AEB4D01A /* BarlowCondensed-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6611D67663C4AE1FDD1A5C43 /* BarlowCondensed-LICENSE.txt */; };
+		4FDCC60A2D634E9574C33564 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ECE732B0F2F033B7350FB5D6 /* Inter-Medium.ttf */; };
+		5322E0CA0D0D3D0033A767FB /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE7E1271FFD323746B986A29 /* BoardView.swift */; };
+		537D6FD2B9447DEAF167B04E /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1D3AC7D480E18C7DB63555D2 /* Inter-SemiBold.ttf */; };
+		5B0B78394C8768BB488972B6 /* Inter-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 39FED2587B17BA2D73AFF9B4 /* Inter-LICENSE.txt */; };
+		5D59BEB9112B5B36DE2D68C5 /* RoomViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCA91FD79964081A4946F35 /* RoomViews.swift */; };
+		65B5332D49E557D30C33D2CB /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38A9374191B2AD4C587E338D /* Position.swift */; };
+		774367AE1D712C3E3B0B7DAF /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3CF74B529BD61AE3ADB5DC0A /* Inter-Regular.ttf */; };
+		787E3DEF189663FA72816348 /* GameClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED15FAD1711446229207EC10 /* GameClient.swift */; };
+		8085B2265506954C76EB67C9 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34065DB7324BA72E9EF02FC5 /* Inter-Bold.ttf */; };
+		A15E606CAEFEC5601B03A41B /* BarlowCondensed-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C7D07C2E97C92745B87A5C67 /* BarlowCondensed-ExtraBold.ttf */; };
+		A50DE997157E6C02757939D5 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE7E1271FFD323746B986A29 /* BoardView.swift */; };
+		AA11BA06386B5897FB66DF34 /* BarlowCondensed-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C7D07C2E97C92745B87A5C67 /* BarlowCondensed-ExtraBold.ttf */; };
+		B76C2544D1CDD548E91C5D73 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E606A2C5AA52D2A46ADF8B /* Configuration.swift */; };
+		BA69687BC15C78FDE53ECCD3 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64279BE1DC7AB940F465025C /* Protocol.swift */; };
+		C7A8ABC30C6D8743F2077209 /* Inter-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 39FED2587B17BA2D73AFF9B4 /* Inter-LICENSE.txt */; };
+		D17A38E9BFB180EF337C096C /* BarlowCondensed-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6611D67663C4AE1FDD1A5C43 /* BarlowCondensed-LICENSE.txt */; };
+		D245534C1B1497F57469DF8E /* SwapmateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03140405B2FFE6E1F0002BEF /* SwapmateApp.swift */; };
+		D5924E62A1444C389A848583 /* GameViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F2CA4B4217136E782AD1F3 /* GameViews.swift */; };
+		D8012514F51A9055E9EC1000 /* iOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4036BED6722C0897D2786CE2 /* iOS.xcassets */; };
+		DA1CB417A50D09E3F79E8743 /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1D3AC7D480E18C7DB63555D2 /* Inter-SemiBold.ttf */; };
+		EB4958162E8A6F14473341DF /* SwapmateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03140405B2FFE6E1F0002BEF /* SwapmateApp.swift */; };
+		EF03CF3FDEEC40A32CCFF78E /* GameClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED15FAD1711446229207EC10 /* GameClient.swift */; };
+		F41DDDD2E71B8DE4109999D3 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34065DB7324BA72E9EF02FC5 /* Inter-Bold.ttf */; };
+		F6367B6EF683B698C9F3D3F1 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E606A2C5AA52D2A46ADF8B /* Configuration.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		03140405B2FFE6E1F0002BEF /* SwapmateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapmateApp.swift; sourceTree = "<group>"; };
+		1D3AC7D480E18C7DB63555D2 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-SemiBold.ttf"; sourceTree = "<group>"; };
+		34065DB7324BA72E9EF02FC5 /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Bold.ttf"; sourceTree = "<group>"; };
+		38A9374191B2AD4C587E338D /* Position.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Position.swift; sourceTree = "<group>"; };
+		39FED2587B17BA2D73AFF9B4 /* Inter-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Inter-LICENSE.txt"; sourceTree = "<group>"; };
+		3CF74B529BD61AE3ADB5DC0A /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Regular.ttf"; sourceTree = "<group>"; };
+		4036BED6722C0897D2786CE2 /* iOS.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = iOS.xcassets; sourceTree = "<group>"; };
+		4F9EF7F095E5220194126CD4 /* Swapmate-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Swapmate-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		64279BE1DC7AB940F465025C /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		6611D67663C4AE1FDD1A5C43 /* BarlowCondensed-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "BarlowCondensed-LICENSE.txt"; sourceTree = "<group>"; };
+		7CCA91FD79964081A4946F35 /* RoomViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomViews.swift; sourceTree = "<group>"; };
+		91E606A2C5AA52D2A46ADF8B /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		A0F2CA4B4217136E782AD1F3 /* GameViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViews.swift; sourceTree = "<group>"; };
+		B6D5D9835FFB42736026228B /* Swapmate-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swapmate-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE7E1271FFD323746B986A29 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
+		C7D07C2E97C92745B87A5C67 /* BarlowCondensed-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BarlowCondensed-ExtraBold.ttf"; sourceTree = "<group>"; };
+		DF85B8EFE41467F8B43293C3 /* macOS.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = macOS.xcassets; sourceTree = "<group>"; };
+		EB6608A223ECA7520A165664 /* Artwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Artwork.swift; sourceTree = "<group>"; };
+		ECE732B0F2F033B7350FB5D6 /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Medium.ttf"; sourceTree = "<group>"; };
+		ED15FAD1711446229207EC10 /* GameClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameClient.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		4B94F6FCE3F8BFAB052C0CCD /* App */ = {
+			isa = PBXGroup;
+			children = (
+				EB6608A223ECA7520A165664 /* Artwork.swift */,
+				BE7E1271FFD323746B986A29 /* BoardView.swift */,
+				A0F2CA4B4217136E782AD1F3 /* GameViews.swift */,
+				7CCA91FD79964081A4946F35 /* RoomViews.swift */,
+				03140405B2FFE6E1F0002BEF /* SwapmateApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		5672CC8C0E166A2ACD7C52CA /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				C7D07C2E97C92745B87A5C67 /* BarlowCondensed-ExtraBold.ttf */,
+				6611D67663C4AE1FDD1A5C43 /* BarlowCondensed-LICENSE.txt */,
+				34065DB7324BA72E9EF02FC5 /* Inter-Bold.ttf */,
+				39FED2587B17BA2D73AFF9B4 /* Inter-LICENSE.txt */,
+				ECE732B0F2F033B7350FB5D6 /* Inter-Medium.ttf */,
+				3CF74B529BD61AE3ADB5DC0A /* Inter-Regular.ttf */,
+				1D3AC7D480E18C7DB63555D2 /* Inter-SemiBold.ttf */,
+			);
+			name = Fonts;
+			path = Resources/Fonts;
+			sourceTree = "<group>";
+		};
+		67DD76BEE0D959FB5C63B383 = {
+			isa = PBXGroup;
+			children = (
+				4B94F6FCE3F8BFAB052C0CCD /* App */,
+				5672CC8C0E166A2ACD7C52CA /* Fonts */,
+				C7C59864550028D9596E98FE /* Resources */,
+				67FB601E2E2F3C4C13A66D14 /* SwapmateKit */,
+				745C4CA87BC00F4BD555DE4D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		67FB601E2E2F3C4C13A66D14 /* SwapmateKit */ = {
+			isa = PBXGroup;
+			children = (
+				91E606A2C5AA52D2A46ADF8B /* Configuration.swift */,
+				ED15FAD1711446229207EC10 /* GameClient.swift */,
+				38A9374191B2AD4C587E338D /* Position.swift */,
+				64279BE1DC7AB940F465025C /* Protocol.swift */,
+			);
+			name = SwapmateKit;
+			path = Sources/SwapmateKit;
+			sourceTree = "<group>";
+		};
+		745C4CA87BC00F4BD555DE4D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4F9EF7F095E5220194126CD4 /* Swapmate-iOS.app */,
+				B6D5D9835FFB42736026228B /* Swapmate-macOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C7C59864550028D9596E98FE /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				4036BED6722C0897D2786CE2 /* iOS.xcassets */,
+				DF85B8EFE41467F8B43293C3 /* macOS.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		026C48B95A062128EE16DA11 /* Swapmate-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 72BA310E4613C7090DE771B8 /* Build configuration list for PBXNativeTarget "Swapmate-iOS" */;
+			buildPhases = (
+				4B5712691484A5FAEB071F00 /* Sources */,
+				9A8D8F929A086AD2426D23EE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Swapmate-iOS";
+			packageProductDependencies = (
+			);
+			productName = "Swapmate-iOS";
+			productReference = 4F9EF7F095E5220194126CD4 /* Swapmate-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8619F46C8BC8EA81BAA53D60 /* Swapmate-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A92B47E261A0DDA3A477C4C2 /* Build configuration list for PBXNativeTarget "Swapmate-macOS" */;
+			buildPhases = (
+				C3A6DAC44A3CF9285526A5A3 /* Sources */,
+				34F65CCEB8ECC1355E2773F2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Swapmate-macOS";
+			packageProductDependencies = (
+			);
+			productName = "Swapmate-macOS";
+			productReference = B6D5D9835FFB42736026228B /* Swapmate-macOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		989A90BFD7C96281AC660544 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					026C48B95A062128EE16DA11 = {
+						ProvisioningStyle = Automatic;
+					};
+					8619F46C8BC8EA81BAA53D60 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 96BEE893D2DCCEBD0C1A0402 /* Build configuration list for PBXProject "Swapmate" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 67DD76BEE0D959FB5C63B383;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 745C4CA87BC00F4BD555DE4D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				026C48B95A062128EE16DA11 /* Swapmate-iOS */,
+				8619F46C8BC8EA81BAA53D60 /* Swapmate-macOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		34F65CCEB8ECC1355E2773F2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A15E606CAEFEC5601B03A41B /* BarlowCondensed-ExtraBold.ttf in Resources */,
+				D17A38E9BFB180EF337C096C /* BarlowCondensed-LICENSE.txt in Resources */,
+				F41DDDD2E71B8DE4109999D3 /* Inter-Bold.ttf in Resources */,
+				5B0B78394C8768BB488972B6 /* Inter-LICENSE.txt in Resources */,
+				1C3814DB222DA52440E7FFB1 /* Inter-Medium.ttf in Resources */,
+				32A1BA76F2DFEEA5F0C89C0D /* Inter-Regular.ttf in Resources */,
+				537D6FD2B9447DEAF167B04E /* Inter-SemiBold.ttf in Resources */,
+				1DBC3947FCD2F34B4CDA24E2 /* macOS.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9A8D8F929A086AD2426D23EE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA11BA06386B5897FB66DF34 /* BarlowCondensed-ExtraBold.ttf in Resources */,
+				401ACFF1E522E668AEB4D01A /* BarlowCondensed-LICENSE.txt in Resources */,
+				8085B2265506954C76EB67C9 /* Inter-Bold.ttf in Resources */,
+				C7A8ABC30C6D8743F2077209 /* Inter-LICENSE.txt in Resources */,
+				4FDCC60A2D634E9574C33564 /* Inter-Medium.ttf in Resources */,
+				774367AE1D712C3E3B0B7DAF /* Inter-Regular.ttf in Resources */,
+				DA1CB417A50D09E3F79E8743 /* Inter-SemiBold.ttf in Resources */,
+				D8012514F51A9055E9EC1000 /* iOS.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4B5712691484A5FAEB071F00 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				15A23BD0EB684B2913EA015B /* Artwork.swift in Sources */,
+				A50DE997157E6C02757939D5 /* BoardView.swift in Sources */,
+				F6367B6EF683B698C9F3D3F1 /* Configuration.swift in Sources */,
+				EF03CF3FDEEC40A32CCFF78E /* GameClient.swift in Sources */,
+				1C33EFB1D0971B3516735905 /* GameViews.swift in Sources */,
+				2054E86E9AB37D6615CC1F2B /* Position.swift in Sources */,
+				0BF74EF5332F6E93097D6DD8 /* Protocol.swift in Sources */,
+				289507A1EB22C7A6555DC2BB /* RoomViews.swift in Sources */,
+				EB4958162E8A6F14473341DF /* SwapmateApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3A6DAC44A3CF9285526A5A3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0219797027FB268267C25448 /* Artwork.swift in Sources */,
+				5322E0CA0D0D3D0033A767FB /* BoardView.swift in Sources */,
+				B76C2544D1CDD548E91C5D73 /* Configuration.swift in Sources */,
+				787E3DEF189663FA72816348 /* GameClient.swift in Sources */,
+				D5924E62A1444C389A848583 /* GameViews.swift in Sources */,
+				65B5332D49E557D30C33D2CB /* Position.swift in Sources */,
+				BA69687BC15C78FDE53ECCD3 /* Protocol.swift in Sources */,
+				5D59BEB9112B5B36DE2D68C5 /* RoomViews.swift in Sources */,
+				D245534C1B1497F57469DF8E /* SwapmateApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		15C7B81BBFD786001C6316E6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Swapmate.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "macOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_NAME = Swapmate;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		40BA7EDB35549385ADEEBF6F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = "iOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_NAME = Swapmate;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4AB44B878CD7C976BA7D81AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Swapmate.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "macOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_NAME = Swapmate;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		9E8948D8AA665020DE443373 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.swapmate.swapmate;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		B397022218502B1CE51C0F7A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.swapmate.swapmate;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		EFF32004291F3123860542C5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = "iOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_NAME = Swapmate;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		72BA310E4613C7090DE771B8 /* Build configuration list for PBXNativeTarget "Swapmate-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40BA7EDB35549385ADEEBF6F /* Debug */,
+				EFF32004291F3123860542C5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		96BEE893D2DCCEBD0C1A0402 /* Build configuration list for PBXProject "Swapmate" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9E8948D8AA665020DE443373 /* Debug */,
+				B397022218502B1CE51C0F7A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A92B47E261A0DDA3A477C4C2 /* Build configuration list for PBXNativeTarget "Swapmate-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				15C7B81BBFD786001C6316E6 /* Debug */,
+				4AB44B878CD7C976BA7D81AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 989A90BFD7C96281AC660544 /* Project object */;
+}

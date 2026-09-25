@@ -18,6 +18,9 @@ export type IconName =
   | 'trash'
   | 'new'
   | 'duplicate'
+  | 'keyboard'
+  | 'check'
+  | 'close'
 
 const PATHS: Record<IconName, React.ReactNode> = {
   select: <path d="M5 3l14 8-6 1.5L9.5 19 5 3z" />,
@@ -74,6 +77,14 @@ const PATHS: Record<IconName, React.ReactNode> = {
   ),
   trash: <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />,
   new: <path d="M12 5v14M5 12h14" />,
+  keyboard: (
+    <>
+      <rect x="3" y="6" width="18" height="12" rx="2" />
+      <path d="M7 10h.01M11 10h.01M15 10h.01M8 14h8" />
+    </>
+  ),
+  check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
+  close: <path d="M6 6l12 12M18 6L6 18" />,
   duplicate: (
     <>
       <rect x="8" y="8" width="12" height="12" rx="2" />
@@ -113,7 +124,7 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
 }
 
 export function ShapeIcon({ kind, color }: { kind: NodeKind; color: string }) {
-  const fill = `${color}33`
+  const fill = `${color}14`
   let shape: React.ReactNode
   switch (kind) {
     case 'start':
@@ -131,7 +142,7 @@ export function ShapeIcon({ kind, color }: { kind: NodeKind; color: string }) {
       break
   }
   return (
-    <svg width="40" height="32" viewBox="0 0 40 32" fill={fill} stroke={color} strokeWidth="2" aria-hidden="true">
+    <svg width="40" height="32" viewBox="0 0 40 32" fill={fill} stroke={color} strokeWidth="1.6" strokeLinejoin="round" aria-hidden="true">
       {shape}
     </svg>
   )

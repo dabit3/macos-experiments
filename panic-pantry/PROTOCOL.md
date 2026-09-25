@@ -104,7 +104,7 @@ hello ──► welcome ──► room.create / room.join ──► room.state (
 ## Automation / test channel (HTTP)
 
 The server can also expose a small JSON HTTP API used by
-`test/multiplayer-e2e.sh` and `test/visual-parity.sh`. It is served on the
+`test/native-integration.sh` (also available as `test/multiplayer-e2e.sh`). It is served on the
 same port, is unauthenticated, and is therefore **off by default**: start the
 server with `--test-harness` (or `PP_TEST_HARNESS=1`) to mount the `/test/*`
 routes. Without the flag they answer 404. `/health` and `/levels` are always
@@ -131,6 +131,14 @@ Supported `test.command` values handled by `GameClient`: `report`,
 `theme {mode: light|dark|system}`, `join {code}`, `host {level?}`, `leave`,
 `howto` (opens the How-to-play sheet) and `dismiss` (pops it). Anything else
 is surfaced through `GameClient.commands`.
+
+The native implementation is in `apple/Sources/PantryKit/`. Swift `Codable`
+models preserve these message names and compact keys. `hello` explicitly
+includes protocol `1`. Inputs use the same held-versus-edge semantics, and
+resume tokens are stored in the device Keychain. `test.command` handling
+also supports native theme, help-sheet, host/join/leave and report state.
+The former browser viewport/pixel-ratio report extensions are historical
+visual-harness metadata and are not part of native protocol validation.
 
 `server/bin/plan.dart` runs the shared simulation headlessly with the core
 bots on every seat, records the inputs of the seats that will be driven by

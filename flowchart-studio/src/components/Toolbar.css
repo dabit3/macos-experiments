@@ -30,17 +30,10 @@
 }
 
 .brand-name {
-  font-weight: 700;
+  font-weight: 650;
   font-size: 15px;
-  color: var(--brand);
-  letter-spacing: -0.02em;
-}
-
-.brand-sub {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-muted);
-  letter-spacing: 0.01em;
+  color: var(--text-strong);
+  letter-spacing: -0.015em;
 }
 
 .tb-group {
@@ -132,41 +125,30 @@
   color: #fff;
 }
 
-.tb-btn:focus-visible,
-.tb-zoom:focus-visible {
+.tb-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
-.tb-zoom {
-  height: 34px;
-  min-width: 56px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--text-strong);
-  font-family: var(--mono);
+.tb-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 6px;
+  padding-right: 14px;
+  border-right: 1px solid var(--border);
+  height: 22px;
   font-size: 12.5px;
-  font-weight: 500;
-  cursor: pointer;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
-.tb-zoom:hover {
-  background: var(--control-hover);
+.tb-saved svg {
+  color: #0f9a6d;
 }
 
-@media (max-width: 1750px) {
-  .tb-group[aria-label='Tools'] .tb-btn span,
-  .tb-group[aria-label='Edge style'] .tb-btn span {
-    display: none;
-  }
-
-  .tb-group[aria-label='Tools'] .tb-btn.has-label,
-  .tb-group[aria-label='Edge style'] .tb-btn.has-label {
-    padding: 0 9px;
-  }
-
-  .brand-sub {
+@media (max-width: 1400px) {
+  .tb-saved {
     display: none;
   }
 }

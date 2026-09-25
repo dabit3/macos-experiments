@@ -1,0 +1,212 @@
+[
+  {
+    "id": "training",
+    "name": "Training Kitchen",
+    "tagline": "Learn the ropes",
+    "gimmick": "A calm kitchen with one recipe and step-by-step guidance.",
+    "rows": [
+      "CTTCBBCPP",
+      "C.......C",
+      "K.1...2.C",
+      "R.......D",
+      "C.3...4.X",
+      "CSSECCCCC"
+    ],
+    "menu": [
+      "tomatoSoup"
+    ],
+    "roundSeconds": 180,
+    "starThresholds": [
+      20,
+      60,
+      120
+    ],
+    "movers": [],
+    "orderInterval": 30.0,
+    "orderDuration": 90.0,
+    "startingPlates": 3,
+    "tutorial": true,
+    "accent": 4283210728
+  },
+  {
+    "id": "corner-cafe",
+    "name": "Corner Café",
+    "tagline": "Three soups, one room",
+    "gimmick": "Everything is within reach. Find your rhythm before the kitchen turns on you.",
+    "rows": [
+      "CTTBBCCOOCCPP",
+      "C...........C",
+      "K.1.......2.C",
+      "R...CBCBC...C",
+      "D.3.......4.X",
+      "C...........C",
+      "CSSECCCMMCCCC"
+    ],
+    "menu": [
+      "tomatoSoup",
+      "onionSoup",
+      "mushroomSoup"
+    ],
+    "roundSeconds": 150,
+    "starThresholds": [
+      120,
+      240,
+      380
+    ],
+    "movers": [],
+    "orderInterval": 14.0,
+    "orderDuration": 55.0,
+    "startingPlates": 3,
+    "tutorial": false,
+    "accent": 4293417276
+  },
+  {
+    "id": "conveyor-canteen",
+    "name": "Conveyor Canteen",
+    "tagline": "Split by belts",
+    "gimmick": "A wall divides prep from cooking. Belts carry chopped food right and dirty plates left.",
+    "rows": [
+      "CTTOO>>>CCCPP",
+      "C.....#.....C",
+      "K.1...#...2.C",
+      "R.....#.....D",
+      "C.3...#...4.X",
+      "C.....#.....C",
+      "CMBBC<<<CSSEC"
+    ],
+    "menu": [
+      "tomatoSoup",
+      "onionSoup",
+      "mushroomSoup"
+    ],
+    "roundSeconds": 150,
+    "starThresholds": [
+      100,
+      220,
+      360
+    ],
+    "movers": [],
+    "orderInterval": 14.0,
+    "orderDuration": 55.0,
+    "startingPlates": 3,
+    "tutorial": false,
+    "accent": 4281312122
+  },
+  {
+    "id": "split-shift",
+    "name": "Split Shift",
+    "tagline": "The kitchen drifts apart",
+    "gimmick": "The cooking half slides away every few seconds. Hand things over while the doorway lines up.",
+    "rows": [
+      "CTTLOC~~~~~~~",
+      "C....C~~~~~~~",
+      "K.1...~~~~~~~",
+      "R....C~~~~~~~",
+      "D.3..C~~~~~~~",
+      "C....C~~~~~~~",
+      "CBBCCC~~~~~~~",
+      "######~~~~~~~",
+      "######~~~~~~~"
+    ],
+    "menu": [
+      "tomatoSoup",
+      "onionSoup",
+      "gardenSalad"
+    ],
+    "roundSeconds": 160,
+    "starThresholds": [
+      90,
+      200,
+      330
+    ],
+    "movers": [
+      {
+        "id": "east-wing",
+        "x": 6,
+        "y": 0,
+        "rows": [
+          "CCCCCPP",
+          "..2...C",
+          "......C",
+          "C.....C",
+          "C.4...X",
+          "C.....C",
+          "CSSECCC"
+        ],
+        "axis": "y",
+        "range": 2,
+        "travel": 2.0,
+        "dwell": 9.0,
+        "phase": 0.0
+      }
+    ],
+    "orderInterval": 14.0,
+    "orderDuration": 55.0,
+    "startingPlates": 3,
+    "tutorial": false,
+    "accent": 4288372197
+  },
+  {
+    "id": "drift-deck",
+    "name": "Drift Deck",
+    "tagline": "Ride the ferries",
+    "gimmick": "Prep is north, stoves and plates are south. Two ferries shuttle chopped food across the river.",
+    "rows": [
+      "CTTBBCOOCMMBC",
+      "C.1.......2.C",
+      "C...........C",
+      "~~~~~~~~~~~~~",
+      "~~~~~~~~~~~~~",
+      "~~~~~~~~~~~~~",
+      "D...........X",
+      "R.3.......4.K",
+      "CSSECCPPCCSSC"
+    ],
+    "menu": [
+      "tomatoSoup",
+      "onionSoup",
+      "mushroomSoup"
+    ],
+    "roundSeconds": 160,
+    "starThresholds": [
+      90,
+      200,
+      330
+    ],
+    "movers": [
+      {
+        "id": "ferry-west",
+        "x": 2,
+        "y": 3,
+        "rows": [
+          "...",
+          "..."
+        ],
+        "axis": "y",
+        "range": 1,
+        "travel": 1.5,
+        "dwell": 4.0,
+        "phase": 0.0
+      },
+      {
+        "id": "ferry-east",
+        "x": 8,
+        "y": 3,
+        "rows": [
+          "...",
+          "..."
+        ],
+        "axis": "y",
+        "range": 1,
+        "travel": 1.5,
+        "dwell": 4.0,
+        "phase": 5.5
+      }
+    ],
+    "orderInterval": 14.0,
+    "orderDuration": 55.0,
+    "startingPlates": 3,
+    "tutorial": false,
+    "accent": 4280264905
+  }
+]

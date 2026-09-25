@@ -6,9 +6,10 @@ clients only render snapshots and send intents. Every message is a JSON object
 with a `type` field. Unknown fields are ignored; unknown types produce an
 `error`.
 
-The canonical constants live in
-`packages/swapmate_core/lib/src/protocol.dart` and are shared by the server
-and the Flutter client, so all four platforms speak byte-identical JSON.
+The canonical constants live in `packages/swapmate_core/lib/src/protocol.dart`.
+The native iOS/macOS client mirrors the exact payloads with typed Codable models
+in `apple/Sources/SwapmateKit/Protocol.swift`; live-server integration tests
+verify interoperability.
 
 ```
 ws://<host>:8787/ws        WebSocket endpoint
@@ -21,7 +22,7 @@ http://<host>:8787/         static web build when started with --static
 
 | Term | Values | Meaning |
 | --- | --- | --- |
-| board | `A`, `B` | The two simultaneous boards. |
+| board | `a`, `b` | The two simultaneous boards (displayed as A and B). |
 | seat | `aw`, `ab`, `bw`, `bb` | Board letter + colour. Team 1 = `aw`+`bb`, Team 2 = `ab`+`bw`. |
 | team | `1`, `2` | Partners sit on opposite colours of opposite boards. |
 | colour | `w`, `b` | |
@@ -83,7 +84,7 @@ Every change broadcasts
 | `game.move` | `move` | Must be legal for the sender's seat and colour to move. |
 | `game.premove` | `move` or `null` | Stored per player, validated and executed when the player's turn arrives; `null` clears. Works for drops (pre-drop). |
 | `game.resign` | | Ends the match for the sender's team. |
-| `game.draw` | `action`: `offer`, `accept`, `decline` | Agreement requires both teams. |
+| `game.draw` | `action`: `offer`, `accept`, `decline` | After an opposing offer, both members of the accepting team must accept (bots count as agreeing). |
 | `chat.send` | `quick` (code) or `text`, `scope`: `team` or `room` | Quick codes: `need_p need_n need_b need_r need_q no_q sit go trades mating help gg thanks sorry`. |
 
 The server broadcasts a full snapshot after every change:
@@ -92,18 +93,18 @@ The server broadcasts a full snapshot after every change:
 {"type":"game.state","game":{
   "gameId":"g-…",
   "boards":{
-    "A":{"id":"A","fen":"rnbqkbnr/…[NP] w KQkq - 0 1",
+    "a":{"id":"a","fen":"rnbqkbnr/…[NP] w KQkq - 0 1",
          "clock":{"w":179400,"b":180000,"running":"w"},
          "lastMove":{"from":"e2","to":"e4"},"inCheck":false},
-    "B":{…}},
-  "moves":[{"seq":1,"board":"A","color":"w","number":1,
+    "b":{…}},
+  "moves":[{"seq":1,"board":"a","color":"w","number":1,
             "move":{"from":"e2","to":"e4"},"san":"e4","clockMs":180000},
-           {"seq":7,"board":"A","color":"b","number":4,
+           {"seq":7,"board":"a","color":"b","number":4,
             "move":{"drop":"P","to":"h6"},"san":"P@h6","clockMs":171200,
             "captured":null}],
   "result":null | {"winner":"1"|"2"|null,
                    "reason":"checkmate|timeout|resignation|stalemate|repetition|agreement|abandonment",
-                   "board":"A","loser":"2"},
+                   "board":"a","loser":"ab"},
   "serverTime":1710000000000,
   "premove":{"from":"g8","to":"f6"} | null,    // recipient's own premove
   "drawOffers":["aw"],
@@ -119,8 +120,8 @@ animate what happened:
 
 ```jsonc
 {"type":"game.event","event":{"kind":"move|drop|pass|start|finish",
-  "board":"A","seat":"aw","move":{…},"san":"Qxf7#",
-  "captured":"P","toBoard":"B","toColor":"b"}}
+  "board":"a","seat":"aw","move":{…},"san":"Qxf7#",
+  "captured":"P","toBoard":"b","toColor":"b"}}
 ```
 
 `pass` events carry the captured piece to the partner's reserve on the other
@@ -162,8 +163,9 @@ not_your_turn illegal_move not_playing not_ready rate_limited`.
 
 ## Test channel (server started with `--test`)
 
-Used by `test/multiplayer-e2e.sh` to drive every platform through one game.
-A client that sent `testId` in `hello` can be addressed over HTTP:
+The native shell harness `test/multiplayer-e2e.sh` runs Swift clients against
+the real server, including command acknowledgements through this endpoint.
+A native client launched with `SWAPMATE_TEST_ID` can also be addressed over HTTP:
 
 ```
 GET  /test/clients                  -> {"clients":[{"testId","playerId","name","platform","room","seat"}]}
@@ -173,12 +175,15 @@ POST /test/command                  {"testId":"ios","command":{"cmd":"move","uci
 
 The server forwards the command as `{"type":"test.command","id":"t-…", …command}`
 and the client answers `{"type":"test.result","id":"t-…","ok":true, …}`.
-Commands run through the same UI controllers a user drives (the board
-controller executes `move`), not a back door into the server.
+Commands run through the same native `GameClient` intents as the UI, including
+advisory move validation. They wait for authoritative snapshots/errors, not a
+back door into server state. The native result contains `room` and `game`
+snapshots, `mySeat`, `chats` (count), `theme`, `ok`, and optional `error`; absent
+optional values are omitted.
 
 | cmd | fields | result |
 | --- | --- | --- |
-| `state` | | `{screen, status, theme, playerId, room, seat, phase, gameId, fenA, fenB, moves, moveText, over, score, result, viewport}` |
+| `state` | | Native result described above |
 | `create_room` | `code?`, `fillBots?`, `timeControl?` | state once the room exists |
 | `join_room` | `code`, `spectate?` | |
 | `seat` | `seat` | waits until the seat is held |
@@ -191,8 +196,12 @@ controller executes `move`), not a back door into the server.
 | `chat` | `text` | |
 | `resign`, `draw` (`action`), `rematch`, `leave` | | |
 | `theme` | `mode`: `dark` or `light` | |
-| `wait` | `phase?`, `moves?`, `over?`, `frames?`, `timeoutMs?` | blocks until the predicate holds, then until `frames` more frames were produced (a device screenshot needs 3 on slow emulators) |
-| `capture` | | state plus `png` (base64), `pngWidth`, `pngHeight`: the client's own rasterised frame. Used when the host cannot screenshot (software-rendered Android emulator). |
+| `wait` | `phase?`, `moves?`, `over?`, `timeoutMs?` | Blocks until the snapshot predicate holds or returns an explicit timeout error. |
+
+The retired Flutter raster `capture` command and frame-count predicates are
+not supported by the native client. Use native XCTest, macOS screenshot tools
+or `xcrun simctl io booted screenshot` for separately authorized UI validation.
+Historical four-platform raster harnesses are archived under `historical/`.
 
 Seeds: `--seed` fixes the server RNG (room codes, bot move choice) and bots
 choose moves by a deterministic evaluation over the seeded RNG, so a test with

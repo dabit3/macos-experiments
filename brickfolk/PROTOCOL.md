@@ -7,7 +7,8 @@ purchases, room actions) and render what the server sends back.
 
 The message identifiers below are defined once in
 `shared/lib/src/protocol.dart` (`MsgType`, `ErrorCode`, `ChatChannel`) and
-used by both the server and the Flutter app.
+used by the Dart server and mirrored in the native Apple client. The Swift
+wire models are in `apple/Sources/BrickfolkCore/`.
 
 - Endpoint: `ws://<host>:<port>/ws`
 - Health: `GET /health` → `{"ok":true,"protocolVersion":1}`
@@ -186,8 +187,8 @@ interpolate between the last two frames.
 "jump","land","checkpoint","death","finish"
 ```
 
-Course geometry is derived deterministically from the room seed
-(`shared/lib/src/obby.dart`) so every client draws the same level. Score =
+Course geometry is the shared deterministic `ObbyCourse.instance`
+(`shared/lib/src/obby.dart`), exported into the native content bundle. Score =
 finish bonus − time, or checkpoints reached for unfinished players.
 
 ### Tycoon (`experience: "tycoon"`)
@@ -240,7 +241,7 @@ When a match ends the room enters `results` and every seated client gets:
 package from `rank|name|score|detail` of every entry using integer string
 hashing only, so it is bit-identical on Dart VM, Dart web (JS numbers) and
 every native target. Clients that observe the same match must report the
-same checksum; the cross-platform test asserts exactly that.
+same checksum; the native protocol integration probe asserts exactly that.
 
 Persistence (server-side SQLite): players, tokens, Pips, inventory, avatar,
 badges, daily streak, friendships, tycoon plots, and per-experience stats
@@ -260,16 +261,12 @@ deterministic bots, reuse of fixed names across restarts, and:
   a screen for the visual tour; `ready` marks the client ready in its lobby
   (used for clients started with `BRICKFOLK_AUTO_READY=false`).
 - `test.report {phase, payload}` from clients is appended to `testReports`
-  with the player's platform and server time. The Flutter app's
-  `TestDriver` reports `signedIn`, `party`, `launch`, `lobby`, `countdown`,
-  `playing` and `results` (the latter carries the canonical leaderboard and
-  checksum). `lobby`, `playing`, `results` and `tour` are sent only after a
-  frame showing that state has been rasterised and carry `rendered: true`
-  (`false` if the client gave up waiting for frame timings), so a screenshot
-  taken on receipt shows the reported state even on a device whose display
-  lags the game. A client built with `BRICKFOLK_PHASE_MARKER=true` also
-  paints a phase-coloured strip on its left edge (`PhaseMarker`) so a harness
-  can tell from the display alone which phase a frame shows, and
-  `--results-ms` lets the server hold results long enough for a slow display
-  to catch up. `test/e2e/run.mjs` consumes these to time screenshots and to
-  compare final state across web, iOS, Android and macOS.
+  with the player's platform and server time. The native `AutomationDriver`
+  reports `signedIn`, `party`, `launch`, `lobby`, `countdown`, `playing`,
+  `results` and `tour`; results carry the canonical leaderboard/checksum.
+  Native reports describe received state and set `rendered: false`: they
+  do not assert rasterization or visual parity. `BRICKFOLK_PHASE_MARKER=true`
+  adds an in-app phase label; `--results-ms` controls the results hold time.
+  `test/multiplayer-e2e.sh` checks two real URLSession WebSocket peers and
+  all three games without launching a UI. Historical Flutter display
+  comparisons are retained only under `.devin/`.

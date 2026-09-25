@@ -1,5 +1,7 @@
 # Rift Requiem
 
+![Rift Requiem screenshot](screenshots/rift-requiem.jpg)
+
 A native landscape **iPhone / iPad** weapon fighter inspired by Guilty Gear Xrd
 (2014). Two independently connected guests duel in the Cathedral Engine.
 Original articulated fighters, a generated cathedral stage, a synthesized

@@ -1,12 +1,18 @@
-# Dart / Flutter
+# Dart backend
 .dart_tool/
 build/
-.flutter-plugins-dependencies
 *.iml
 .idea/
 
-# e2e harness
-node_modules/
+# Native Apple builds
+.build/
+.swiftpm/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+apple/*.log
+*.xcresult/
+__pycache__/
 
 # Local databases
 *.sqlite

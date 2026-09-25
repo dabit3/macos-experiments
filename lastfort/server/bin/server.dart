@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:lastfort_server/lastfort_server.dart';
 
 /// Usage: dart run bin/server.dart [--port 8787] [--host 0.0.0.0]
-///   [--web-root ../client/build/web] [--fast] [--seed N] [--quiet]
+///   [--web-root <directory>] [--fast] [--seed N] [--quiet]
 Future<void> main(List<String> args) async {
   var port = int.tryParse(Platform.environment['PORT'] ?? '') ?? 8787;
   var host = '0.0.0.0';

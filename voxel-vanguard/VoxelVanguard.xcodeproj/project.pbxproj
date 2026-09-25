@@ -10,6 +10,7 @@
 		3CC4F2552F868B7045D397A1 /* DungeonScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438417848E12DEF76506828 /* DungeonScene.swift */; };
 		5C679B5F84481FA324F72297 /* GameClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71DB2BD12FF7D137438F437D /* GameClient.swift */; };
 		8D2E4D8C378255400EEB22BD /* VoxelVanguardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A70947A03F930E2874907D /* VoxelVanguardApp.swift */; };
+		B189709ABF9B622B0778C3C5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BBD1C2A6C99D8B8D2F0E87 /* Theme.swift */; };
 		E3F1208CF94484AE7D398A26 /* Soundscape.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC390E891FD1878E6F30A058 /* Soundscape.swift */; };
 		E5F4CED623DA31BA499CE17C /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3E3654AE46D624D097FD05 /* Models.swift */; };
 /* End PBXBuildFile section */
@@ -20,6 +21,7 @@
 		5B15BAF7E01AB81025BA77BC /* VoxelVanguard.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = VoxelVanguard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		71DB2BD12FF7D137438F437D /* GameClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameClient.swift; sourceTree = "<group>"; };
 		8438417848E12DEF76506828 /* DungeonScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DungeonScene.swift; sourceTree = "<group>"; };
+		B8BBD1C2A6C99D8B8D2F0E87 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		CC390E891FD1878E6F30A058 /* Soundscape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Soundscape.swift; sourceTree = "<group>"; };
 		F2083A480F5A272CAEB7972B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -41,6 +43,7 @@
 				F2083A480F5A272CAEB7972B /* Info.plist */,
 				1F3E3654AE46D624D097FD05 /* Models.swift */,
 				CC390E891FD1878E6F30A058 /* Soundscape.swift */,
+				B8BBD1C2A6C99D8B8D2F0E87 /* Theme.swift */,
 				24A70947A03F930E2874907D /* VoxelVanguardApp.swift */,
 			);
 			path = App;
@@ -113,6 +116,7 @@
 				5C679B5F84481FA324F72297 /* GameClient.swift in Sources */,
 				E5F4CED623DA31BA499CE17C /* Models.swift in Sources */,
 				E3F1208CF94484AE7D398A26 /* Soundscape.swift in Sources */,
+				B189709ABF9B622B0778C3C5 /* Theme.swift in Sources */,
 				8D2E4D8C378255400EEB22BD /* VoxelVanguardApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Swapmate dark canvas, matches SwapColors.dark.canvas -->
-    <color name="swapmate_canvas">#FF0F1216</color>
-</resources>

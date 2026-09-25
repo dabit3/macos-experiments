@@ -1,259 +1,226 @@
 # Brickfolk
 
-Brickfolk is an original cross-platform social sandbox: blocky avatars meet in
-a hub, form parties, and jump into shared "experiences" (mini-games) that run
-on a single authoritative multiplayer server. One Dart/Flutter codebase
-produces four real clients — **web**, **iOS**, **Android** and **macOS** — and
-players on any of them play together in the same room.
+![Brickfolk screenshot](screenshots/brickfolk.jpg)
 
-It was built with the `clone-this` skill using the publicly documented design
-of Roblox as the *conceptual* reference (hub + experiences, avatar/inventory
-economy, parties, obby/tycoon/tag genres). See "Reference boundary" below.
-Everything here — name, art, characters, UI, audio-free feedback, copy — is
-original.
+An original social sandbox for **macOS, iPhone and iPad**. Native SwiftUI
+screens and Canvas characters meet the existing authoritative Dart multiplayer
+server. There is no Flutter runtime, WebView, or local substitute for the
+server's game simulation.
 
-### Arcade art direction
+The midnight-blue shell, pale-lavender light theme, electric-blue/coral/mint
+accents, block avatars, original illustrated world covers and Inter fonts are
+retained. macOS uses a resizable window and keyboard/mouse controls; compact
+phones use bottom navigation, touch buttons and a joystick. iPad supports
+portrait, landscape and split-window layouts.
 
-The arcade edition uses a midnight-blue shell, electric-blue navigation,
-marigold action buttons with a physical press response, a featured world,
-three distinct illustrated game cards, crew staging, dimensional avatars,
-and a confetti championship screen. The same widgets and bundled Inter fonts
-ship on all four platforms. Light mode uses pale lavender surfaces.
-
-The three bundled `app/assets/worlds/*.webp` covers are original AI-generated
-promotional illustrations made for Brickfolk (OpenAI image generation, September
-2026). They depict each experience's theme; gameplay uses the actual Flame
-renderers, with a parallax skyline and coral arches, teal platforms, and a
-violet/cyan freeze arena. Portrait Tag follows the player at a readable scale
-and includes a full-arena minimap; its playfield stays clear of the HUD and
-joystick. Phone search remains available down to 320 logical pixels.
-No source-game assets or third-party characters are
-bundled. The procedural thumbnails remain the image-error fallback.
-
-| | |
+| Area | Features |
 |---|---|
-| Hub | place browser with procedural thumbnails, friends & parties (4-letter join codes), filtered global/party/room chat, profiles with badges, daily reward streak, Pips currency + shop, avatar editor (body colours, faces, hats, accessories) |
-| Experiences | **Skyline Obby** (checkpoints, deaths, leaderboard by finish time), **Brick Tycoon** (place droppers/conveyors/vaults on a persistent plot, buy income upgrades), **Freeze Tag Arena** (3 rounds, rotating tagger, thaw mechanic) |
-| Multiplayer | server-authoritative rooms up to 8 players, party launch across platforms, lobby → countdown → gameplay → results, reconnection with seat grace, deterministic server-side bots to fill matches |
-| Persistence | SQLite on the server: players, tokens, Pips, inventory, avatars, badges, streaks, friendships, plots, stats |
-| Determinism | fixed seed, fixed clock, deterministic bots and autopilots in test mode; results carry a cross-platform checksum |
+| Hub | Searchable places, live room listings, ratings, four-letter room codes |
+| Social | Friend requests/accept/decline/remove, presence, parties, leader launch |
+| Economy | Pips, shop purchases, owned inventory, avatar preview/save, daily streaks |
+| Profiles | Stats, earned/locked badges, player lookup |
+| Chat | Filtered global, party and room chat, including lobby and results |
+| Rooms | Eight seats including deterministic bots, ready/unready, countdown, gameplay, results, rematch |
+| Skyline Obby | Server course, checkpoints, hazards, jumping, falls, finish ranking |
+| Brick Tycoon | Persistent 6×6 plot, purchases, half-price removal, adjacency income, upgrades, rival plots |
+| Freeze Tag Arena | Three rounds, rotating tagger, freezing/thawing, portrait camera and minimap |
+| Persistence | SQLite players, inventory, plots, badges, currency and friendships; device Keychain resume token |
 
 ## Layout
 
-```
-brickfolk/
-├── app/        Flutter client (web, ios, android, macos targets)
-├── server/     Dart shelf + web_socket_channel authoritative server, SQLite
-├── shared/     Dart package shared by app and server: protocol, models,
-│               simulations (obby/tycoon/tag), avatar catalogue, chat filter
-├── test/       cross-platform multiplayer e2e harness (Node + Playwright)
-├── PROTOCOL.md JSON-over-WebSocket protocol spec
-└── .devin/clone-this/brickfolk/   clone-this run manifest and evidence
+```text
+apple/                          Native apps and protocol test package
+  Brickfolk.xcodeproj/          Checked-in generated project and shared schemes
+  project.yml                  XcodeGen source of truth
+  Sources/BrickfolkApp/         SwiftUI screens, native renderers, Keychain client
+  Sources/BrickfolkCore/        Codable protocol, WebSocket actor, content, test pilot
+  Sources/ProtocolProbe/        Real WebSocket integration executable
+  Tests/BrickfolkCoreTests/     Protocol, content, checksum and camera tests
+server/                        Existing Dart authoritative server and SQLite store
+shared/                        Existing pure Dart rules and catalog (no Flutter)
+test/                          Native quality and protocol integration scripts
+PROTOCOL.md                    Existing JSON-over-WebSocket v1 contract
 ```
 
 ## Requirements
 
-- Flutter 3.47+ (`brew install --cask flutter`), Dart SDK bundled
-- Xcode 26 with an iOS simulator (for `ios`), CocoaPods
-- Android SDK command-line tools with `platform-tools`, `emulator` and an
-  AVD named `brickfolk` (for `android`); `ANDROID_HOME` defaults to
-  `/opt/homebrew/share/android-commandlinetools`
-- Node 20+ and `ffmpeg` (for the e2e harness and recordings)
+- Xcode 15 or newer, macOS 14 or newer; iOS 17 or newer.
+- Dart **3.13.3 or newer** for the server/shared packages.
+- XcodeGen 2.44 or newer only when regenerating the project (`brew install xcodegen`).
+- No CocoaPods, Flutter SDK, Node, or third-party Swift packages are needed.
 
-## Run it
+Both targets build from the checked-in Xcode project. The local Swift package
+contains the core library and its content resource; the Xcode app targets link
+that library.
 
-### 1. Server
+## Run the server
 
 ```sh
 cd brickfolk/server
 dart pub get
 dart run bin/server.dart --port 8080 --db brickfolk.sqlite
-# deterministic test server (fixed clock, /test endpoints, seed 1234):
-dart run bin/server.dart --port 8080 --test-mode --seed 1234 --db /tmp/brickfolk-dev.db
-# standalone binary (sqlite3 ships a build hook, so use `dart build`, not
-# `dart compile exe`): -> build/cli/bundle/bin/server + lib/libsqlite3.dylib
-dart build cli -o build/cli
 ```
 
-`GET http://localhost:8080/health` returns `{"ok":true,"protocolVersion":1}`.
-Pass `--web-root ../app/build/web` to also serve the web client from `/`.
-The server listens on `0.0.0.0` (LAN play) and speaks plain `ws://`; use
-`--host 127.0.0.1` to keep it local, and terminate TLS in a reverse proxy for
-anything public. `--match-length-scale 2.5` stretches match timers (the
-harness does this for software-emulated Android).
+`GET /health` reports protocol version 1. `/ws` is the WebSocket endpoint.
+The default listener is `0.0.0.0`, so physical devices on the same LAN can
+connect. Use `--host 127.0.0.1` for local-only development.
 
-### 2. Clients
+The server speaks `ws://`. Deploy it behind a TLS reverse proxy for `wss://`.
+The apps declare local-network access and permit configurable development
+connections through ATS; macOS is sandboxed with the outgoing network
+entitlement.
 
-All clients default to `ws://localhost:8080/ws` (Android uses
-`ws://10.0.2.2:8080/ws` to reach the host). Override with
-`--dart-define=BRICKFOLK_SERVER=ws://host:port/ws`, or `?server=` on web.
+## Build and launch
 
 ```sh
-cd brickfolk/app
-flutter pub get
+cd brickfolk/apple
+# Optional after editing project.yml:
+xcodegen generate
 
-# web
-flutter run -d chrome
-flutter build web --release          # -> build/web
+# macOS compile/build without requiring a signing identity:
+xcodebuild -project Brickfolk.xcodeproj -scheme Brickfolk-macOS \
+  -configuration Debug -derivedDataPath build/macOS CODE_SIGNING_ALLOWED=NO build
 
-# iOS simulator
-open -a Simulator
-flutter run -d "iPhone 17"           # or any booted simulator id
-flutter build ios --simulator --debug
+# iOS / iPadOS Simulator:
+xcodebuild -project Brickfolk.xcodeproj -scheme Brickfolk-iOS \
+  -configuration Debug -sdk iphonesimulator \
+  -destination 'generic/platform=iOS Simulator' \
+  -derivedDataPath build/iOS CODE_SIGNING_ALLOWED=NO build
 
-# Android emulator
-emulator -avd brickfolk &
-flutter run -d emulator-5554
-flutter build apk --release          # -> build/app/outputs/flutter-apk/app-release.apk
-
-# macOS (native AppKit window, not a WebView)
-flutter run -d macos
-flutter build macos --debug          # -> build/macos/Build/Products/Debug/Brickfolk.app
+open Brickfolk.xcodeproj
 ```
 
-Sign in with any name (3-16 chars), open **Places**, pick an experience, or
-create a **Party** and share its 4-letter code with a friend on another
-platform — the leader's *Launch* pulls everyone into the same room. Solo
-players can add bots from the launch sheet.
+For interactive use, select `Brickfolk-macOS` or `Brickfolk-iOS` in Xcode,
+choose a destination and Run. Configure your signing team for physical
+devices/distribution. Use a normally signed macOS build for persistent
+Keychain access. `CODE_SIGNING_ALLOWED=NO` above is a compiler verification
+command, not a distribution build.
 
-Controls: obby — arrow keys / A·D + space or the on-screen pad; tag — WASD /
-arrows / drag joystick; tycoon — tap or click a plot cell, pick a part.
+The iOS target supports device families **1 and 2**; macOS is a separate
+AppKit-hosted SwiftUI target, not Catalyst. Bundle identifiers are preserved:
+`dev.brickfolk.brickfolkApp` (iOS) and `dev.brickfolk.app` (macOS).
 
-## Cross-platform multiplayer test
+Sign in with a 3–16 character name starting with a letter. The initial server
+field and Settings both accept a full `ws://` or `wss://` URL. On a physical
+iPhone/iPad, replace `localhost` with your server computer's LAN address.
+An invalid URL, failed connection or rejected command appears in the app.
+
+Resume tokens are stored in Keychain per server URL. Reopening or reconnecting
+resumes the same identity. Disconnects use one connection loop with backoff
+capped at eight seconds, ten-second heartbeats and the server's 30-second
+seat grace. Backgrounding iOS closes the socket and foregrounding resumes it.
+Sign out deletes the saved token; knowing a player's name alone cannot
+recover that profile. Existing Apple appearance/audio/haptic preferences and
+saved names migrate automatically. If an older installation has a resume
+token, the sign-in screen offers **Restore previous Apple session**: first
+select the same server you used before. A successful welcome transfers that
+token into Keychain and removes its old preferences entry. Failed restores
+keep the previous token available. The old token was not scoped to a server,
+so it is never transmitted automatically.
+
+### Controls
+
+- **Obby:** A/D or left/right arrows; Space, W or up arrow to jump. Hold the
+  on-screen move/jump buttons on touch devices.
+- **Tag:** WASD/arrows or drag the touch joystick. Move into a frozen teammate
+  to thaw them. The camera keeps edge spawns and labels clear of the HUD;
+  a minimap shows the full arena on compact displays.
+- **Tycoon:** select a brick and click/tap an empty cell; enable Remove mode
+  for a half-price refund. Purchases and upgrades use authoritative cash.
+- Use the room header for the player roster, chat, settings and leaving.
+  Results' **Play again** readies you once the server reopens the lobby.
+
+### Launch configuration
+
+Set environment variables in the Xcode scheme's Run action, or pass equivalent
+arguments as `--brickfolk-name=Builder` or `--brickfolk-name Builder`.
+Arguments override environment variables. Theme, sound, haptics and server URL
+are saved in native preferences.
+
+| Environment variable | Default / meaning |
+|---|---|
+| `BRICKFOLK_SERVER` | Saved URL or `ws://localhost:8080/ws` |
+| `BRICKFOLK_NAME` | Optional automatic sign-in name |
+| `BRICKFOLK_THEME` | Saved theme or `system`; `light`, `dark`, `system` |
+| `BRICKFOLK_TEST` | `false`; enables native test driver only with a test-mode server |
+| `BRICKFOLK_PARTY` | Optional four-letter party code for test clients |
+| `BRICKFOLK_HOST` | `false`; creates/launches the test party |
+| `BRICKFOLK_PLAYERS` | `4`; expected humans before automatic party launch |
+| `BRICKFOLK_BOTS` | `2`; launch-sheet and automated match bot count, 0–7 |
+| `BRICKFOLK_EXPERIENCE` | `obby`; also `tycoon` or `tag` |
+| `BRICKFOLK_AUTO_READY` | `true`; test driver readies the initial lobby |
+| `BRICKFOLK_TOUR` | `false`; test mode waits for `test.control` screen commands |
+| `BRICKFOLK_FRAME_INTERVAL_MS` | `16`; native Canvas display cadence (8–1000 ms), independent of server tick rate |
+| `BRICKFOLK_PHASE_MARKER` | `false`; small diagnostic phase label |
+
+For Simulator environment overrides, prefix the variable with `SIMCTL_CHILD_`
+before `xcrun simctl launch`. Web query parameters and `--dart-define` no
+longer apply. Test phase reports describe received state, **not** proof that a
+frame was displayed or a visual comparison passed.
+
+## Validation
+
+From `brickfolk/`:
 
 ```sh
-cd brickfolk
-./test/multiplayer-e2e.sh                 # builds all four targets, then plays a match
-./test/multiplayer-e2e.sh --no-build      # reuse builds from an earlier harness run
-./test/multiplayer-e2e.sh --platforms web,ios,macos --bots 1
-./test/multiplayer-e2e.sh --experience tag --seed 42 --timeout 600
+swift test --package-path apple
+xcrun swift-format lint --strict --recursive apple/Sources apple/Tests apple/Package.swift
+(cd shared && dart pub get && dart analyze --fatal-infos && dart test)
+(cd server && dart pub get && dart analyze --fatal-infos && dart test)
+bash test/multiplayer-e2e.sh
+# All of the above, Dart format checks and both Xcode builds:
+bash test/validate.sh
 ```
 
-The harness (`test/e2e/run.mjs`):
+The protocol integration script starts an isolated in-memory Dart server and
+two real native `URLSessionWebSocketTask` peers. It checks sign-in, daily
+cooldown, buying/equipping, friends, parties/chat, ratings, public profiles,
+bad-room errors, disconnect/resume, all three games, shared result checksums,
+lobby return and leaving. `macos`/`ios` are protocol labels in this shell
+test; it does not launch two platform UIs.
 
-1. starts the server in test mode with a fixed seed and clock,
-2. builds and launches the web client (Playwright/Chromium), the iOS
-   Simulator build (`xcrun simctl`), the Android emulator build (`adb`,
-   booting the AVD if needed) and the native macOS app,
-3. has all four sign in with fixed names, join party `BRIK`, and lets the
-   host launch the obby once every member is online,
-4. drives each client with the in-app deterministic autopilot
-   (`app/lib/src/test_driver.dart`) through lobby → countdown → gameplay →
-   results,
-5. asserts that all clients report the **same room, leaderboard and
-   checksum**, that the server's checksum matches, that every platform is in
-   the party and room, and that all evidence exists,
-6. saves per-platform `lobby`/`gameplay`/`results` screenshots, a recording
-   per client and a composed four-way recording, `report.json`,
-   `server-state.json`, `summary.md` and all logs to
-   `.devin/clone-this/brickfolk/evidence/tests/multiplayer-<timestamp>/`,
-7. cuts an edited **review video** (`review.mp4`, with `review-edl.json`
-   describing every segment) from that evidence with
-   `test/e2e/review_video.mjs`: title card, chaptered sections (hub visual
-   parity, lobby, countdown/gameplay, results, verdict), the four platform
-   recordings aligned on wall-clock time and laid out side by side with
-   platform labels and captions, screenshot slides and the final
-   leaderboard. Chapters are embedded as MP4 chapter metadata. Skip with
-   `--no-review`; re-cut or combine runs by hand with
-   `node test/e2e/review_video.mjs <runDir> --extra <tycoonRunDir> --extra <tagRunDir>`.
-
-Exit code is non-zero on any mismatch or missing artefact.
-
-Emulator notes: on hosts without Hypervisor.framework (virtualised CI
-machines) the wrapper script automatically falls back to a legacy emulator
-build under `~/android-legacy` that still supports `-accel off` (pure
-software emulation of an arm64 API 25 image); it is slow but functional. On
-that emulator in-guest `screenrecord` has no encoder and `screencap` stalls
-the device, so the harness records and screenshots the display from the host
-through the emulator console (`screenrecord` on the console port, 180 s
-segments concatenated with ffmpeg), caps the Android client at
-four frames per second (`BRICKFOLK_FRAME_INTERVAL_MS`, applied via
-`ThrottledFrameBinding`), and scales match timers (`--match-length-scale`) so
-the slow client can finish. Even so, that display finishes a frame only every
-15–25 s and can trail the game by minutes, so a throttled Android client is
-run with `BRICKFOLK_PHASE_MARKER=true`: the app paints a small phase-coloured
-strip on its left edge (`PhaseMarker`), the harness decodes the newest frame
-of the in-progress display recording every few seconds and keeps the first
-frame whose marker shows each phase (`BRICKFOLK_ANDROID_CAPTURE=marker`, the
-default for a throttled client). Because the display can still be showing
-the previous app instance when a run starts, a frame counts only once the
-server has seen the Android client reach that phase and the phases arrive in
-order. The Android client is started with
-`BRICKFOLK_AUTO_READY=false` and the harness readies it only after the lobby
-frame has reached the display, and the server keeps results on screen for
-long enough (`--results-ms`) for that phase to arrive as well.
-`BRICKFOLK_ANDROID_CAPTURE=display` grabs the display right after each phase
-report instead; clients report `lobby`/`playing`/`results` only once a frame
-showing that state has been rasterised (`RasterGate` in the test driver) so
-such a grab shows the reported state. The recording is always the display. The starved system process of
-that image raises its own "Process system isn't responding" dialog; the
-harness taps its "Wait" item (located through `uiautomator dump`), and a
-display screenshot is only accepted when the window list shows no such dialog
-right after the frame was grabbed, otherwise it is retaken and the run fails
-if that keeps happening. Before launching the app the harness also checks that the guest
-can route to the host (a long framework stall can drop the emulated Wi-Fi
-for good, and `adb reboot` leaves that emulator with a dead adbd, so it
-restarts the emulator process instead) and waits for the guest load average
-to settle so System UI restarts do not compete with the match. Override with
-`BRICKFOLK_EMULATOR`, `BRICKFOLK_AVD`, `BRICKFOLK_EMULATOR_ARGS`,
-`BRICKFOLK_ANDROID_FRAME_MS`, `BRICKFOLK_ANDROID_CAPTURE`.
-
-The same run also performs a **visual tour**: web (reference) and native
-macOS (actual) sign in as the same player, open the hub, place details, avatar, social,
-chat, profile and daily-reward screens, and `test/e2e/visual_compare.py`
-normalises and diffs every pair (`visual/<screen>/hub-<screen>-{reference,
-actual,diff}.png` + metrics). Skip it with `--no-visual`.
-
-Simulator note: `simctl io recordVideo` keeps its recording state inside
-Simulator.app, so a recorder that died without `SIGINT` leaves "Host
-recording is already in progress" behind for every later run. The harness
-detects that refusal, restarts Simulator.app (the device and the app under
-test stay booted) and starts the recorder again.
-
-macOS note: the native window is recorded as a screen region by ffmpeg's
-AVFoundation screen grabber with wall-clock timestamps
-(`recording-macos.mp4`, stderr in `macos-record.log`), so frames dropped
-while the host is saturated by the other three clients only lower the frame
-rate; `screencapture -v` silently stopped writing part-way through long
-matches. The review editor stands in a platform's phase screenshot for any
-recording that still ends before a clip window and labels the tile
-"recording ended, screenshot".
-
-## Quality gates
+The default uses shortened match timers; use `BRICKFOLK_MATCH_SCALE=1` for
+normal durations. Set `BRICKFOLK_TEST_PORT` when port 8088 is occupied. Logs
+are under ignored `apple/build/protocol/`. To point the probe at an existing
+throwaway server instead:
 
 ```sh
-cd brickfolk/shared && dart pub get && dart format --set-exit-if-changed . && dart analyze && dart test
-cd brickfolk/server && dart pub get && dart format --set-exit-if-changed . && dart analyze && dart test
-cd brickfolk/app    && flutter pub get && dart format --set-exit-if-changed . && flutter analyze && flutter test
-cd brickfolk/app    && flutter build web --release && flutter build ios --simulator --debug \
-                    && flutter build apk --release && flutter build macos --debug
+swift run --package-path apple brickfolk-protocol-probe ws://127.0.0.1:8080/ws
 ```
 
-`test/manifest/collect_quality.sh` runs all of the above and stores the logs
-under the clone-this run directory; `test/manifest/clean_checkout_build.sh`
-copies exactly the files git would commit into a fresh directory and builds
-the server, all four clients and the test suites there;
-`test/manifest/sweep.py` and
-`test/manifest/build_manifest.py` produce the discovery sweeps and the
-`state.json` inventory from that evidence. `tool/make_icons.py` regenerates
-the app icons for every platform from the original Brickfolk brick mark.
+The existing 13 server and 24 shared rules tests remain intact. Native tests
+replace the removed Flutter-specific model/layout checks. See
+[apple/VERIFICATION.md](apple/VERIFICATION.md) for commands actually executed
+and remaining validation gaps.
 
-## Evidence
+## Content and icons
 
-Screenshots and recordings from the automated four-platform match live under
-`.devin/clone-this/brickfolk/evidence/tests/multiplayer-<timestamp>/`
-(`web|ios|android|macos-{lobby,gameplay,results}.png`,
-`recording-<platform>.*`, `recording-four-way.mp4`, `review.mp4`). Large binaries are kept
-out of git and attached to the PR / session instead; `report.json` and
-`summary.md` describe each run. The clone-this manifest (`state.json`,
-`events.jsonl`) records audits, inventories, checks and sweeps.
+The three original generated world illustrations are retained byte-for-byte
+under `apple/Sources/BrickfolkApp/Resources/OriginalArtwork/`. PNG conversions
+in the asset catalog are used by Apple image rendering. Inter's five font
+weights and SIL Open Font License are bundled alongside them. Original Apple
+app icon pixels are preserved; `python3 tool/make_icons.py` regenerates them
+from the original brick mark (optional Pillow installation required).
 
-## Reference boundary
+The checked-in core `content.json` is generated from the Dart catalog,
+rewards, badges, arena and course, so runtime builds do not require Dart:
 
-The source title is a commercial product that could not be run or purchased
-in the build environment. Brickfolk's reference is the *publicly documented*
-design — hub-and-experiences structure, avatar economy, party and social
-features, and the obby / tycoon / tag genres. No proprietary assets, names,
-logos, characters or audio were used or reproduced. "Visual parity" in the
-manifest means the four Brickfolk clients match **each other** (web is the
-baseline); it never claims pixel parity with the original.
+```sh
+cd brickfolk/server
+dart run tool/export_apple_content.dart
+```
+
+After changing the authoritative content definitions, rerun this command and
+the native/core tests. Only the test pilot predicts physics to schedule real
+inputs; the interactive client always displays server snapshots.
+
+## Historical evidence and reference boundary
+
+`.devin/clone-this/brickfolk/` retains the **historical Flutter version's**
+manifests, reports and comparison metrics. Those reports do not validate this
+native migration. The obsolete Flutter app, platform wrappers and
+Flutter/Playwright build harness have been removed.
+
+Brickfolk's conceptual reference is the publicly documented hub/experiences,
+avatar economy and social sandbox genres. All names, characters, art and
+branding are original; no proprietary source-game assets are bundled.

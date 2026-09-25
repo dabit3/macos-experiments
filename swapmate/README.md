@@ -1,239 +1,203 @@
 # Swapmate
 
-Swapmate is a four-player, two-board **Bughouse chess** game with real
-networked multiplayer for **web, iOS, Android and macOS**. One Flutter code
-base renders every client; one authoritative Dart server owns the rules,
-clocks and rooms and speaks the JSON-over-WebSocket protocol documented in
-[`PROTOCOL.md`](PROTOCOL.md). A human on any platform can play with or
-against a human on any other platform, and server-side bots fill empty seats.
+![Swapmate screenshot](screenshots/swapmate.jpg)
 
-Swapmate is an original implementation built from the publicly documented
-Bughouse rules (chess.com / FICS rule set). It contains no assets, names or
-artwork from any commercial chess product; the pieces, logo, colours and copy
-are all drawn in code under the Swapmate name.
+Native **iPhone, iPad and macOS** Bughouse chess, built with SwiftUI and native
+Canvas artwork. The unchanged pure Dart server owns rooms, bots, rules, clocks
+and match progression. Clients connect over real WebSockets using the typed
+v1 protocol in [PROTOCOL.md](PROTOCOL.md).
 
-## The game
+The Flutter application and its platform scaffolding have been removed.
+`historical/` preserves the previous tests and evidence documentation for
+reference; it is not part of the native build.
 
-Two boards run at the same time. Partners sit next to each other playing
-opposite colours: **Team 1 = A‑White + B‑Black**, **Team 2 = A‑Black +
-B‑White**. Every piece you capture slides across to your partner's reserve
-tray; on their turn they may **drop** it on any empty square instead of
-moving. Pawns cannot be dropped on the 1st or 8th rank, drops that give check
-or checkmate are legal, and promoted pieces turn back into pawns when
-captured. Each board has independent clocks with increment. The first team to
-checkmate, win on time or receive a resignation on *either* board wins the
-match; stalemate, threefold repetition and agreement are draws.
+## Play
 
-Features:
+Two boards run simultaneously. **Tidal = A-White + B-Black** and
+**Ember = A-Black + B-White**. Captures pass to your partner's reserve. Drop a
+reserve piece instead of moving; pawns cannot drop on ranks 1 or 8, and
+captured promoted pieces revert to pawns. Castling, en passant, promotion,
+checking drops, checkmate, stalemate, repetition, independent clocks and
+increment are enforced by the existing server.
 
-- full legal move generation (castling, en passant, promotion) plus drops,
-  check / checkmate / stalemate / repetition detection, per-board clocks
-- reserve trays, piece-passing animation between boards, last-move and check
-  highlights, legal-move dots, promotion picker
-- premove and pre-drop, quick chat / emotes to your partner (“Need a
-  knight!”, “Sit!”, “Go go go!”), room chat
-- 4-player lobby with join codes, seat/team selection, bots, ready state,
-  spectators, rematch with colours swapped, reconnection with a resume token
-- results screen with the full move list and **BPGN export** (copy / share)
-- dark and light themes, phone / tablet / desktop / web layouts, safe-area
-  aware, keyboard + mouse + touch input, loading / error / reconnecting states
+- Create a room, play with server-side bots, or join a four-letter code.
+  Choose seats, add/remove bots as host, choose a time control, and ready up.
+  Spectators can watch both boards and use room chat.
+- Tap a piece and destination or drag it. Select or drag a reserve piece to
+  drop it. Moves made while waiting become premoves/pre-drops; their validity
+  is checked again by the server when your turn arrives. Choose the promotion
+  piece in the native dialog.
+- Use the coordinate field and Enter for keyboard moves (`e2e4`, `e7e8n`,
+  `N@f3`). Escape cancels selection/premove. The macOS Match menu also offers
+  reconnect (Command-Shift-R) and theme switching (Command-Shift-L).
+- Quick chat goes to your partner; text chat has room/team audiences. Narrow
+  layouts expose chat and move history in sheets. Wider windows show them
+  beside both boards. Phone layouts scroll vertically; iPad and landscape
+  layouts place boards side by side when space permits.
+- Offer/accept/decline a draw, resign with confirmation, inspect both final
+  boards and move history, copy/share/save BPGN, and vote to rematch with colors
+  swapped.
+- Settings provides dark/light/system appearance, reconnect, disconnect and
+  forgetting the saved session. Server/name/theme persist in UserDefaults;
+  resume tokens use the Apple Keychain, scoped by server URL. Network errors
+  remain visible. Automatic retries are bounded to six consecutive failures
+  with capped exponential backoff; replaced connections are cancelled.
 
-## Arcade art direction
-
-The shared UI uses a navy/cream palette, lime action buttons, and two original
-team identities: **Tidal** (Team 1, mint) and **Ember** (Team 2, coral).
-Barlow Condensed supplies the arcade display lettering; Inter handles names,
-controls, and chat. Both font families ship locally with their OFL licenses.
-The title-screen miniature arenas, team emblems, medal, chessmen, backgrounds,
-and platform launcher icons are rendered from original vector geometry.
-The boards use mint/cream squares and beveled pieces; active clocks, reserves,
-and the match banner keep the two-team relationship visible.
-
-Screen entrances settle after 360 ms and honor the system's reduced-motion
-setting. Existing piece movement, capture transfers, selection, and result
-transitions remain part of the shared Flutter interface.
-
-The responsive regression suite renders Home, Lobby, Game, and Results in
-both themes at 320×640, 390×844, 800×600, and 1180×800, including full reserves.
-Run it with `cd app && flutter test test/arcade_layout_test.dart`.
-To save its synthetic layout captures, set `SWAPMATE_RENDER_DIR` to an existing
-directory; live platform screenshots come from the multiplayer E2E above.
-
-## Layout
-
-```
-swapmate/
-  packages/swapmate_core/   rules, FEN/BPGN, protocol types, deterministic bot (pure Dart, tested)
-  server/                   authoritative shelf + web_socket_channel server (dart run bin/server.dart)
-  app/                      Flutter client: web, ios, android, macos targets
-  test/                     multiplayer-e2e.sh, Playwright web driver, PNG comparator
-  .devin/clone-this/        clone-this run manifest (state.json, events.jsonl) and evidence
-```
+The original navy/cream, lime, Tidal mint and Ember coral palette, vector
+chessmen, mark, miniature arenas, medal and launcher icons are retained.
+Material control symbols use native SF Symbols equivalents. Inter and Barlow
+Condensed are bundled with their original SIL Open Font License files under
+`apple/Resources/Fonts/`. Move and capture-transfer animations honor Reduce
+Motion.
 
 ## Requirements
 
-- Flutter 3.47 (`brew install --cask flutter`), Dart bundled with it
-- Xcode 26 with an iPhone simulator (iOS and macOS targets)
-- Android SDK command-line tools; `tool/android-avd.sh` installs
-  `platform-tools`, `emulator`, the `android-35` AOSP ATD system image and
-  creates the `swapmate_atd` AVD (540x1200 @ hdpi) the e2e test boots
-- Node 20+ (only for the Playwright web driver used by the e2e test)
+- macOS with Xcode 15+ (Swift 5.9), macOS 14+ target, iOS 17+ targets.
+  Both native schemes were built with Xcode 26.6 during migration.
+- Dart 3.13.3+ for the existing backend. Install the
+  [Dart SDK](https://dart.dev/get-dart); Flutter is not required.
+- XcodeGen only when changing `project.yml`: `brew install xcodegen`.
+  The generated Xcode project is checked in and builds without XcodeGen.
 
-## Run it
+## Start the server
+
+From the repository root:
 
 ```sh
-# 1. server (test mode adds the /test/* channel used by the e2e harness; omit --test in production)
-cd swapmate/server && dart pub get && dart run bin/server.dart --port 8787 --static ../app/build/web
-
-# 2. clients
-cd swapmate/app && flutter pub get
-flutter build web --release        # served by the server at http://localhost:8787/
-flutter run -d macos               # native macOS window
-flutter run -d <iphone simulator>  # iOS Simulator
-flutter run -d emulator-5554       # Android emulator (uses ws://10.0.2.2:8787/ws by default)
+cd swapmate/server
+dart pub get
+dart run bin/server.dart --host 0.0.0.0 --port 8787
 ```
 
-Every client accepts the same launch configuration, in this priority order:
-`--dart-define` values, URL query parameters (web: `?server=…&name=…&room=…`),
-`simctl launch` arguments (iOS: `--SWAPMATE_SERVER=…`), intent extras
-(Android: `-e SWAPMATE_SERVER …`) and environment variables (macOS:
-`SWAPMATE_SERVER`, `SWAPMATE_NAME`, `SWAPMATE_ROOM`, `SWAPMATE_WINDOW`).
+Use `ws://localhost:8787/ws` on the same Mac or iOS Simulator. On a physical
+iPhone/iPad use the Mac's LAN address, such as `ws://192.168.1.20:8787/ws`, and
+allow local-network access. Use a `wss://` server for remote play.
 
-Play: one player creates a room and shares the 4-letter code, the others join,
-pick seats (or add bots), everyone taps **Ready** and the host starts. Drag or
-tap-tap to move, tap a reserve piece then a square to drop, right-click /
-long-press to premove.
+Both native targets include local-network usage descriptions. ATS permits
+configurable plain WebSockets for development, including numeric LAN hosts;
+macOS is sandboxed with outgoing network and user-selected export permissions.
+The server's optional static-file endpoint remains available but is not used
+by the Apple applications.
 
-## Automated four-platform multiplayer test
+## Build and run
+
+Run the following from the repository root:
+
+```sh
+# macOS (unsigned local build)
+xcodebuild -project swapmate/apple/Swapmate.xcodeproj \
+  -scheme Swapmate-macOS -destination 'platform=macOS' \
+  -derivedDataPath swapmate/apple/build/macOS CODE_SIGNING_ALLOWED=NO build
+
+swapmate/apple/build/macOS/Build/Products/Debug/Swapmate.app/Contents/MacOS/Swapmate \
+  --SWAPMATE_SERVER=ws://localhost:8787/ws --SWAPMATE_NAME=Mac
+
+# iPhone and iPad Simulator (both device families are included)
+xcodebuild -project swapmate/apple/Swapmate.xcodeproj \
+  -scheme Swapmate-iOS -destination 'generic/platform=iOS Simulator' \
+  -derivedDataPath swapmate/apple/build/iOS CODE_SIGNING_ALLOWED=NO build
+
+xcrun simctl list devices available
+# Boot your chosen iPhone or iPad Simulator in Xcode, then:
+xcrun simctl install booted \
+  swapmate/apple/build/iOS/Build/Products/Debug-iphonesimulator/Swapmate.app
+xcrun simctl launch booted dev.swapmate.swapmate \
+  --SWAPMATE_SERVER=ws://localhost:8787/ws --SWAPMATE_NAME=iPhone
+```
+
+For physical devices or distribution, open `apple/Swapmate.xcodeproj`, choose
+the iOS/macOS scheme and set your signing team. Both targets preserve bundle
+identifier `dev.swapmate.swapmate`. Unsigned build checks do not validate
+distribution signing or device Keychain entitlements.
+
+After editing project configuration, regenerate with:
+
+```sh
+(cd swapmate/apple && xcodegen generate)
+```
+
+### Launch configuration
+
+Priority is launch arguments, then environment, then saved preferences, then
+defaults. Native arguments accept `--SWAPMATE_SERVER=...` and the short forms
+below, either `--key=value` or `--key value`.
+
+| Environment / long argument | Short argument | Default |
+| --- | --- | --- |
+| `SWAPMATE_SERVER` | `--server` | `ws://localhost:8787/ws` |
+| `SWAPMATE_NAME` | `--name` | Mac player / iPhone player |
+| `SWAPMATE_THEME` | `--theme` | `dark`; also `light` or `system` |
+| `SWAPMATE_AUTOCONNECT` | `--autoconnect` | false |
+| `SWAPMATE_TEST_ID` | `--test-id` | absent |
+| `SWAPMATE_ROOM` | `--room` | absent |
+
+`SWAPMATE_TEST_ID` or `SWAPMATE_ROOM` implies auto-connect. The room option
+joins the specified room after the handshake, matching the former native
+launch behavior. Explicit create/join actions still run after resuming a
+saved connection.
+`SWAPMATE_WINDOW=1180x820+20+40` is supported on macOS (screen top-left origin).
+iOS launch environment can be supplied with `SIMCTL_CHILD_SWAPMATE_*`.
+Web query strings, Android intents and Dart defines are retired.
+
+## Verification
+
+From the repository root:
+
+```sh
+# Unit/model/protocol tests. Live-backend tests explicitly skip without a URL.
+swift test --package-path swapmate/apple
+
+# Starts its own loopback Dart server and exercises actual Swift clients.
+bash swapmate/test/multiplayer-e2e.sh
+
+# Existing backend/rules suites remain intact.
+(cd swapmate/server && dart pub get && dart analyze && dart test)
+(cd swapmate/packages/swapmate_core && dart pub get && dart analyze && dart test)
+
+# Source formatting/lint and project metadata
+(cd swapmate/apple && xcrun swift-format lint --strict --recursive App Sources Tests Package.swift)
+dart format --output=none --set-exit-if-changed swapmate/test/generate-fixtures.dart
+bash -n swapmate/test/multiplayer-e2e.sh swapmate/test/tc.sh
+plutil -lint swapmate/apple/iOS-Info.plist swapmate/apple/macOS-Info.plist \
+  swapmate/apple/Swapmate.entitlements
+```
+
+The native model suite compares legal targets and check detection against 132
+positions generated by the unchanged Dart rules (seeded bughouse games plus
+castling, en passant, promotions, pockets, checkmate/stalemate edge positions).
+Regenerate these reference fixtures after intentional rules changes with:
 
 ```sh
 cd swapmate
-test/multiplayer-e2e.sh                # builds everything, then runs the match
-test/multiplayer-e2e.sh --skip-build   # reuse the existing builds
+dart run test/generate-fixtures.dart \
+  apple/Tests/SwapmateKitTests/Fixtures/positions.json
 ```
 
-The script:
+The integration harness exercises five Swift `URLSessionWebSocketTask` clients:
+four human seats plus a spectator, private/room chat, server rejection, secure
+store abstraction and resumed identity, real capture transfers, pre-drop,
+checkmate, equal snapshots/BPGN, rematch, and team draw consent. A second test
+exercises bot management, time controls, bot replies and resignation. A third
+checks the HTTP test channel waits for native snapshots and reports timeouts.
+`PORT`, `SEED` and `OUT` configure the harness. It refuses to reuse an occupied
+port and cleans up only its own server. Reports are under ignored
+`test/output/`.
 
-1. starts the server in test mode with a fixed seed (`SEED=42`) and serves the
-   web build;
-2. launches the four clients — web in Playwright Chromium, iOS via
-   `xcrun simctl`, Android via `adb` (booting the AVD if needed), macOS as a
-   native window — with `testId`s so the harness can address each one;
-3. has them join room `SWAP`, take seats web=A‑White, iOS=A‑Black,
-   Android=B‑White, macOS=B‑Black, ready up and start a 5+0 game (30+0 on
-   hypervisor-less hosts, `CLOCK_MS`);
-4. plays a scripted match through each client's own board controller
-   (Scholar's mate on board A while board B trades pawns and a queen, a
-   drop of the captured pawn, a premove that fires, a quick-chat request,
-   and `Qxf7#`);
-5. asserts that all four clients report the **same FEN for both boards, move
-   list, BPGN, result and score** and are on the results screen;
-6. captures **lobby, gameplay and results** screenshots for every platform,
-   a `recording.mov` of the whole run, `summary.json`, `final.bpgn`, and all
-   client/server logs;
-7. runs the **visual parity** phase (below).
+These are shell-driven protocol tests and native compiler builds. UI-driven,
+physical-device, VoiceOver, and visual parity testing have **not** been
+performed during this migration. Historical Flutter screenshots/tests do not
+validate the SwiftUI interface.
 
-Output goes to `.devin/clone-this/swapmate/evidence/tests/e2e-<timestamp>/`
-(override with `OUT=`). Exit code 0 means every assertion held. Environment
-knobs: `PORT`, `SEED`, `ROOM`, `IOS_UDID`, `ANDROID_AVD`, `ANDROID_HOME`,
-`E2E_TIMEOUT`, `TC_TIMEOUT_MS`, `CLOCK_MS`, `VISUAL_TOLERANCE`, `VISUAL_EDGE_RADIUS`,
-`VISUAL_EDGE_THRESHOLD`, `VISUAL_SHIFT`.
+## Source layout
 
-### Visual parity
-
-The web build is the visual baseline. After the match, each native client
-re-joins the finished room as a spectator next to a Playwright spectator
-rendered at the same logical viewport and device-pixel ratio; the native
-capture is cropped to its safe area (iOS status bar / home indicator, the
-macOS title bar) and compared pixel-by-pixel with `test/compare_png.py`
-(dependency-free, writes reference / actual / diff / overlay PNGs and a metrics
-JSON per comparison). Normalization is deliberately narrow and recorded in
-each JSON: per-channel tolerance 16 for gradient dithering, an edge band of
-2 px around reference colour steps larger than that tolerance (Impeller vs
-CanvasKit glyph, curve and half-pixel border coverage), pixelmatch-style
-anti-aliasing detection and a 1 px jitter radius. Three
-negative controls (a 4 px shift, dark vs light theme, lobby vs results) must
-still fail on every run, which guards against the normalization becoming too
-loose.
-
-### Android on a host without hardware virtualization
-
-The AVD runs under software rendering and CPU emulation (QEMU TCG) when the
-host has no hypervisor (`sysctl kern.hv_support` = 0). The harness then starts
-the emulator with `-feature -HVF -accel off` (the emulator otherwise insists on
-Hypervisor.framework and exits), and `tool/android-avd.sh` picks a lean AOSP
-automated-test-device image at a small resolution so frames stay affordable.
-A software-emulated `system_server` also misses its 60 s watchdog and is
-killed in a loop, so on such hosts the harness sets
-`ro.hw_timeout_multiplier=10` as root as soon as adb answers (the ATD image is
-`userdebug`, and zygote is still preloading at that point, so `system_server`
-reads the scaled value); `ANDROID_BOOT_TIMEOUT` defaults to 3000 s there
-because a cold TCG boot takes 20-30 minutes. The Android client is the
-release (AOT) build for the same reason: debug-mode JIT Dart is not usable
-under software CPU emulation.
-Installing the APK and drawing the first frame still take minutes rather than
-seconds, and Android may compose no pixels for `screencap`. The harness copes
-with this without changing the game: it keeps the device awake, whitelists the
-app in Android 15's background network firewall
-(`cmd connectivity set-background-networking-enabled-for-uid`), installs the
-IPv4 default route that the emulated Wi-Fi's DHCP sometimes leaves out (the
-symptom is `connect: Network is unreachable` for `10.0.2.2`), and brings up
-the classic SLIRP NIC (`eth0`, `10.0.2.15`) as a static fallback uplink
-because under TCG the virtio Wi-Fi association watchdog fires before DHCPv4
-finishes and `wlan0` keeps losing its IPv4 address,
-raises the test-command timeout (`TC_TIMEOUT_MS`), and when a host
-screenshot comes back uniformly black it asks the client to rasterize its own
-frame (test command `capture`, a `RepaintBoundary.toImage` of the whole app).
-Captures obtained this way are listed in `captures.txt` next to the
-screenshots. On a host with a hypervisor the ordinary `adb screencap` path is
-used.
-
-These workarounds do not guarantee progress: TCG can still stall APK installation
-or Flutter frame delivery, or crash Android's `system_server`. The harness bounds frame waits and reports lifecycle
-state; a timeout is a failed run, even if Android registered and exchanged moves.
-Use a host with hardware acceleration or an authorized device when software
-emulation cannot finish the assertions. Check the current manifest before
-treating an older successful recording as verification of the latest source.
-
-The arcade redesign's four-platform gate is currently **blocked**. In the
-September 11 run, all four clients joined and played nine moves before Android's
-`system_server` exited with SIGSEGV and zygote terminated. Android's client then
-disconnected. The APK builds successfully, but this attempt does not establish
-a completed four-platform match. The manifest retains the failure and the
-remaining Android visual cases; an earlier successful run does not verify the
-redesign.
-
-## Quality checks
-
-```sh
-cd swapmate/packages/swapmate_core && dart format --set-exit-if-changed . && dart analyze && dart test
-cd swapmate/server              && dart format --set-exit-if-changed . && dart analyze && dart test
-cd swapmate/app                 && dart format --set-exit-if-changed lib test && flutter analyze && flutter test
-bash -n swapmate/test/multiplayer-e2e.sh && shellcheck swapmate/test/*.sh   # if shellcheck is installed
-cd swapmate/app && flutter build web --release && flutter build macos --debug \
-                && flutter build ios --simulator --debug && flutter build apk --release
+```text
+apple/App/                       Shared SwiftUI app, native Canvas artwork/input
+apple/Sources/SwapmateKit/        Typed wire models, FEN/legal targets, networking
+apple/Tests/SwapmateKitTests/     Model fixtures and real-backend integration
+apple/Resources/                 Original fonts, licenses and app icons
+apple/project.yml                Source for the checked-in Xcode project
+packages/swapmate_core/          Unchanged authoritative rules and protocol
+server/                          Existing authoritative Dart WebSocket server
+test/                            Native verification and protocol command helper
+historical/                      Inactive Flutter tests/harness/documentation
 ```
-
-## Evidence
-
-The clone-this run lives in `.devin/clone-this/swapmate/` (`state.json`,
-`events.jsonl`). Screenshots, the screen recording and the full e2e output are
-written under `.devin/clone-this/swapmate/evidence/`; the binary captures are
-kept out of git (see [`.gitignore`](.gitignore)) and attached to the pull
-request and the session report instead.
-
-## Design notes
-
-- **Flutter widgets + custom painters instead of Flame.** A chess board is a
-  static grid with a handful of animated sprites; Flutter's own render tree
-  with `CustomPainter` pieces, implicit animations and `RepaintBoundary`s
-  schedules animations through Flutter's frame pipeline, keeps the whole UI
-  (lobby, HUD, chat, dialogs) in one widget tree, and shares layout and artwork
-  across platforms. A sustained 60 fps has not been measured on all four targets.
-  This deviation from the recommended stack is
-  recorded in the clone-this manifest.
-- The server is authoritative: clients never mutate game state locally, they
-  render `game.state` snapshots and extrapolate the running clock.
-- Determinism: the server RNG is seeded (`--seed`), the bots pick moves from a
-  seeded evaluation, and the harness uses fixed time controls, so a run
-  replays identically.

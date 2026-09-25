@@ -1,5 +1,7 @@
 # Vexel
 
+![Vexel screenshot](screenshots/vexel.jpg)
+
 A self-contained architectural scene editor inspired by the dark **Autodesk 3ds Max 2025** desktop workspace. Opens directly to **Forma Gallery**, a procedural limestone gallery with eleven sculptural arch ribs, bronze glazing, four artworks, plinths, oak benches, plants and studio lighting.
 
 ## Run

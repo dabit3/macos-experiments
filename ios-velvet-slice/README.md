@@ -1,5 +1,7 @@
 # Velvet Slice
 
+![Velvet Slice screenshot](screenshots/ios-velvet-slice.jpg)
+
 A native, offline iPhone fruit-slicing arcade. SwiftUI frames a SpriteKit playfield in a classic 8-bit console style: a limited bright palette, procedurally rasterised pixel-art citrus, kiwi, dragonfruit and bombs (28x32 grids scaled with nearest-neighbour sampling), stepped animations, and the open-licensed Press Start 2P pixel font (`Resources/Fonts/OFL.txt`). All sounds are synthesized locally. No accounts, network, ads, runtime dependencies or third-party game artwork.
 
 ## Build and run

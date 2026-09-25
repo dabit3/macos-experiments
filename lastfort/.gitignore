@@ -1,5 +1,13 @@
 **/.dart_tool/
 **/.DS_Store
+apple/.build/
+apple/build/
+apple/DerivedData/
+apple/**/*.xcuserstate
+apple/**/xcuserdata/
+apple/.swiftpm/
+apple/build-*.log
+test/output/
 
 # Large binary clone-this evidence (screenshots, recordings) is attached to
 # the PR instead of committed; logs, reports, and the manifest stay in git.

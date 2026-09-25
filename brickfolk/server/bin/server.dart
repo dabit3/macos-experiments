@@ -28,7 +28,7 @@ Future<void> main(List<String> args) async {
     )
     ..addOption(
       'web-root',
-      help: 'Directory with the built Flutter web app to serve at /.',
+      help: 'Optional directory of static files to serve at /.',
     )
     ..addFlag(
       'test-mode',

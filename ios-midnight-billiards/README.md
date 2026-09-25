@@ -1,5 +1,7 @@
 # Midnight Billiards
 
+![Midnight Billiards screenshot](screenshots/ios-midnight-billiards.jpg)
+
 A native, offline iOS billiards room, built with SwiftUI Canvas, custom fixed-substep physics, and
 original procedural artwork and synthesized audio. Landscape gives the table enough space for
 precise touch aiming. iOS 17 or later; iPhone and iPad.
@@ -33,18 +35,20 @@ and ignored, along with build output. The original app icon is checked in; regen
 
 ## Controls
 
-- Choose **The house table** for eight-ball against Avery, or **Against the clock** for a
-  three-minute solo challenge.
-- Tap or drag the felt to aim. White dashes predict cue-ball contact; the gold segment predicts
-  the target direction or a single cushion bounce. Guides do not account for later collisions.
-- Set **Power**, optionally refine aim in quarter-degree steps, then **Take shot**.
-- The cue-ball control cycles **Center / Follow / Draw**. Spin affects cue momentum after its
-  first collision and lightly affects cushion response.
+- Choose **Play Avery** for eight-ball against the local AI, or **Challenge** for a
+  three-minute solo run.
+- Drag anywhere on the felt to aim. White dashes predict cue-ball contact; the amber segment
+  predicts the target direction or a single cushion bounce. Guides ignore later collisions.
+- Pull the cue on the right side down and release to shoot. The further you pull, the harder
+  the shot; a faint tick marks your last power.
+- Roll the **Fine** wheel on the left for sub-degree aim corrections.
+- Tap the cue ball on the left to choose **Center / Follow / Draw**. Spin affects cue momentum
+  after its first collision and lightly affects cushion response.
 - After a shot, the cue points toward a suggested geometric angle. It does not shoot for you
   or guarantee a pot; adjust direction and power.
-- When given ball in hand, tap clear felt to place the cue and confirm. Break fouls restrict
-  placement behind the marked head string.
-- Tap a pocket to call the eight when your group is clear. The chosen pocket has a gold ring.
+- With ball in hand, drag the cue ball to place it, then aim and shoot as normal. Break fouls
+  restrict placement behind the marked head string.
+- Tap a pocket to call the eight when your group is clear. The chosen pocket has an amber ring.
 - Pause offers resume, rules, fresh rack, and return to the club. Backgrounding pauses play;
   returning never silently resumes the clock. Sound toggles on the title and table screens.
 

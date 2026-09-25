@@ -40,7 +40,7 @@ struct GameEngine {
     var resultTitle = ""
     var resultDetail = ""
     var status = "Your break"
-    var detail = "Aim at the rack. Give it a little power."
+    var detail = "Aim at the rack, then pull the cue back hard."
     var score = 0
     var pots = 0
     var shots = 0
@@ -56,8 +56,8 @@ struct GameEngine {
     init(mode: GameMode) {
         self.mode = mode
         if mode == .challenge {
-            status = "Three minutes. One table."
-            detail = "Every ball counts · streaks multiply your score"
+            status = "3:00 on the clock"
+            detail = "Pot in a row to build a streak multiplier."
         }
     }
 
@@ -92,8 +92,8 @@ struct GameEngine {
         shotClock = 0
         shots += 1
         lastPots = []
-        status = turn == 0 ? "Shot in motion" : "Avery takes the shot"
-        detail = "Let the table settle"
+        status = turn == 0 ? "Rolling" : "Avery shoots"
+        detail = "Wait for the balls to stop."
         table.shoot(angle: angle, power: power, spin: spin)
     }
 
@@ -112,7 +112,7 @@ struct GameEngine {
         }
         if mode == .challenge && secondsRemaining <= 0 && !shooting {
             finished = true
-            resultTitle = "Time, beautifully spent."
+            resultTitle = "Time’s up"
             resultDetail = "\(pots) balls potted · \(shots) shots · best streak \(longestStreak)"
         }
     }
@@ -128,19 +128,19 @@ struct GameEngine {
                 ballInHand = true
                 kitchen = false
                 status = "Scratch · −50"
-                detail = "Tap open felt to place the cue ball, then confirm."
+                detail = "Drag the cue ball anywhere, then shoot."
                 restoreCue()
             } else if !lastPots.isEmpty {
                 streak += 1
                 longestStreak = max(longestStreak, streak)
                 let earned = lastPots.count * 100 * min(streak, 5)
                 score += earned
-                status = "+\(earned) · \(streak > 1 ? "\(min(streak, 5))× streak" : "Beautiful pot")"
-                detail = "Keep the next shot clean to build your streak."
+                status = "+\(earned) · \(streak > 1 ? "\(min(streak, 5))× streak" : "Nice pot")"
+                detail = "Pot again to build your streak."
             } else {
                 streak = 0
-                status = "Find your next angle"
-                detail = "Tap or drag on the felt to aim."
+                status = "Missed · streak reset"
+                detail = "Drag on the table to aim."
             }
             pots += lastPots.count
             isBreak = false
@@ -148,8 +148,8 @@ struct GameEngine {
                 rackNumber += 1
                 table.rack()
                 score += 500
-                status = "Table cleared · +500"
-                detail = "A fresh rack. Keep the rhythm."
+                status = "Rack cleared · +500"
+                detail = "Fresh rack. Keep going."
                 ballInHand = false
                 isBreak = true
             }
@@ -168,7 +168,7 @@ struct GameEngine {
             let legalWin = legalAtStart == [8] && !foul && eightPocket == calledPocket
             finished = true
             humanWon = legalWin ? turn == 0 : turn != 0
-            resultTitle = humanWon ? "The table is yours." : "A lesson in angles."
+            resultTitle = humanWon ? "You win" : "Avery wins"
             resultDetail =
                 legalWin
                 ? "\(turn == 0 ? "You" : "Avery") cleared the group and called the eight."
@@ -184,7 +184,7 @@ struct GameEngine {
             status = events.scratch ? "Scratch · ball in hand" : "Foul · ball in hand"
             if events.scratch {
                 detail =
-                    "\(turn == 0 ? "Place your cue ball" : "Avery places the cue ball")\(kitchen ? " behind the head string" : "")."
+                    "\(turn == 0 ? "Drag the cue ball to place it" : "Avery places the cue ball")\(kitchen ? " behind the head string" : "")."
             } else if !correctFirst {
                 detail = "Hit your own group first. \(turn == 0 ? "Your" : "Avery’s") turn."
             } else {
@@ -204,16 +204,16 @@ struct GameEngine {
                 ? objectPotted
                 : lastPots.contains { group(for: turn)?.contains($0) ?? false }
             if !keepTurn { turn = 1 - turn }
-            status = turn == 0 ? "Your table" : "Avery is lining up"
+            status = turn == 0 ? "Your shot" : "Avery’s shot"
             detail =
                 group(for: turn).map { "\($0.rawValue) · \(remaining(for: turn).count) remaining" }
-                ?? "Open table · choose solids or stripes with a legal pot"
+                ?? "Open table · pot any ball to claim a group"
         }
         isBreak = false
         calledPocket = nil
         if requiresCall {
             detail =
-                turn == 0 ? "Tap a pocket to call the eight." : "Avery is calling a pocket for the eight."
+                turn == 0 ? "Tap a pocket to call the 8-ball." : "Avery is calling a pocket."
         }
     }
 

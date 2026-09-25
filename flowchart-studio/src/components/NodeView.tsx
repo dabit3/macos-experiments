@@ -25,17 +25,7 @@ export const NodeView = memo(function NodeView({ node, selected, editing, target
 
   return (
     <g className={className} data-node-id={node.id} style={{ '--node-color': meta.color } as React.CSSProperties}>
-      {selected && (
-        <rect
-          className="node-selection"
-          x={node.x - 6}
-          y={node.y - 6}
-          width={node.w + 12}
-          height={node.h + 12}
-          rx={12}
-          vectorEffect="non-scaling-stroke"
-        />
-      )}
+      {selected && <path className="node-halo" d={shapePath(node)} />}
       <path className="node-shape" d={shapePath(node)} />
       {!editing && (
         <text className="node-label" x={cx} y={startY} textAnchor="middle" dominantBaseline="central">

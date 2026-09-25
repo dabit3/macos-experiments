@@ -4,7 +4,7 @@ import 'package:swapmate_server/swapmate_server.dart';
 
 /// Usage:
 ///   dart run bin/server.dart [--port 8787] [--host 0.0.0.0] [--seed 42]
-///                            [--bot-delay-ms 700] [--test] [--static ../app/build/web]
+///                            [--bot-delay-ms 700] [--test] [--static <directory>]
 ///
 /// Environment fallbacks: PORT, SWAPMATE_SEED, SWAPMATE_TEST=1, SWAPMATE_STATIC.
 Future<void> main(List<String> args) async {

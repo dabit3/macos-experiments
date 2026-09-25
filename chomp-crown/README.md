@@ -1,5 +1,7 @@
 # Chomp Crown
 
+![Chomp Crown screenshot](screenshots/chomp-crown.jpg)
+
 Native iPhone multiplayer maze combat built with **SwiftUI + SpriteKit**, with an
 authoritative Node WebSocket server. Two to four human guests compete for two
 round crowns. No Apple developer account, browser, cloud service or identity

@@ -1,5 +1,7 @@
 # Draev
 
+![Draev screenshot](screenshots/draev.jpg)
+
 A local, editable architectural drafting workspace inspired by the AutoCAD dark desktop interface. Opens on a procedurally drawn courtyard residence with walls, glazing, doors, furniture, paving, planting, dimensions and room schedules. No server, credentials, remote assets or commercial engine required.
 
 ## Start

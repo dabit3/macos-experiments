@@ -1,0 +1,99 @@
+name: GambitCourt
+options:
+  minimumXcodeGenVersion: 2.42.0
+  deploymentTarget:
+    iOS: "17.0"
+    macOS: "14.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: 1
+    PRODUCT_NAME: GambitCourt
+    PRODUCT_BUNDLE_IDENTIFIER: dev.gambitcourt.gambitCourt
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+packages:
+  CourtCore:
+    path: .
+targetTemplates:
+  CourtApp:
+    type: application
+    sources:
+      - path: Sources/CourtApp
+      - path: Resources/fonts
+        type: folder
+        buildPhase: resources
+      - path: Resources/art
+        type: folder
+        buildPhase: resources
+      - path: Resources/sfx
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - package: CourtCore
+        product: CourtCore
+targets:
+  GambitCourt-iOS:
+    templates: [CourtApp]
+    platform: iOS
+    sources:
+      - path: Resources/iOSAssets.xcassets
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTS_MACCATALYST: NO
+    info:
+      path: Config/iOS-Info.plist
+      properties:
+        CFBundleDisplayName: Gambit Court
+        ITSAppUsesNonExemptEncryption: false
+        NSLocalNetworkUsageDescription: Gambit Court connects to your chess server on the local network for live multiplayer games.
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+  GambitCourt-macOS:
+    templates: [CourtApp]
+    platform: macOS
+    sources:
+      - path: Resources/macOSAssets.xcassets
+    settings:
+      base:
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_ENTITLEMENTS: Config/macOS.entitlements
+    info:
+      path: Config/macOS-Info.plist
+      properties:
+        CFBundleDisplayName: Gambit Court
+        LSApplicationCategoryType: public.app-category.board-games
+        NSLocalNetworkUsageDescription: Gambit Court connects to your chess server on the local network for live multiplayer games.
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+    entitlements:
+      path: Config/macOS.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+        com.apple.security.files.user-selected.read-write: true
+schemes:
+  GambitCourt-iOS:
+    build:
+      targets:
+        GambitCourt-iOS: all
+    run:
+      config: Debug
+  GambitCourt-macOS:
+    build:
+      targets:
+        GambitCourt-macOS: all
+    run:
+      config: Debug

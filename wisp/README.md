@@ -1,5 +1,7 @@
 # Wisp
 
+![Wisp screenshot](screenshots/wisp.jpg)
+
 A native iOS (SwiftUI, iOS 17+) chat client for [Abliteration AI](https://abliteration.ai).
 Black and white. Ephemeral by default.
 

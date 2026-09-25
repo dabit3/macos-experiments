@@ -1,5 +1,7 @@
 # Midnight Channel
 
+![Midnight Channel screenshot](screenshots/midnight-channel.jpg)
+
 A native landscape iPhone fighting game with a golden television/pop-art identity,
 original rivals and separately animated supernatural companions. Inspired by
 Persona 4 Arena (2012); see [reference research and evidence boundaries](docs/REFERENCE.md).

@@ -7,7 +7,8 @@ the server echoes it back inside a `room_state` snapshot.
 
 The Dart definitions live in
 `packages/gambit_court_core/lib/src/protocol.dart` and are shared verbatim by
-the server and all four Flutter clients.
+the server. The native Apple client has equivalent typed Codable models in
+`apple/Sources/CourtCore/Protocol.swift`.
 
 ```
 ws://<host>:8765/ws        game protocol (JSON text frames)
@@ -130,8 +131,8 @@ server never ticks, so every client shows identical, deterministic clocks.
 ## Test-automation bridge
 
 Started with `dart run bin/server.dart --control [--seed N --frozen-clocks
---bot-delay-ms 0]`. Clients built with `GC_AUTOMATION=true` (or `?automation=1`
-on the web) accept `ui_command` frames and answer with `ui_report`; the bridge
+--bot-delay-ms 0]`. Native clients launched with `--GC_AUTOMATION true` (or the
+`GC_AUTOMATION=true` environment variable) accept `ui_command` frames and answer with `ui_report`; the bridge
 lets an orchestrator drive any connected client through the server and read
 its rendered state back.
 
@@ -142,7 +143,7 @@ POST /control/clients/<id>/ui       {"action": …, "timeoutMs"?: 15000} → ui_
 POST /control/clock/advance         {"ms": 2000}   (frozen clocks only)
 ```
 
-`ui_command` actions understood by the Flutter client:
+`ui_command` actions understood by the native Swift client:
 
 `state`, `set_name {name}`, `set_theme {theme}`, `create_room {timeControl?,
 side?, botLevel?, isPublic?}`, `join_room {code, asSpectator?}`, `quick_pair
@@ -164,15 +165,14 @@ Every report is `{"ok": bool, …}`; most include the client's rendered state:
  "offers":{"draw":null,"takeback":null,"rematch":null},"premove":null}
 ```
 
-Reports also carry `view` — `{width, height, devicePixelRatio, paddingTop,
-paddingBottom}` in logical pixels for the client's Flutter view — which the
-harness uses to crop native captures and size the web reference for the
-normalized visual-parity comparison. `settle` waits for in-flight UI
-transitions to finish and returns the same report; the web build accepts
-`?safeBottom=<px>` to reserve a bottom safe-area inset equal to a native
-client's.
+Native reports describe the Swift state bound to the view; they do not carry
+the retired Flutter `view` metrics or certify that a frame was rendered.
+`settle` waits for pending server intents, then returns the same state report.
+`drop_connection` replies before reconnecting with the same client identity.
+The bridge is disabled by default; use it only with a development server.
 
 `fen` is the position currently displayed (it differs from `liveFen` while the
-user browses history); `moves` is always the full live move list. The
-four-platform harness in `test/e2e/run.mjs` compares these reports across
-clients after every ply.
+user browses history); `moves` is the full live move list, or the imported
+mainline in PGN review mode. The active `test/multiplayer-e2e.sh` validates four
+native client stores against the server after every ply. The previous
+four-platform rendering harness is archived in `test/historical-flutter/`.

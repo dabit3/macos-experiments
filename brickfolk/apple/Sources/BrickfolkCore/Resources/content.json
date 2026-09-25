@@ -1,0 +1,882 @@
+{
+  "catalog": [
+    {
+      "id": "face_smile",
+      "name": "Classic Smile",
+      "slot": "face",
+      "price": 0,
+      "blurb": "Default face."
+    },
+    {
+      "id": "face_grin",
+      "name": "Big Grin",
+      "slot": "face",
+      "price": 40,
+      "blurb": "All teeth."
+    },
+    {
+      "id": "face_wink",
+      "name": "Wink",
+      "slot": "face",
+      "price": 60,
+      "blurb": "Knows something."
+    },
+    {
+      "id": "face_shades",
+      "name": "Shades",
+      "slot": "face",
+      "price": 120,
+      "blurb": "Too cool."
+    },
+    {
+      "id": "face_sleepy",
+      "name": "Sleepy",
+      "slot": "face",
+      "price": 50,
+      "blurb": "Five more minutes."
+    },
+    {
+      "id": "face_robot",
+      "name": "Bolt Face",
+      "slot": "face",
+      "price": 200,
+      "blurb": "Beep boop."
+    },
+    {
+      "id": "hat_none",
+      "name": "No Hat",
+      "slot": "hat",
+      "price": 0,
+      "blurb": "Fresh air."
+    },
+    {
+      "id": "hat_cap",
+      "name": "Builder Cap",
+      "slot": "hat",
+      "price": 50,
+      "blurb": "Classic cap."
+    },
+    {
+      "id": "hat_crown",
+      "name": "Pip Crown",
+      "slot": "hat",
+      "price": 400,
+      "blurb": "For royalty."
+    },
+    {
+      "id": "hat_helmet",
+      "name": "Hard Hat",
+      "slot": "hat",
+      "price": 90,
+      "blurb": "Safety first."
+    },
+    {
+      "id": "hat_wizard",
+      "name": "Star Wizard",
+      "slot": "hat",
+      "price": 250,
+      "blurb": "Pointy and wise."
+    },
+    {
+      "id": "hat_beanie",
+      "name": "Cozy Beanie",
+      "slot": "hat",
+      "price": 70,
+      "blurb": "Warm ears."
+    },
+    {
+      "id": "hat_propeller",
+      "name": "Propeller Top",
+      "slot": "hat",
+      "price": 150,
+      "blurb": "Spins."
+    },
+    {
+      "id": "acc_none",
+      "name": "None",
+      "slot": "accessory",
+      "price": 0,
+      "blurb": "Plain torso."
+    },
+    {
+      "id": "acc_scarf",
+      "name": "Red Scarf",
+      "slot": "accessory",
+      "price": 60,
+      "blurb": "Flowing."
+    },
+    {
+      "id": "acc_backpack",
+      "name": "Brick Pack",
+      "slot": "accessory",
+      "price": 110,
+      "blurb": "Carries bricks."
+    },
+    {
+      "id": "acc_cape",
+      "name": "Hero Cape",
+      "slot": "accessory",
+      "price": 300,
+      "blurb": "Dramatic."
+    },
+    {
+      "id": "acc_tie",
+      "name": "Bow Tie",
+      "slot": "accessory",
+      "price": 45,
+      "blurb": "Dapper."
+    },
+    {
+      "id": "acc_wings",
+      "name": "Pixel Wings",
+      "slot": "accessory",
+      "price": 500,
+      "blurb": "Cosmetic flight."
+    }
+  ],
+  "bodyColors": [
+    4294295626,
+    4294937164,
+    4293216333,
+    4293946295,
+    4287519991,
+    4282285050,
+    4281710806,
+    4281310811,
+    4290237003,
+    4287388220,
+    4294239954,
+    4288324527,
+    4282007371,
+    4294967295
+  ],
+  "bodyColorNames": [
+    "Sunbrick yellow",
+    "Kiln orange",
+    "Cherry red",
+    "Bubblegum",
+    "Grape",
+    "Sky blue",
+    "Lagoon",
+    "Meadow green",
+    "Lime",
+    "Cocoa",
+    "Sand",
+    "Pebble grey",
+    "Charcoal",
+    "Cloud white"
+  ],
+  "dailyRewards": [
+    25,
+    35,
+    50,
+    65,
+    80,
+    100,
+    150
+  ],
+  "badges": [
+    {
+      "id": "welcome",
+      "name": "Welcome to Brickfolk",
+      "description": "Joined Brickfolk for the first time.",
+      "color": 4282285050
+    },
+    {
+      "id": "first_steps",
+      "name": "First Steps",
+      "description": "Reached a checkpoint in Skyline Obby.",
+      "color": 4281310811
+    },
+    {
+      "id": "summit",
+      "name": "Summit",
+      "description": "Finished Skyline Obby.",
+      "color": 4294295626
+    },
+    {
+      "id": "speedrunner",
+      "name": "Speedrunner",
+      "description": "Finished Skyline Obby in under 75 seconds.",
+      "color": 4293216333
+    },
+    {
+      "id": "founder",
+      "name": "Founder",
+      "description": "Placed your first brick in Brick Tycoon.",
+      "color": 4287519991
+    },
+    {
+      "id": "magnate",
+      "name": "Magnate",
+      "description": "Earned 500 pips in one Brick Tycoon session.",
+      "color": 4294937164
+    },
+    {
+      "id": "untouchable",
+      "name": "Untouchable",
+      "description": "Survived a whole Freeze Tag round.",
+      "color": 4281710806
+    },
+    {
+      "id": "it_factor",
+      "name": "It Factor",
+      "description": "Froze three players in one Freeze Tag match.",
+      "color": 4293946295
+    },
+    {
+      "id": "social",
+      "name": "Social Brick",
+      "description": "Made a friend.",
+      "color": 4290237003
+    },
+    {
+      "id": "streak_3",
+      "name": "Three-Day Streak",
+      "description": "Claimed the daily reward three days in a row.",
+      "color": 4287388220
+    }
+  ],
+  "places": [
+    {
+      "kind": "obby",
+      "name": "Skyline Obby",
+      "tagline": "Leap across the rooftops.",
+      "description": "A twelve-stage obstacle course in the clouds. Reach every checkpoint, dodge the kiln bricks and hit the summit pad first. Falling sends you back to your last checkpoint.",
+      "accent": 4282285050,
+      "matchSeconds": 120,
+      "minPlayers": 2
+    },
+    {
+      "kind": "tycoon",
+      "name": "Brick Tycoon",
+      "tagline": "Build a plot that pays.",
+      "description": "Place droppers, conveyors and vaults on your 6x6 plot. Every brick earns pips each second; upgrades multiply the whole plot. The richest builder when the timer ends wins.",
+      "accent": 4294937164,
+      "matchSeconds": 90,
+      "minPlayers": 1
+    },
+    {
+      "kind": "tag",
+      "name": "Freeze Tag Arena",
+      "tagline": "Run, freeze, rescue.",
+      "description": "One tagger, seven runners, sixty seconds. Frozen runners can be thawed by a teammate. Survive to score; freeze everyone to win the round.",
+      "accent": 4281710806,
+      "matchSeconds": 60,
+      "minPlayers": 2
+    }
+  ],
+  "bricks": [
+    {
+      "id": "dropper",
+      "name": "Dropper",
+      "cost": 20,
+      "income": 2,
+      "color": 4282285050,
+      "blurb": "Drops 2 pips a second."
+    },
+    {
+      "id": "conveyor",
+      "name": "Conveyor",
+      "cost": 50,
+      "income": 4,
+      "color": 4288324527,
+      "blurb": "Earns 4, plus 1 for each adjacent dropper."
+    },
+    {
+      "id": "vault",
+      "name": "Vault",
+      "cost": 150,
+      "income": 12,
+      "color": 4294295626,
+      "blurb": "A sturdy 12 pips a second."
+    },
+    {
+      "id": "fountain",
+      "name": "Pip Fountain",
+      "cost": 400,
+      "income": 40,
+      "color": 4281710806,
+      "blurb": "Gushes 40 pips a second."
+    }
+  ],
+  "upgrades": [
+    {
+      "id": "boost1",
+      "name": "Oiled Gears",
+      "cost": 100,
+      "multiplier": 1.5,
+      "blurb": "Plot income x1.5."
+    },
+    {
+      "id": "boost2",
+      "name": "Golden Mortar",
+      "cost": 350,
+      "multiplier": 2.0,
+      "blurb": "Plot income x2."
+    },
+    {
+      "id": "boost3",
+      "name": "Sky Crane",
+      "cost": 900,
+      "multiplier": 3.0,
+      "blurb": "Plot income x3."
+    }
+  ],
+  "obby": {
+    "platforms": [
+      {
+        "x": 0.0,
+        "y": -1.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "checkpoint"
+      },
+      {
+        "x": 5.513141550974121,
+        "y": 0.0,
+        "w": 2.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 9.605479361028856,
+        "y": 0.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 15.264236957453411,
+        "y": 0.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "checkpoint"
+      },
+      {
+        "x": 21.036094019316224,
+        "y": 1.0,
+        "w": 3.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 25.686689026455106,
+        "y": 0.5,
+        "w": 3.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 31.07444153020572,
+        "y": -1.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 37.2743855198141,
+        "y": -1.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "checkpoint"
+      },
+      {
+        "x": 43.48365436469545,
+        "y": -2.5,
+        "w": 2.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 48.16414298248863,
+        "y": -3.0,
+        "w": 2.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 51.817311834327235,
+        "y": -3.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "checkpoint"
+      },
+      {
+        "x": 58.052786920920745,
+        "y": -3.0,
+        "w": 11.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 63.052786920920745,
+        "y": -2.0,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 70.8417575500363,
+        "y": -2.0,
+        "w": 11.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 75.8417575500363,
+        "y": -1.0,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 83.75706830877537,
+        "y": -2.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "checkpoint"
+      },
+      {
+        "x": 89.66535538469009,
+        "y": -1.5,
+        "w": 11.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 94.66535538469009,
+        "y": -0.5,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 103.1405814691359,
+        "y": -2.0,
+        "w": 10.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 108.1405814691359,
+        "y": -1.0,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 115.81074321424657,
+        "y": -2.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "checkpoint"
+      },
+      {
+        "x": 122.6191275948371,
+        "y": -2.5,
+        "w": 10.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 127.6191275948371,
+        "y": -1.5,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 134.6455251997295,
+        "y": -1.0,
+        "w": 10.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 139.6455251997295,
+        "y": 0.0,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 147.19671626803157,
+        "y": -1.5,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 153.5639832935426,
+        "y": -1.5,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "checkpoint"
+      },
+      {
+        "x": 159.20544777983375,
+        "y": -1.0,
+        "w": 2.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 162.8914768491792,
+        "y": 0.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 169.04858172079415,
+        "y": -1.0,
+        "w": 3.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 173.65446583540594,
+        "y": -1.5,
+        "w": 10.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 178.65446583540594,
+        "y": -0.5,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 185.51978862790372,
+        "y": -1.5,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "checkpoint"
+      },
+      {
+        "x": 191.61077250354995,
+        "y": -2.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 197.16860777434763,
+        "y": -0.5,
+        "w": 10.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 202.16860777434763,
+        "y": 0.5,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 209.234113449216,
+        "y": -1.5,
+        "w": 2.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 213.57838357433528,
+        "y": -1.5,
+        "w": 3.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 219.1791248572796,
+        "y": -1.5,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "checkpoint"
+      },
+      {
+        "x": 224.83348213074123,
+        "y": 0.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 231.59140439884868,
+        "y": -1.5,
+        "w": 3.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 236.71612400679487,
+        "y": -1.5,
+        "w": 10.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 241.71612400679487,
+        "y": -0.5,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 248.79135337955444,
+        "y": -2.0,
+        "w": 11.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 253.79135337955444,
+        "y": -1.0,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 262.11707375963874,
+        "y": -2.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "checkpoint"
+      },
+      {
+        "x": 267.97668882238366,
+        "y": -3.0,
+        "w": 10.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 272.97668882238366,
+        "y": -2.0,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 279.64660396743244,
+        "y": -1.5,
+        "w": 3.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 284.315521799182,
+        "y": 0.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 290.45925080274156,
+        "y": 0.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "checkpoint"
+      },
+      {
+        "x": 296.87690748556224,
+        "y": 0.5,
+        "w": 2.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 300.8333638156143,
+        "y": 0.5,
+        "w": 3.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 306.32545977847224,
+        "y": -0.5,
+        "w": 11.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 311.32545977847224,
+        "y": 0.5,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 319.4684295089621,
+        "y": -0.5,
+        "w": 2.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 323.43228414490096,
+        "y": -0.5,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "checkpoint"
+      },
+      {
+        "x": 329.59817497716114,
+        "y": 0.5,
+        "w": 10.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 334.59817497716114,
+        "y": 1.5,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 341.3730794382962,
+        "y": 0.0,
+        "w": 4.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 348.1257443198708,
+        "y": -0.5,
+        "w": 10.0,
+        "h": 1.0,
+        "kind": "normal"
+      },
+      {
+        "x": 353.1257443198708,
+        "y": 0.5,
+        "w": 1.0,
+        "h": 0.5,
+        "kind": "kill"
+      },
+      {
+        "x": 360.609477600045,
+        "y": -0.5,
+        "w": 6.0,
+        "h": 1.0,
+        "kind": "finish"
+      }
+    ],
+    "checkpoints": [
+      {
+        "x": 2.0,
+        "y": 0.0
+      },
+      {
+        "x": 17.264236957453413,
+        "y": 1.0
+      },
+      {
+        "x": 39.2743855198141,
+        "y": 0.0
+      },
+      {
+        "x": 53.817311834327235,
+        "y": -2.0
+      },
+      {
+        "x": 85.75706830877537,
+        "y": -1.0
+      },
+      {
+        "x": 117.81074321424657,
+        "y": -1.0
+      },
+      {
+        "x": 155.5639832935426,
+        "y": -0.5
+      },
+      {
+        "x": 187.51978862790372,
+        "y": -0.5
+      },
+      {
+        "x": 221.1791248572796,
+        "y": -0.5
+      },
+      {
+        "x": 264.11707375963874,
+        "y": -1.0
+      },
+      {
+        "x": 292.45925080274156,
+        "y": 1.0
+      },
+      {
+        "x": 325.43228414490096,
+        "y": 0.5
+      }
+    ],
+    "finishX": 361.609477600045
+  },
+  "tag": {
+    "width": 24.0,
+    "height": 16.0,
+    "walls": [
+      {
+        "x": 5.0,
+        "y": 3.0,
+        "w": 3.0,
+        "h": 1.0
+      },
+      {
+        "x": 16.0,
+        "y": 3.0,
+        "w": 3.0,
+        "h": 1.0
+      },
+      {
+        "x": 5.0,
+        "y": 12.0,
+        "w": 3.0,
+        "h": 1.0
+      },
+      {
+        "x": 16.0,
+        "y": 12.0,
+        "w": 3.0,
+        "h": 1.0
+      },
+      {
+        "x": 11.0,
+        "y": 6.5,
+        "w": 2.0,
+        "h": 3.0
+      },
+      {
+        "x": 3.0,
+        "y": 7.5,
+        "w": 1.0,
+        "h": 1.0
+      },
+      {
+        "x": 20.0,
+        "y": 7.5,
+        "w": 1.0,
+        "h": 1.0
+      },
+      {
+        "x": 9.0,
+        "y": 1.0,
+        "w": 1.0,
+        "h": 2.0
+      },
+      {
+        "x": 14.0,
+        "y": 13.0,
+        "w": 1.0,
+        "h": 2.0
+      }
+    ]
+  }
+}

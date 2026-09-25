@@ -1,5 +1,7 @@
 # Paper Relics
 
+![Paper Relics screenshot](screenshots/ios-paper-relics.jpg)
+
 A native portrait iOS deckbuilder set in an original paper theater, drawn in a
 classic 8-bit console style.
 SwiftUI, runtime-drawn pixel art, locally synthesized sound, and no dependencies,

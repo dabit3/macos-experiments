@@ -1,5 +1,7 @@
 # PDF Form Signer: fill a form, draw a signature, download a real PDF
 
+![PDF Form Signer: fill a form, draw a signature, download a real PDF screenshot](screenshots/pdf-form-signer.jpg)
+
 A browser-only document-signing app. A two-page **Contractor Agreement** is rendered as
 paper-like HTML with 18 inline fields (text, email, phone, native date pickers, a state
 dropdown, radio groups and checkboxes), inline validation, an initials pad on each page, a

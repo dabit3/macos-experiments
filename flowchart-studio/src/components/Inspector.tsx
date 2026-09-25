@@ -11,9 +11,11 @@ interface InspectorProps {
   onLabelChange: (value: string) => void
   onKindChange: (kind: NodeKind) => void
   onDelete: () => void
+  sourceLabel?: string
+  targetLabel?: string
 }
 
-export function Inspector({ selection, node, edge, onLabelChange, onKindChange, onDelete }: InspectorProps) {
+export function Inspector({ selection, node, edge, onLabelChange, onKindChange, onDelete, sourceLabel, targetLabel }: InspectorProps) {
   const total = selection.nodes.length + selection.edges.length
   const current = node?.label ?? edge?.label ?? ''
   const [draft, setDraft] = useState(current)
@@ -38,7 +40,7 @@ export function Inspector({ selection, node, edge, onLabelChange, onKindChange, 
             {selection.edges.length > 0 && `, ${selection.edges.length} edge${selection.edges.length === 1 ? '' : 's'}`}
           </span>
         </div>
-        <p className="inspector-hint">Drag to move together · Ctrl+D duplicates · Delete removes</p>
+        <p className="inspector-hint">Drag any selected node to move the group. Ctrl+D duplicates.</p>
         <button type="button" className="inspector-danger" onClick={onDelete}>
           <Icon name="trash" size={16} /> Delete selection
         </button>
@@ -53,7 +55,6 @@ export function Inspector({ selection, node, edge, onLabelChange, onKindChange, 
       <div className="inspector-head">
         <span className="inspector-swatch" />
         <span className="inspector-title">{node ? `${kindMeta(node.kind).name} node` : 'Edge'}</span>
-        <span className="inspector-id">{node?.id ?? edge?.id}</span>
       </div>
       <label className="inspector-field">
         <span>Label</span>
@@ -77,7 +78,7 @@ export function Inspector({ selection, node, edge, onLabelChange, onKindChange, 
           <select value={node.kind} onChange={(e) => onKindChange(e.target.value as NodeKind)}>
             {NODE_KINDS.map((k) => (
               <option key={k.kind} value={k.kind}>
-                {k.name} — {k.hint}
+                {k.name}
               </option>
             ))}
           </select>
@@ -85,7 +86,7 @@ export function Inspector({ selection, node, edge, onLabelChange, onKindChange, 
       )}
       {edge && (
         <p className="inspector-hint">
-          {edge.source} <b>{edge.sourcePort}</b> → {edge.target} <b>{edge.targetPort}</b>
+          From <b>{sourceLabel}</b> to <b>{targetLabel}</b>
         </p>
       )}
       <button type="button" className="inspector-danger" onClick={onDelete}>

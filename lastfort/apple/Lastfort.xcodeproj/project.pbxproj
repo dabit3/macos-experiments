@@ -1,0 +1,503 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		07180524EAE4600DB47FA00A /* LastfortApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495B2D0B67DF26072EE6EF59 /* LastfortApp.swift */; };
+		09AC6C333D94D16F362F38FA /* HubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F212AC03D5DD433C5EE70B /* HubView.swift */; };
+		0D5D005AE8082537251DB008 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = E638663C568110044120AA36 /* Session.swift */; };
+		2F86C6463EA3386FF841FB6B /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA9128B65538840A37CB82C /* Profile.swift */; };
+		376FFE15E2B12148EC59BC5E /* Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6277702A693FAEC3CBDD27 /* Controls.swift */; };
+		465AF27C7079D52E3849EECC /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = E638663C568110044120AA36 /* Session.swift */; };
+		4FD8251718ED365A36D30AB4 /* Artwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7011C2D810BB68DFC726282F /* Artwork.swift */; };
+		5BCED1AC3DC1AADDD3CB424C /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA9128B65538840A37CB82C /* Profile.swift */; };
+		5E43A4D09E5972B9F833395C /* Artwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7011C2D810BB68DFC726282F /* Artwork.swift */; };
+		6955B7671592EED97F6D0481 /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7005D55BB8EA73E70EEBE584 /* MatchView.swift */; };
+		71490A1773E1DA7A50C47BA3 /* Island.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD253C44527A7B837E501DB2 /* Island.swift */; };
+		71FB55FED7A17D888D3F15CA /* HubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F212AC03D5DD433C5EE70B /* HubView.swift */; };
+		78E3D2ACC2D96BFF86958655 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257606670F3B4AD6E53EE1DD /* Theme.swift */; };
+		79FEC98588AA2D27A7871CE6 /* catalogue.json in Resources */ = {isa = PBXBuildFile; fileRef = DD3BEAA3A763E16F7B70CC73 /* catalogue.json */; };
+		7AD0A53752BB6D0CF53E503F /* MatchReplica.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A480CD47222C56059CED4A8 /* MatchReplica.swift */; };
+		90845B281D2F43D5742527D2 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DAB2C391CDE7A03541E48F /* Protocol.swift */; };
+		9CE9C87685E0298817770414 /* Island.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD253C44527A7B837E501DB2 /* Island.swift */; };
+		A464424D6233F492A8E9AFEA /* MatchReplica.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A480CD47222C56059CED4A8 /* MatchReplica.swift */; };
+		A9571051922DEBE56A1171B1 /* Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6277702A693FAEC3CBDD27 /* Controls.swift */; };
+		B6E00E8A3DE6206AD9F0DC19 /* GameCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A86BB4E6B7D54600C45505 /* GameCanvas.swift */; };
+		BE08C71FB3670FE4DFE812BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 223A4F550F9AAAA1E0236931 /* Assets.xcassets */; };
+		CF37F445FC425D2E5830A1B1 /* catalogue.json in Resources */ = {isa = PBXBuildFile; fileRef = DD3BEAA3A763E16F7B70CC73 /* catalogue.json */; };
+		CFDD8C74278AF12D729215DE /* LastfortApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495B2D0B67DF26072EE6EF59 /* LastfortApp.swift */; };
+		DB0FADA479AB4123DD09774D /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257606670F3B4AD6E53EE1DD /* Theme.swift */; };
+		DE0C105C48A77BCC8858C61F /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DAB2C391CDE7A03541E48F /* Protocol.swift */; };
+		E5FD8A154F02F7FC38FA18DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 223A4F550F9AAAA1E0236931 /* Assets.xcassets */; };
+		EF8789EB5F8DC963E276D23C /* GameCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A86BB4E6B7D54600C45505 /* GameCanvas.swift */; };
+		F143004E9DD50D31D6A2381C /* ProfileViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BE3C9A0E157C7207BB88E7 /* ProfileViews.swift */; };
+		F744BE84448E1DA99E73ABB2 /* ProfileViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BE3C9A0E157C7207BB88E7 /* ProfileViews.swift */; };
+		FF3BC777E45E04889D20D208 /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7005D55BB8EA73E70EEBE584 /* MatchView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1BA9128B65538840A37CB82C /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		223A4F550F9AAAA1E0236931 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		22F212AC03D5DD433C5EE70B /* HubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubView.swift; sourceTree = "<group>"; };
+		257606670F3B4AD6E53EE1DD /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		3A480CD47222C56059CED4A8 /* MatchReplica.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchReplica.swift; sourceTree = "<group>"; };
+		4248E17E93180CDBCB723338 /* Lastfort-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Lastfort-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		495B2D0B67DF26072EE6EF59 /* LastfortApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastfortApp.swift; sourceTree = "<group>"; };
+		5481EE27745378774286A07D /* Lastfort-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Lastfort-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7005D55BB8EA73E70EEBE584 /* MatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchView.swift; sourceTree = "<group>"; };
+		7011C2D810BB68DFC726282F /* Artwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Artwork.swift; sourceTree = "<group>"; };
+		AB6277702A693FAEC3CBDD27 /* Controls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controls.swift; sourceTree = "<group>"; };
+		B5DAB2C391CDE7A03541E48F /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		D9A86BB4E6B7D54600C45505 /* GameCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCanvas.swift; sourceTree = "<group>"; };
+		DD3BEAA3A763E16F7B70CC73 /* catalogue.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalogue.json; sourceTree = "<group>"; };
+		E0BE3C9A0E157C7207BB88E7 /* ProfileViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViews.swift; sourceTree = "<group>"; };
+		E638663C568110044120AA36 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
+		FD253C44527A7B837E501DB2 /* Island.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Island.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		3C8C5DFA7E3ED1D228AF8CC9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4248E17E93180CDBCB723338 /* Lastfort-iOS.app */,
+				5481EE27745378774286A07D /* Lastfort-macOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		71DD212C296D04BF9C9801A7 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				DEBA9CCA9BC64910F5AFB032 /* App */,
+				A2195008B0C920F923C3F9A9 /* Model */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		79F09A9C3F32F117A048E3C5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				223A4F550F9AAAA1E0236931 /* Assets.xcassets */,
+				DD3BEAA3A763E16F7B70CC73 /* catalogue.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		A2195008B0C920F923C3F9A9 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				FD253C44527A7B837E501DB2 /* Island.swift */,
+				3A480CD47222C56059CED4A8 /* MatchReplica.swift */,
+				1BA9128B65538840A37CB82C /* Profile.swift */,
+				B5DAB2C391CDE7A03541E48F /* Protocol.swift */,
+				E638663C568110044120AA36 /* Session.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		DD9BB1563893D0F09FFEDC79 = {
+			isa = PBXGroup;
+			children = (
+				79F09A9C3F32F117A048E3C5 /* Resources */,
+				71DD212C296D04BF9C9801A7 /* Sources */,
+				3C8C5DFA7E3ED1D228AF8CC9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DEBA9CCA9BC64910F5AFB032 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				7011C2D810BB68DFC726282F /* Artwork.swift */,
+				AB6277702A693FAEC3CBDD27 /* Controls.swift */,
+				D9A86BB4E6B7D54600C45505 /* GameCanvas.swift */,
+				22F212AC03D5DD433C5EE70B /* HubView.swift */,
+				495B2D0B67DF26072EE6EF59 /* LastfortApp.swift */,
+				7005D55BB8EA73E70EEBE584 /* MatchView.swift */,
+				E0BE3C9A0E157C7207BB88E7 /* ProfileViews.swift */,
+				257606670F3B4AD6E53EE1DD /* Theme.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B13C0B92D0F803FF218AF1F8 /* Lastfort-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 54C18417EB32AC53DC1DB34B /* Build configuration list for PBXNativeTarget "Lastfort-iOS" */;
+			buildPhases = (
+				8E9AD92E90629A59ADB847E9 /* Sources */,
+				556213C3AABFE3BD7F932EE2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Lastfort-iOS";
+			packageProductDependencies = (
+			);
+			productName = "Lastfort-iOS";
+			productReference = 4248E17E93180CDBCB723338 /* Lastfort-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B227E7CA9B589447319B114C /* Lastfort-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 197CB7E5C39F2FA894B9471E /* Build configuration list for PBXNativeTarget "Lastfort-macOS" */;
+			buildPhases = (
+				7DDBBBC3B851A690B526957E /* Sources */,
+				6E9E2A7F60CCAB4A583F6FFE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Lastfort-macOS";
+			packageProductDependencies = (
+			);
+			productName = "Lastfort-macOS";
+			productReference = 5481EE27745378774286A07D /* Lastfort-macOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8E0080C3AD0DB94E6312F02F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					B13C0B92D0F803FF218AF1F8 = {
+						ProvisioningStyle = Automatic;
+					};
+					B227E7CA9B589447319B114C = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = DADF068BFAE4EFBC71F5AC74 /* Build configuration list for PBXProject "Lastfort" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = DD9BB1563893D0F09FFEDC79;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 3C8C5DFA7E3ED1D228AF8CC9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B13C0B92D0F803FF218AF1F8 /* Lastfort-iOS */,
+				B227E7CA9B589447319B114C /* Lastfort-macOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		556213C3AABFE3BD7F932EE2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E5FD8A154F02F7FC38FA18DA /* Assets.xcassets in Resources */,
+				79FEC98588AA2D27A7871CE6 /* catalogue.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6E9E2A7F60CCAB4A583F6FFE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE08C71FB3670FE4DFE812BF /* Assets.xcassets in Resources */,
+				CF37F445FC425D2E5830A1B1 /* catalogue.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7DDBBBC3B851A690B526957E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E43A4D09E5972B9F833395C /* Artwork.swift in Sources */,
+				A9571051922DEBE56A1171B1 /* Controls.swift in Sources */,
+				B6E00E8A3DE6206AD9F0DC19 /* GameCanvas.swift in Sources */,
+				71FB55FED7A17D888D3F15CA /* HubView.swift in Sources */,
+				9CE9C87685E0298817770414 /* Island.swift in Sources */,
+				07180524EAE4600DB47FA00A /* LastfortApp.swift in Sources */,
+				A464424D6233F492A8E9AFEA /* MatchReplica.swift in Sources */,
+				FF3BC777E45E04889D20D208 /* MatchView.swift in Sources */,
+				5BCED1AC3DC1AADDD3CB424C /* Profile.swift in Sources */,
+				F744BE84448E1DA99E73ABB2 /* ProfileViews.swift in Sources */,
+				DE0C105C48A77BCC8858C61F /* Protocol.swift in Sources */,
+				0D5D005AE8082537251DB008 /* Session.swift in Sources */,
+				DB0FADA479AB4123DD09774D /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8E9AD92E90629A59ADB847E9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4FD8251718ED365A36D30AB4 /* Artwork.swift in Sources */,
+				376FFE15E2B12148EC59BC5E /* Controls.swift in Sources */,
+				EF8789EB5F8DC963E276D23C /* GameCanvas.swift in Sources */,
+				09AC6C333D94D16F362F38FA /* HubView.swift in Sources */,
+				71490A1773E1DA7A50C47BA3 /* Island.swift in Sources */,
+				CFDD8C74278AF12D729215DE /* LastfortApp.swift in Sources */,
+				7AD0A53752BB6D0CF53E503F /* MatchReplica.swift in Sources */,
+				6955B7671592EED97F6D0481 /* MatchView.swift in Sources */,
+				2F86C6463EA3386FF841FB6B /* Profile.swift in Sources */,
+				F143004E9DD50D31D6A2381C /* ProfileViews.swift in Sources */,
+				90845B281D2F43D5742527D2 /* Protocol.swift in Sources */,
+				465AF27C7079D52E3849EECC /* Session.swift in Sources */,
+				78E3D2ACC2D96BFF86958655 /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		47C5123BB5CAA4211567822A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		4D2F5176A2117289BB9BC70D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = "Config/iOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lastfort.lastfort;
+				PRODUCT_NAME = Lastfort;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7986B6322A06786EEF2EFD36 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/Lastfort.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "Config/macOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lastfort.lastfort;
+				PRODUCT_NAME = Lastfort;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		8E7B406544C6D070830F0C93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/Lastfort.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "Config/macOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lastfort.lastfort;
+				PRODUCT_NAME = Lastfort;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		A07925740B20D1FF5F7CB482 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = "Config/iOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lastfort.lastfort;
+				PRODUCT_NAME = Lastfort;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		F8E40A29C636BDE25219FE24 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		197CB7E5C39F2FA894B9471E /* Build configuration list for PBXNativeTarget "Lastfort-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8E7B406544C6D070830F0C93 /* Debug */,
+				7986B6322A06786EEF2EFD36 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		54C18417EB32AC53DC1DB34B /* Build configuration list for PBXNativeTarget "Lastfort-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4D2F5176A2117289BB9BC70D /* Debug */,
+				A07925740B20D1FF5F7CB482 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DADF068BFAE4EFBC71F5AC74 /* Build configuration list for PBXProject "Lastfort" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F8E40A29C636BDE25219FE24 /* Debug */,
+				47C5123BB5CAA4211567822A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8E0080C3AD0DB94E6312F02F /* Project object */;
+}

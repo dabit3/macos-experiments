@@ -6,3 +6,11 @@
 .devin/clone-this/swapmate/evidence/**/*.mov
 .devin/clone-this/swapmate/evidence/**/*.mp4
 .devin/clone-this/swapmate/evidence/**/*.pid
+apple/.build/
+apple/.swiftpm/
+apple/build/
+apple/DerivedData/
+apple/**/*.xcuserstate
+apple/**/xcuserdata/
+test/output/
+apple/*.log

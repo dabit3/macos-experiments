@@ -74,6 +74,14 @@ struct WorldEvent: Decodable, Identifiable {
   let tick: Int
 }
 
+struct Notice: Identifiable, Equatable {
+  static let kinds: Set<String> = ["start", "down", "artifact", "equip", "warning", "clear"]
+  let id: Int
+  let kind: String
+  let text: String
+  let tick: Int
+}
+
 struct Snapshot: Decodable {
   let code: String
   let phase: String

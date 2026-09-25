@@ -2,10 +2,17 @@
 test/e2e/node_modules/
 test/e2e/window_id
 
-# Dart / Flutter
+# Dart and native Apple build outputs
 .dart_tool/
 build/
 *.iml
+apple/.build/
+apple/.swiftpm/
+apple/DerivedData*/
+apple/*.log
+*.xcuserstate
+xcuserdata/
+.DS_Store
 
 # clone-this evidence: the manifest (state.json, events.jsonl) and small JSON
 # results are committed; screenshots, recordings and logs are attached to the

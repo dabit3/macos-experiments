@@ -1,15 +1,21 @@
 # Node (test harness)
 test/node_modules/
 
-# Dart / Flutter build output
+# Dart / Apple build output
 **/.dart_tool/
 **/build/
-app/.flutter-plugins-dependencies
-app/*.iml
+**/.build/
+**/DerivedData*/
+**/node_modules/
+**/xcuserdata/
+**/*.xcuserstate
 server/.packages
+.native-tests/
+**/__pycache__/
 
 # Local server saves and scratch
 server/saves/
+server/data/
 *.log
 
 # Large binary evidence is attached to the PR, not committed

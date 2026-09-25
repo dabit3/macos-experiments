@@ -1,5 +1,14 @@
-# Node (Playwright harness)
-test/node_modules/
+apple/.build/
+apple/.swiftpm/
+apple/build/
+apple/DerivedData*/
+apple/build-*.log
+apple/**/*.xcuserstate
+apple/**/xcuserdata/
+test/artifacts/
+core/.dart_tool/
+server/.dart_tool/
+.DS_Store
 
 # Large binary evidence stays out of git; it is attached to the PR instead.
 .devin/clone-this/*/evidence/**/*.png

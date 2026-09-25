@@ -5,7 +5,7 @@ Dependency-free: rasterizes the hearth-stones-and-ember mark (same design as
 the in-app EmberGlyph) at 2048px with a scanline polygon filler, then box-
 downsamples into each required size.
 
-    python3 tools/gen_icons.py            # writes into app/{ios,macos,android,web}
+    python3 tools/gen_icons.py            # writes into apple/Resources
 
 iOS icons are opaque (the system applies its own mask); macOS, Android and web
 maskable icons get a rounded-square with transparent corners.
@@ -16,7 +16,7 @@ import sys
 import zlib
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1] / "app"
+ROOT = Path(__file__).resolve().parents[1] / "apple" / "Resources"
 S = 2048  # supersampled canvas
 
 CREAM = (0xF7, 0xF1, 0xE6)
@@ -179,25 +179,16 @@ def main():
         write_png(path, n, cache[key], opaque)
         print(path, n)
 
-    ios = ROOT / "ios/Runner/Assets.xcassets/AppIcon.appiconset"
+    ios = ROOT / "iOS.xcassets/AppIcon.appiconset"
     for name, n in [("Icon-App-20x20@1x", 20), ("Icon-App-20x20@2x", 40), ("Icon-App-20x20@3x", 60),
                     ("Icon-App-29x29@1x", 29), ("Icon-App-29x29@2x", 58), ("Icon-App-29x29@3x", 87),
                     ("Icon-App-40x40@1x", 40), ("Icon-App-40x40@2x", 80), ("Icon-App-40x40@3x", 120),
                     ("Icon-App-60x60@2x", 120), ("Icon-App-60x60@3x", 180), ("Icon-App-76x76@1x", 76),
                     ("Icon-App-76x76@2x", 152), ("Icon-App-83.5x83.5@2x", 167), ("Icon-App-1024x1024@1x", 1024)]:
         emit(ios / f"{name}.png", n, square, True)
-    mac = ROOT / "macos/Runner/Assets.xcassets/AppIcon.appiconset"
+    mac = ROOT / "macOS.xcassets/AppIcon.appiconset"
     for n in (16, 32, 64, 128, 256, 512, 1024):
         emit(mac / f"app_icon_{n}.png", n, rounded, False)
-    android = ROOT / "android/app/src/main/res"
-    for d, n in [("mdpi", 48), ("hdpi", 72), ("xhdpi", 96), ("xxhdpi", 144), ("xxxhdpi", 192)]:
-        emit(android / f"mipmap-{d}/ic_launcher.png", n, rounded, False)
-    web = ROOT / "web"
-    emit(web / "favicon.png", 64, rounded, False)
-    emit(web / "icons/Icon-192.png", 192, rounded, False)
-    emit(web / "icons/Icon-512.png", 512, rounded, False)
-    emit(web / "icons/Icon-maskable-192.png", 192, square, True)
-    emit(web / "icons/Icon-maskable-512.png", 512, square, True)
     return 0
 
 

@@ -1,5 +1,7 @@
 # Solune
 
+![Solune screenshot](screenshots/solune.jpg)
+
 A local architectural visualization studio inspired by **Lumion 2024**. Opens on Casa del Mar, an original procedural coastal villa: two furnished floors, recessed glazing, timber pergola, infinity pool with planar reflection, landscape, palms and olive trees.
 
 ## Run

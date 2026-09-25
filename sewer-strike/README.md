@@ -1,5 +1,7 @@
 # Sewer Strike
 
+![Sewer Strike screenshot](screenshots/sewer-strike.jpg)
+
 A native landscape **iPhone/iPad** cooperative 3D belt-scrolling beat-'em-up.
 Four original masked reptilian heroes fight through a neon backstreet, sewer
 conduit and reactor arena. Two to four real guests share enemy waves and a boss.

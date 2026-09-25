@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Generates the Brickfolk app icon (an original coral brick with four studs on
-a sky-blue tile) at every size the four platform targets need. Requires
+a sky-blue tile) at every size the native Apple targets need. Requires
 Pillow. Run from anywhere:
 
     python3 brickfolk/tool/make_icons.py
@@ -10,7 +10,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-APP = Path(__file__).resolve().parents[1] / "app"
+ASSETS = Path(__file__).resolve().parents[1] / "apple/Sources/BrickfolkApp/Resources/Assets.xcassets"
 SKY = (62, 123, 250)
 SKY_DEEP = (44, 93, 205)
 CORAL = (255, 107, 74)
@@ -63,24 +63,14 @@ def save(img, path):
 
 
 def main():
-    ios = APP / "ios/Runner/Assets.xcassets/AppIcon.appiconset"
-    for entry in json.loads((ios / "Contents.json").read_text())["images"]:
+    icons = ASSETS / "AppIcon.appiconset"
+    for entry in json.loads((icons / "Contents.json").read_text())["images"]:
         pt = float(entry["size"].split("x")[0])
         scale = int(entry["scale"].rstrip("x"))
-        img = render(round(pt * scale)).convert("RGB")  # iOS forbids alpha
-        save(img, ios / entry["filename"])
-    macos = APP / "macos/Runner/Assets.xcassets/AppIcon.appiconset"
-    for n in (16, 32, 64, 128, 256, 512, 1024):
-        save(render(n), macos / f"app_icon_{n}.png")
-    android = APP / "android/app/src/main/res"
-    for folder, n in (("mdpi", 48), ("hdpi", 72), ("xhdpi", 96), ("xxhdpi", 144), ("xxxhdpi", 192)):
-        save(render(n), android / f"mipmap-{folder}/ic_launcher.png")
-    web = APP / "web"
-    save(render(192), web / "icons/Icon-192.png")
-    save(render(512), web / "icons/Icon-512.png")
-    save(render(192, maskable=True), web / "icons/Icon-maskable-192.png")
-    save(render(512, maskable=True), web / "icons/Icon-maskable-512.png")
-    save(render(32), web / "favicon.png")
+        img = render(round(pt * scale))
+        if entry["idiom"] != "mac":
+            img = img.convert("RGB")
+        save(img, icons / entry["filename"])
     print("icons written")
 
 

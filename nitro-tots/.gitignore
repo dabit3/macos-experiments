@@ -1,9 +1,8 @@
-# Dart / Flutter
+# Dart backend
 .dart_tool/
 build/
 *.iml
 .idea/
-.flutter-plugins-dependencies
 
 # Clone-this evidence: keep manifests, drop large binaries
 .devin/clone-this/**/*.png
@@ -16,5 +15,9 @@ build/
 # Test run scratch
 test/.run/
 
-# Playwright driver deps (npm install in test/)
-test/node_modules
+# Native Apple build products
+apple/Core/.build/
+apple/.derived/
+**/xcuserdata/
+*.xcuserstate
+.DS_Store

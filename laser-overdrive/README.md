@@ -1,5 +1,7 @@
 # Laser Overdrive
 
+![Laser Overdrive screenshot](screenshots/laser-overdrive.jpg)
+
 An original native **iPhone** neon laser rhythm duel, inspired by Sound Voltex.
 Four BT lanes, two FX lanes, sustained notes, independently tracked cyan/magenta
 lasers and rapid laser slams share a 44-second, 144 BPM original electronic track.

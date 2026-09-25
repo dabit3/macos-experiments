@@ -1,223 +1,200 @@
 # Lastfort
 
-Lastfort is an original, top-down battle-royale shooter with building. Up to
-16 players (deterministic bots fill the empty slots) drop from a sky bus onto
-a 1000 x 1000 island, harvest wood / brick / metal, loot chests for weapons,
-ammo and shields in five rarity tiers, build and edit walls, floors, ramps and
-roofs, and outlast a shrinking storm. Solo, duos and squads; spectating after
-elimination; a hub with a locker of original cosmetics, match stats and an
-XP-based season pass.
+![Lastfort screenshot](screenshots/lastfort.jpg)
 
-One Dart/Flutter code base ships four real clients (web, iOS, Android, macOS)
-that all play together on one authoritative Dart server. Nothing in the
-repository is copied from any commercial game: art, names, cosmetics, map and
-audio cues are original, and the design reference was public documentation of
-the battle-royale genre (see `.devin/clone-this/lastfort/evidence/discovery/`).
+Lastfort is an original top-down battle-royale shooter with building. Up to
+16 players drop from a sky bus onto a deterministic 1000 × 1000 island,
+harvest wood, stone and metal, loot weapons and consumables, build and edit
+forts, and outlast the storm. Solo, duos and squads share an authoritative
+Dart server; bots fill empty slots. The native Apple client includes the
+lobby, locker, season pass, career statistics, settings, spectating, results
+and rematches.
+
+The client uses SwiftUI, native Canvas, AppKit keyboard/mouse input, and
+UIKit touch/haptic support. macOS 14+, iOS 17+ and iPadOS 17+ are supported.
+There is no Flutter runtime or embedded web UI. The former web and Android
+clients have been retired as part of this Apple migration.
 
 ```
-lastfort/
-  core/     shared Dart package: rules, deterministic simulation, protocol types, bots
-  server/   authoritative WebSocket server (rooms, join codes, bots, reconnection, test controls)
-  client/   Flutter + Flame app: web, iOS, Android, macOS
-  test/     cross-platform multiplayer end-to-end harness
-  PROTOCOL.md  JSON-over-WebSocket protocol
-  .devin/clone-this/lastfort/  clone-this run manifest and evidence
+apple/
+  Lastfort.xcodeproj      checked-in native Xcode project and shared schemes
+  project.yml            XcodeGen source
+  Sources/App/           native screens, design system (Theme.swift), artwork, renderer and input
+  Sources/Model/         typed protocol, prediction, networking and persistence
+  Resources/             app icon, launch colours and generated catalogue/fixtures
+  Tests/                 Swift model, deterministic-world and live protocol tests
+core/                    unchanged pure Dart rules, simulation, world and bots
+server/                  unchanged authoritative Dart WebSocket server
+test/multiplayer-e2e.sh   shell-driven native WebSocket integration
+test/historical-flutter/ archived former framework-specific harness
+PROTOCOL.md              existing JSON-over-WebSocket contract
 ```
 
 ## Requirements
 
-- Flutter 3.47 (stable) with Dart 3.13 — `brew install --cask flutter`
-- Xcode 26 with an iOS 26 simulator (iOS / macOS targets)
-- Android SDK with platform-tools, `emulator`, `build-tools;36`,
-  `platforms;android-36` and an arm64 AVD (Android target)
-- Node 20+ (web end-to-end driver, installs Playwright Chromium)
-- Python 3.9+ (harness helpers, clone-this scripts)
+- Xcode 26 (verified with 26.6), including arm64 and x86_64 iOS Simulator
+  slices. Deployment targets remain iOS 17 and macOS 14.
+- Dart 3.13 for the existing backend lockfiles (validated with 3.13.0).
+- XcodeGen 2.46 if regenerating the project; it is not required to build the
+  checked-in project. `brew install xcodegen`.
 
-`core` and `server` are plain Dart packages; `client` depends on `core` by
-path.
-
-## Run the server
+## Start the multiplayer server
 
 ```sh
 cd lastfort/server
-dart pub get
-dart run bin/server.dart --port 8787            # ws://localhost:8787/ws
-dart run bin/server.dart --web-root ../client/build/web   # also serve the web build
+dart pub get --enforce-lockfile
+dart run bin/server.dart --host 0.0.0.0 --port 8787
 ```
 
-Flags: `--port`, `--host`, `--web-root <dir>`, `--fast` (short bus/storm
-timings for every room), `--seed N`, `--quiet`. `GET /health` reports rooms
-and connected clients; see `PROTOCOL.md` for the rest.
+The default client URL is `ws://localhost:8787/ws`. On physical iPhones and
+iPads, set the Mac's LAN address in Settings, such as
+`ws://192.168.1.10:8787/ws`, and allow local network access when prompted.
+For remote servers use `wss://`. The server also accepts `--fast`, `--seed N`
+and `--quiet`; `/health` reports rooms and connections.
 
-## Run the clients
+## Build and run native apps
 
-All clients default to `ws://localhost:8787/ws` (Android: `ws://10.0.2.2:8787/ws`).
-Override with `--dart-define=LASTFORT_SERVER=ws://host:port/ws` or, on the
-web, `?server=ws://host:port/ws`.
+All commands below run from the repository root:
 
 ```sh
-cd lastfort/client
-flutter pub get
+open lastfort/apple/Lastfort.xcodeproj
 
-# web
-flutter run -d chrome
-flutter build web --release --no-web-resources-cdn   # -> build/web
+xcodebuild -project lastfort/apple/Lastfort.xcodeproj \
+  -scheme Lastfort-macOS -configuration Debug -destination 'platform=macOS' \
+  -derivedDataPath lastfort/apple/build/mac CODE_SIGNING_ALLOWED=NO build
+open lastfort/apple/build/mac/Build/Products/Debug/Lastfort.app
 
-# iOS simulator
-open -a Simulator
-flutter run -d iPhone
-flutter build ios --simulator --debug                # -> build/ios/iphonesimulator/Runner.app
-
-# Android emulator
-$ANDROID_HOME/emulator/emulator -avd <avd> &
-flutter run -d emulator-5554
-flutter build apk --debug                            # -> build/app/outputs/flutter-apk/app-debug.apk
-
-# macOS
-flutter run -d macos
-flutter build macos --release                        # -> build/macos/Build/Products/Release/Lastfort.app
+xcodebuild -project lastfort/apple/Lastfort.xcodeproj \
+  -scheme Lastfort-iOS -configuration Debug \
+  -destination 'generic/platform=iOS Simulator' \
+  -derivedDataPath lastfort/apple/build/ios CODE_SIGNING_ALLOWED=NO build
 ```
 
-Playing across platforms: one client creates a room in the hub (choose Solo /
-Duos / Squads), the others enter the 5-letter join code, everyone readies up
-and the host presses Start. Empty slots are filled with bots. A client that
-loses its connection mid-match is kept alive for 60 s and resumes where it was
-when it reconnects.
-
-### Controls
-
-| Action | Keyboard / mouse | Touch |
-|--------|------------------|-------|
-| Move / sprint | WASD or arrows, Shift | left stick |
-| Aim / fire | mouse, left button | right stick (fire on release), Fire button |
-| Jump / drop from bus | Space | Jump |
-| Interact / open chest | E | Interact |
-| Build mode, piece, material | Q; Z X C V; M | Build, piece chips |
-| Place / edit | left click; F | tap, Edit |
-| Hotbar | 1-6, Tab | hotbar |
-| Reload / drop | R / G | Reload |
-| Spectate next, emote, thank | Tab, B, T | buttons |
-| Match menu (leave) | Esc | menu button |
-
-## Automated four-platform multiplayer test
+For interactive use, choose `Lastfort-iOS` and an iPhone or iPad simulator
+in Xcode and press Run. Both device families and portrait/landscape layouts
+are supported; narrow landscape uses compact HUD and touch controls.
+To install the built app on an already booted simulator:
 
 ```sh
-cd lastfort
-./test/multiplayer-e2e.sh
+xcrun simctl install booted \
+  lastfort/apple/build/ios/Build/Products/Debug-iphonesimulator/Lastfort.app
+xcrun simctl launch booted com.lastfort.lastfort
 ```
 
-The harness builds the web, iOS-simulator, Android APK and macOS release
-artifacts with test defines, starts the server on `:8790`, launches the web
-client under Playwright/Chromium, installs and launches the iOS build with
-`xcrun simctl`, the Android build with `adb`, and the macOS app natively. All
-four join room `LFE2E` as one squad, enable the deterministic server-side
-autopilot, the host starts the match (bots fill the other 12 slots), and the
-clients play a full fast match: bus, drop, harvest, build, loot, storm phases,
-eliminations. At the end every client reports the summary it displayed; the
-harness asserts that all reports are byte-identical to each other and to the
-server's own summary, that the humans shared one team, that a winner exists,
-that harvesting and building happened, and that the storm progressed. Test
-builds pin the light theme and load a fresh, namespaced profile
-(`LASTFORT_TEST=<id>`), so a run never inherits or disturbs the real profile,
-theme or session token on the device. It also
-captures lobby / bus / gameplay / midgame / matchover / results screenshots per platform
-plus a screen recording of all clients at once, then cuts that recording into
-an edited review video (see below).
+For physical devices, select a signing team in Xcode and build with signing
+enabled. The bundle ID remains `com.lastfort.lastfort`. The macOS app has
+sandbox/network-client entitlements. Both targets include local-network
+privacy text and an ATS development policy allowing configurable insecure
+LAN endpoints. Use secure endpoints and narrow the policy when distributing
+against a fixed production service.
 
-Output goes to `.devin/clone-this/lastfort/evidence/tests/e2e-<timestamp>/`
-(`run.json`, `result.json`, `report.md`, `reports.json`, `server-summary.json`,
-`*-lobby.png` … `*-results.png`, `all-*.png` composites, `four-way.mov`,
-`harness.log`, `server.log`). macOS screenshots are window-level captures
-(`test/window_id.swift` resolves the window id) so nothing overlapping the
-window leaks into the evidence. `test/pixel_diff.py` then compares the web
-capture (baseline) with the macOS content area for the lobby, match-over and
-results screens and writes `diff-web-macos-*.png` plus `visual.jsonl` with the
-measured differing-pixel counts.
+## Multiplayer and controls
 
-Environment overrides: `LF_PORT`, `LF_ROOM`, `LF_SEED`, `LF_OUT`,
-`LF_SKIP_BUILD=1`, `LF_BUILD_ALL=1`, `LF_IOS_UDID`, `LF_AVD`,
-`LF_MATCH_TIMEOUT`, `LF_REVIEW=0`, and `LF_PLATFORMS=web,ios,macos` to run
-without a platform (only the listed platforms are built; the run is then
-recorded as partial in `run.json`; it never counts as a full four-way pass).
+Create a room with a mode, optional seed and fast timers, or enter another
+player's room code. Ready up; the host chooses the bot-filled player count
+and launches. Menus retain server autopilot controls. The server is the
+authority for loot, combat, building, storms, eliminations and results;
+the native client predicts movement and reconciles acknowledged inputs.
 
-### Web x iOS review video
+| Action | macOS | iPhone/iPad |
+|---|---|---|
+| Move / sprint | WASD/arrows / Shift | left stick / Sprint |
+| Aim / fire | mouse / left button | right stick; outward deflection fires |
+| Jump / bus drop | Space | Jump / Drop from bus |
+| Interact / chest | E or right button | Interact |
+| Build mode | Q | Build |
+| Piece | Z/X/C/V | piece chips |
+| Material | M | material button |
+| Place / edit | left button / F | Place / Edit menu |
+| Hotbar | 1–6 / mouse wheel | hotbar slots |
+| Reload / drop item | R / G | Reload / Drop item |
+| Use consumable | select slot and fire | Use |
+| Spectate next | Tab | Next |
+| Emote / thank driver | B / T | Emote / Thank |
+| Menu / island map | Esc / minimap | Menu / minimap |
+
+The HUD includes shield/health, inventory, resources, ammo, compass,
+storm timer, minimap/full map, squad and elimination information.
+Light/dark/system appearance, reduced motion, sound and haptic settings
+persist. Previous Apple `shared_preferences` profile keys migrate when the
+same app container is available; resume tokens move to the device Keychain.
+Subsequent tokens are stored per server, never in profile JSON.
+
+Connection errors are visible. A dropped connection retries with backoff
+(eight failures, then manual reconnect) using one current WebSocket
+generation. The server retains a disconnected player for about 60 seconds.
+iOS backgrounding disconnects and foregrounding resumes. Expired rooms
+return a visible error instead of leaving a stale match screen.
+
+## Launch configuration
+
+Use Xcode scheme environment variables, process environment, or
+`--key=value` arguments. Arguments override environment values:
+
+| Environment | Argument | Meaning |
+|---|---|---|
+| `LASTFORT_SERVER` | `--server=ws://…/ws` | endpoint |
+| `LASTFORT_NAME` | `--name=Scout` | display name |
+| `LASTFORT_ROOM` | `--room=NATIVE` | create/join a known code |
+| `LASTFORT_MODE` | `--mode=squads` | solo/duos/squads |
+| `LASTFORT_SEED` | `--seed=4242` | deterministic new-room seed |
+| `LASTFORT_FAST` | `--fast=true` | shorter new-room timers |
+| `LASTFORT_AUTO` | `--auto=true` | server autopilot |
+| `LASTFORT_AUTOSTART` | `--autostart=2` | host starts after N human clients join |
+| `LASTFORT_THEME` | `--theme=dark` | initial appearance |
+| `LASTFORT_TEST` | `--test=run-id` | isolated profile/token namespace and reports |
+
+For macOS, launch the executable directly to supply environment/arguments:
 
 ```sh
-cd lastfort
-LF_PLATFORMS=web,ios ./test/multiplayer-e2e.sh
+lastfort/apple/build/mac/Build/Products/Debug/Lastfort.app/Contents/MacOS/Lastfort \
+  --server=ws://localhost:8787/ws --name=MacScout --room=NATIVE
 ```
 
-runs two clients in two separate environments in parallel — Chromium and the
-iOS Simulator — against one server and one room, in a two-up window layout.
-When the match ends `test/review_video.py` turns the raw `four-way.mov` into
-`review.mp4`: a title card, six captioned chapters cut around the moments the
-harness took its screenshots (lobby, drop, gameplay, storm, match over,
-results) with a platform tag over each window, side-by-side gameplay and
-results comparison cards with each client's digest, and a PASS/FAIL verdict
-card, plus `review.mp4.chapters.json` with chapter timestamps. Cards and
-captions are rendered with Pillow in the game's Rajdhani font; ffmpeg only
-trims, crops, overlays and concatenates. Anchors come from `timeline.jsonl`
-(wall-clock times of the recording start and every screenshot), so the cut is
-reproducible from the run directory: `python3 test/review_video.py <run-dir>`.
+For simulators use `SIMCTL_CHILD_LASTFORT_SERVER=… xcrun simctl launch …`
+or pass `--server=…` after the bundle ID.
 
-Runs with web hold the host's start command until every client has joined and
-the lobby capture finishes. The driver then sends the normal `startMatch`
-message over that host's existing WebSocket connection. Each screenshot has a
-`phase-<label>.json` server-state record; the bus capture requires the bus phase.
-Missing screenshots or a failed review-video render fail the harness.
-Requires `ffmpeg` and `pillow`.
-
-The Android emulator needs hardware virtualization. On a host without it
-(`emulator -accel-check` fails, e.g. a macOS VM without nested
-virtualization) the harness stops with an explicit message; attach a physical
-device over `adb` or run with `LF_PLATFORMS=web,ios,macos`.
-
-## Development checks
+## Validation
 
 ```sh
-cd lastfort/core   && dart format --set-exit-if-changed . && dart analyze && dart test
-cd lastfort/server && dart format --set-exit-if-changed . && dart analyze && dart test
-cd lastfort/client && dart format --set-exit-if-changed lib test && flutter analyze && flutter test
+# From repository root:
+swift test --package-path lastfort/apple
+xcrun swift-format lint --strict --recursive \
+  lastfort/apple/Sources lastfort/apple/Tests lastfort/apple/Tools \
+  lastfort/apple/Package.swift
+dart format --output=none --set-exit-if-changed lastfort/apple/Tools/export_assets.dart
+(cd lastfort/core && dart analyze && dart test)
+(cd lastfort/server && dart analyze && dart test)
+bash lastfort/test/multiplayer-e2e.sh
 ```
 
-`core/tool/check_web_determinism.sh` runs the same seeded island generation
-and a full bot match on the Dart VM and as dart2js output under Node and
-fails if the transcripts differ, which guards the web client against integer
-semantics that diverge from native.
+The fixture tests compare three island seeds against authoritative Dart
+terrain, POIs, structures, chests and resource nodes. Other tests validate
+snapshot decoding, exact sparse input fields, structure removal by ID,
+prediction acknowledgements, profile migration and result reward idempotency.
+The live test starts the actual Dart server and uses two native
+`URLSessionWebSocketTask` clients to join a room, play with bots, send actions,
+disconnect/resume the same player, compare final summaries, and rematch.
+It does not drive or validate the UI. With plain `swift test`, that one test
+is skipped unless `LASTFORT_TEST_SERVER` points at a running server.
+The wrapper accepts `DART`, `LF_PORT` and `LF_OUT`; logs go to ignored
+`lastfort/test/output/`. Existing Dart test suites remain intact.
 
-The server suite includes a protocol-level version of the four-platform
-match (`four platforms in one squad finish a match with identical summaries`)
-that runs in a few seconds without any simulator.
+Native UI, visual parity, real-device touch input and signed distribution
+must be checked separately on macOS/iPhone/iPad. No UI-driven verification
+is claimed by the protocol tests.
 
-## Design notes
+## Regenerate native artifacts
 
-- **Arcade presentation**: original island key art, a cobalt/mint/citrus palette,
-  full-body procedural scout outfits, a cinematic lobby, illuminated HUD
-  panels, sculpted tree canopies, beveled structures, helmet/visor characters,
-  and a medal-led results sequence with count-up stats and victory confetti.
-  The island illustration in `client/assets/island-keyart.webp` was generated
-  for Lastfort with an image-generation tool; it contains no third-party game
-  assets. Character and gameplay art are drawn from the equipped cosmetic
-  palette in Dart. Ambient motion honours the reduced-motion preference.
-- **Authority**: the server runs `Sim` from `core` at 20 Hz and is the only
-  source of truth for movement validation, hits, damage, building, looting and
-  the storm. Clients send `InputFrame`s and predict their own movement; the
-  snapshot carries the last applied input sequence for reconciliation.
-- **Interest management**: each snapshot contains only what the viewer can
-  see (radius 90 around the player, or around the spectated player), with
-  delta-encoded structures, resource nodes and chests.
-- **Determinism**: island, loot, chests, bus path, storm centres and bot
-  behaviour derive from the match seed via a small xorshift `Rng`, so a seeded
-  fast room replays identically on every platform.
-- **Design system**: `client/lib/app/theme.dart` defines colour tokens
-  (dark and light), a type scale, spacing, radii, elevation and motion
-  durations; `widgets.dart` holds the shared panel, button, chip and badge
-  primitives used by hub, locker, pass, settings, HUD and results screens.
-  Layouts adapt to phone, tablet and desktop widths, honour safe areas, and
-  input is keyboard + mouse on desktop/web and twin-stick touch on phones.
+```sh
+dart run lastfort/apple/Tools/export_assets.dart
+swift lastfort/apple/Tools/generate_icon.swift
+xcodegen generate --spec lastfort/apple/project.yml
+```
 
-## Evidence
-
-The clone-this run manifest lives in `.devin/clone-this/lastfort/state.json`
-with `events.jsonl` next to it. Screenshots and the recording of the automated
-match are kept out of git (see the pull request for the attached images).
+The catalogue and fixtures are generated from `core/`; they are not demo
+snapshots used by the app. The UI uses the system sans-serif (SF) with a
+condensed heavy display style and monospaced digits; there are no bundled
+fonts or bitmap key art. The lobby backdrop is the actual island for the
+room's seed, rendered from `core`'s deterministic terrain, and cosmetic shapes
+are drawn with native Canvas from the palette/shape catalogue.

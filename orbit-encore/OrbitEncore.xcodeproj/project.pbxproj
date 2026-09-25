@@ -8,22 +8,32 @@
 
 /* Begin PBXBuildFile section */
 		153F53881A21801F81FC8F2A /* OrbitEncoreApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA7342C538C5C69AC732A97 /* OrbitEncoreApp.swift */; };
+		30088B81C837D0AD340932E0 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2FFC1DFA0B4CBFA69A65A6 /* Theme.swift */; };
 		41A9223F6376D8E423E6D695 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D631C2EE369BFE04F6BD01 /* Models.swift */; };
+		42E4BA686CF03572B4843078 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2499C63FB1112D13DA17DB55 /* GameView.swift */; };
 		542482B50725731F0AFD1B3A /* Artwork.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A72F1C735BC0E14726AB74E /* Artwork.xcassets */; };
 		54DED0C43ACBB244032CF310 /* neon.wav in Resources */ = {isa = PBXBuildFile; fileRef = 90D32FABDB665623D1C084EB /* neon.wav */; };
+		9CACA2115BE110C66FB9A3E6 /* ConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA8141D2C228833D0F12EDD /* ConnectView.swift */; };
 		AD09CED9CC2EB2B81B29AA99 /* sugar.wav in Resources */ = {isa = PBXBuildFile; fileRef = 404C564ED50AFA522CC6FF35 /* sugar.wav */; };
 		AF9FE9CEAA47159306DF5CDB /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA46376B821E5593AEBF44C /* AudioEngine.swift */; };
 		B1BA3BF3D3D1DE5A2187208D /* GameClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDABAFBF855C0AD91C1790A4 /* GameClient.swift */; };
+		BAD35DDB05F3B99A8FC6BE4D /* ResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E942E084218FAE546C3438 /* ResultsView.swift */; };
 		E5C2F1AA22DC65CB78951748 /* charts.json in Resources */ = {isa = PBXBuildFile; fileRef = 6E4E6C55F2E6D503B3048C92 /* charts.json */; };
+		FA3C6365079B65C1EBDD6864 /* LobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC3972D05E578B26DDEA5B7 /* LobbyView.swift */; };
 		FBC967D795A5D78D1850FA38 /* OrbitScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC773A6649003FFCD49500C /* OrbitScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0BA46376B821E5593AEBF44C /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
+		0DA8141D2C228833D0F12EDD /* ConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectView.swift; sourceTree = "<group>"; };
 		1A72F1C735BC0E14726AB74E /* Artwork.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Artwork.xcassets; sourceTree = "<group>"; };
+		2499C63FB1112D13DA17DB55 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		404C564ED50AFA522CC6FF35 /* sugar.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sugar.wav; sourceTree = "<group>"; };
+		5A2FFC1DFA0B4CBFA69A65A6 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		5AC773A6649003FFCD49500C /* OrbitScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrbitScene.swift; sourceTree = "<group>"; };
 		6E4E6C55F2E6D503B3048C92 /* charts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = charts.json; sourceTree = "<group>"; };
+		85E942E084218FAE546C3438 /* ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsView.swift; sourceTree = "<group>"; };
+		8CC3972D05E578B26DDEA5B7 /* LobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyView.swift; sourceTree = "<group>"; };
 		90D32FABDB665623D1C084EB /* neon.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = neon.wav; sourceTree = "<group>"; };
 		95D631C2EE369BFE04F6BD01 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		9FA7342C538C5C69AC732A97 /* OrbitEncoreApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrbitEncoreApp.swift; sourceTree = "<group>"; };
@@ -48,11 +58,16 @@
 			isa = PBXGroup;
 			children = (
 				0BA46376B821E5593AEBF44C /* AudioEngine.swift */,
+				0DA8141D2C228833D0F12EDD /* ConnectView.swift */,
 				CDABAFBF855C0AD91C1790A4 /* GameClient.swift */,
+				2499C63FB1112D13DA17DB55 /* GameView.swift */,
 				B64C2A489BF9CD4C33E6CE0A /* Info.plist */,
+				8CC3972D05E578B26DDEA5B7 /* LobbyView.swift */,
 				95D631C2EE369BFE04F6BD01 /* Models.swift */,
 				9FA7342C538C5C69AC732A97 /* OrbitEncoreApp.swift */,
 				5AC773A6649003FFCD49500C /* OrbitScene.swift */,
+				85E942E084218FAE546C3438 /* ResultsView.swift */,
+				5A2FFC1DFA0B4CBFA69A65A6 /* Theme.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -145,10 +160,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF9FE9CEAA47159306DF5CDB /* AudioEngine.swift in Sources */,
+				9CACA2115BE110C66FB9A3E6 /* ConnectView.swift in Sources */,
 				B1BA3BF3D3D1DE5A2187208D /* GameClient.swift in Sources */,
+				42E4BA686CF03572B4843078 /* GameView.swift in Sources */,
+				FA3C6365079B65C1EBDD6864 /* LobbyView.swift in Sources */,
 				41A9223F6376D8E423E6D695 /* Models.swift in Sources */,
 				153F53881A21801F81FC8F2A /* OrbitEncoreApp.swift in Sources */,
 				FBC967D795A5D78D1850FA38 /* OrbitScene.swift in Sources */,
+				BAD35DDB05F3B99A8FC6BE4D /* ResultsView.swift in Sources */,
+				30088B81C837D0AD340932E0 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

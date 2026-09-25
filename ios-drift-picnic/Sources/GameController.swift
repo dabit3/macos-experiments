@@ -19,19 +19,28 @@ final class GameController: NSObject, ObservableObject {
   @Published var bestCup = UserDefaults.standard.double(forKey: "bestCup")
   @Published var bestTrial = UserDefaults.standard.double(forKey: "bestTrial")
   @Published var wins = UserDefaults.standard.integer(forKey: "wins")
+  /// Just-in-time control coaching shown during the first race only.
+  @Published var hint = ""
+  /// Seconds shaved off the mode record by the race just finished; zero when no record fell.
+  @Published var improvement = 0.0
+  @Published var previousRecord = 0.0
   let world = PicnicWorld()
   var race = RaceEngine()
   var reducedMotion = false
+  var learnedControls: Bool { UserDefaults.standard.bool(forKey: "learnedControls") }
   private var link: CADisplayLink?
   private var previousTime = 0.0
   private var countdownTime = 0.0
   private var uiTime = 0.0
+  private var showcaseTime = 0.0
+  private var coachStage = UserDefaults.standard.bool(forKey: "coached") ? 99 : 0
   private var pausedPhase = GamePhase.racing
   private let audio = PicnicAudio()
   private let haptics = UIImpactFeedbackGenerator(style: .soft)
 
   override init() {
     super.init()
+    race.steering = 0
     world.update(race: race, racing: false, reducedMotion: true)
     let link = CADisplayLink(target: self, selector: #selector(tick))
     link.preferredFrameRateRange = CAFrameRateRange(minimum: 30, maximum: 60, preferred: 60)
@@ -40,7 +49,7 @@ final class GameController: NSObject, ObservableObject {
   }
 
   func begin() {
-    if !UserDefaults.standard.bool(forKey: "learnedControls") {
+    if !learnedControls {
       showGuide = true
     } else {
       start()
@@ -53,6 +62,9 @@ final class GameController: NSObject, ObservableObject {
     race = RaceEngine(mode: mode)
     countdown = 3
     countdownTime = 0
+    hint = ""
+    improvement = 0
+    previousRecord = mode == .picnic ? bestCup : bestTrial
     phase = .countdown
     world.update(race: race, racing: true, reducedMotion: reducedMotion)
     cue(.start)
@@ -73,10 +85,11 @@ final class GameController: NSObject, ObservableObject {
 
   func home() {
     phase = .title
+    showGuide = false
     race.steering = 0
     race.releaseDrift()
-    race = RaceEngine(mode: mode)
-    world.update(race: race, racing: false, reducedMotion: reducedMotion)
+    race = RaceEngine(mode: .picnic)
+    world.update(race: race, racing: false, reducedMotion: reducedMotion, showcase: showcaseTime)
   }
 
   func toggleSound() {
@@ -135,11 +148,18 @@ final class GameController: NSObject, ObservableObject {
       let laps = race.player.tracker.laps
       race.step(delta)
       if race.itemsCollected > pickups { cue(.pickup) }
-      if race.player.tracker.laps > laps { cue(.start) }
+      if race.player.tracker.laps > laps { lapCompleted() }
+      coach()
       if race.finished { finish() }
     }
     if phase == .racing || phase == .countdown {
       world.update(race: race, racing: true, reducedMotion: reducedMotion)
+    } else if phase == .title {
+      // Attract mode: the field circles the picnic on its own while the camera orbits.
+      if race.finished { race = RaceEngine(mode: .picnic) }
+      race.step(delta)
+      if !reducedMotion { showcaseTime += delta }
+      world.update(race: race, racing: false, reducedMotion: reducedMotion, showcase: showcaseTime)
     }
     uiTime += delta
     if uiTime > 1.0 / 15 {
@@ -148,9 +168,50 @@ final class GameController: NSObject, ObservableObject {
     }
   }
 
+  private func lapCompleted() {
+    cue(.start)
+    haptics.impactOccurred(intensity: 1)
+    guard let lap = race.player.lapTimes.last else { return }
+    let laps = race.player.tracker.laps
+    var message = (laps == 2 ? "FINAL LAP  " : "LAP \(laps)  ") + raceTime(lap)
+    if bestLap > 0 {
+      message += String(format: "  %+.2f", lap - bestLap)
+    }
+    race.notify(message)
+  }
+
+  private func coach() {
+    switch coachStage {
+    case 0 where race.elapsed > 0.6:
+      hint = "HOLD THE ARROWS TO STEER"
+      if race.steering != 0 || race.elapsed > 8 { coachStage = 1 }
+    case 1 where race.elapsed > 5:
+      hint = "TAP DRIFT GOING INTO A BEND"
+      if race.drifting { coachStage = 2 }
+    case 2:
+      hint =
+        race.player.driftCharge >= 0.65 ? "TAP DRIFT AGAIN TO BOOST!" : "KEEP TURNING TO CHARGE"
+      if !race.drifting {
+        coachStage = race.driftBoosts > 0 ? 3 : 1
+        if coachStage == 3 { hint = "" }
+      }
+    case 3 where race.hasItem:
+      hint = "TAP THE LEMONADE FOR A BURST"
+      coachStage = 4
+    case 4 where !race.hasItem:
+      hint = ""
+      coachStage = 99
+      UserDefaults.standard.set(true, forKey: "coached")
+    default: break
+    }
+  }
+
   private func finish() {
     phase = .results
     race.steering = 0
+    hint = ""
+    let record = mode == .picnic ? bestCup : bestTrial
+    if record > 0 && race.elapsed < record { improvement = record - race.elapsed }
     let fastest = race.player.lapTimes.min() ?? 0
     if bestLap == 0 || fastest < bestLap {
       bestLap = fastest

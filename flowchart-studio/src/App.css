@@ -23,43 +23,99 @@
   min-width: 0;
 }
 
-.statusbar {
+.zoom-controls {
   position: absolute;
   left: 16px;
-  right: 256px;
   bottom: 16px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  height: 36px;
-  padding: 0 14px;
+  gap: 2px;
+  height: 40px;
+  padding: 3px;
   border: 1px solid var(--border);
   border-radius: 10px;
-  background: color-mix(in srgb, var(--panel) 92%, transparent);
-  backdrop-filter: blur(8px);
-  box-shadow: var(--shadow-sm);
-  font-size: 12.5px;
-  color: var(--text-muted);
-  pointer-events: none;
+  background: var(--panel);
+  box-shadow: var(--shadow-md);
   user-select: none;
 }
 
-.statusbar b {
+.zc-btn,
+.zc-value {
+  display: grid;
+  place-items: center;
+  height: 32px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.zc-btn {
+  width: 32px;
+}
+
+.zc-value {
+  min-width: 54px;
+  padding: 0 6px;
+  color: var(--text-strong);
+  font-size: 12.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.zc-btn:hover,
+.zc-value:hover {
+  background: var(--control);
+  color: var(--text-strong);
+}
+
+.zc-btn:focus-visible,
+.zc-value:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.zc-divider {
+  width: 1px;
+  height: 18px;
+  margin: 0 3px;
+  background: var(--border);
+}
+
+.status-chip {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel);
+  box-shadow: var(--shadow-md);
+  font-size: 12.5px;
+  color: var(--text-muted);
+  white-space: pre;
+  pointer-events: none;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+  animation: chip-in 140ms ease;
+}
+
+.status-chip b {
   color: var(--text-strong);
   font-weight: 600;
 }
 
-.status-hint {
-  flex: 1;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.status-zoom {
-  font-family: var(--mono);
-  color: var(--text);
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 4px);
+  }
 }
 
 .toast {
@@ -67,11 +123,14 @@
   left: 50%;
   top: 18px;
   transform: translateX(-50%);
-  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px 9px 12px;
   border-radius: 10px;
-  background: var(--brand);
+  background: var(--text-strong);
   color: #fff;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 13px;
   box-shadow: var(--shadow-lg);
   animation: toast-in 180ms ease;

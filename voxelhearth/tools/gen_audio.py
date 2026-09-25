@@ -4,7 +4,7 @@
 Every cue is generated from simple oscillators and noise with short envelopes so
 the set is fully original and reproducible:
 
-    python3 tools/gen_audio.py        # writes app/assets/audio/*.wav
+    python3 tools/gen_audio.py        # writes apple/Resources/audio/*.wav
 """
 import math
 import random
@@ -12,7 +12,7 @@ import struct
 import wave
 from pathlib import Path
 
-OUT = Path(__file__).resolve().parents[1] / "app" / "assets" / "audio"
+OUT = Path(__file__).resolve().parents[1] / "apple" / "Resources" / "audio"
 SR = 22050
 
 

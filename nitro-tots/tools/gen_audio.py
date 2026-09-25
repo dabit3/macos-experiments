@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Synthesises the original Nitro Tots sound set (pure Python, no deps).
 
-Run from anywhere: python3 tools/gen_audio.py  -> writes app/assets/audio/*.wav
+Run from anywhere: python3 tools/gen_audio.py -> writes apple/Resources/audio/*.wav
 """
 import math
 import os
@@ -10,7 +10,7 @@ import struct
 import wave
 
 RATE = 22050
-OUT = os.path.join(os.path.dirname(__file__), "..", "app", "assets", "audio")
+OUT = os.path.join(os.path.dirname(__file__), "..", "apple", "Resources", "audio")
 
 
 def write(name, samples, volume=0.9):

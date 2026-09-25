@@ -143,9 +143,11 @@ ordered by points, then best places, then slot: `{slot, name, character, kart,
 bot, platform, points, places[]}`.
 
 `match_over.hash` is a stable digest of every race's results (`resultHash()` in
-`packages/nitro_server/lib/src/room.dart`). The cross-platform test
-(`test/multiplayer-e2e.sh`) has every client echo the hash and standings it
-displayed via `test_report`, then asserts they all equal the server's.
+`packages/nitro_server/lib/src/room.dart`). The native headless integration test
+(`test/multiplayer-e2e.sh`) compares two clients' authoritative results and
+hashes, submits a `test_report`, then exercises rematch and leave. Native apps
+launched with `NT_TEST=1` report the hash and standings at match completion;
+`test/verify_room.py` compares those reports with the server.
 
 ## Determinism
 

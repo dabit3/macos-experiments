@@ -9,7 +9,7 @@ let package = Package(
         .target(
             name: "MidnightRules",
             path: "Sources",
-            exclude: ["MidnightApp.swift", "Session.swift", "TableView.swift"],
+            exclude: ["Design.swift", "MidnightApp.swift", "Session.swift", "TableView.swift"],
             sources: ["Physics.swift", "GameEngine.swift"]
         ),
         .testTarget(name: "MidnightRulesTests", dependencies: ["MidnightRules"], path: "Tests"),

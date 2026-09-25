@@ -15,19 +15,8 @@ struct WorkspaceRoot: View {
                 default: EmptyView()
                 }
             } else {
-            header
-            if let workspace = session.workspace, workspace.usesTabs { WorkspaceDocumentTabs(workspace: workspace) }
-            HStack(spacing: 0) {
-                VStack(spacing: 8) {
-                    ForEach(StudioTool.allCases) { tool in
-                        Button { if tool != session.tool { AppCoordinator.shared.launch(tool) } } label: {
-                            ToolBadge(tool: tool, size: 32).opacity(tool == session.tool ? 1 : 0.48)
-                        }.buttonStyle(.plain).help(tool.name)
-                    }
-                    Spacer()
-                    Button { AppCoordinator.shared.home() } label: { DevinMark(size: 28) }.buttonStyle(.plain).help("Creative home")
-                }.padding(.vertical, 15).frame(width: 54).background(Theme.sidebar)
-                    .overlay(alignment: .trailing) { Rectangle().fill(Theme.line).frame(width: 1) }
+                header
+                if let workspace = session.workspace, workspace.usesTabs { WorkspaceDocumentTabs(workspace: workspace) }
                 Group {
                     if session.tool.isCanvas { CanvasWorkspace(session: session) }
                     else {
@@ -41,8 +30,7 @@ struct WorkspaceRoot: View {
                         }
                     }
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-            footer
+                footer
             }
         }.background(Theme.background).foregroundStyle(Theme.text).preferredColorScheme(.dark)
             .sheet(isPresented: $session.showExport) { ExportSheet(session: session) }

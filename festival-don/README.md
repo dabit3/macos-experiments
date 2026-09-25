@@ -1,5 +1,7 @@
 # Festival Don
 
+![Festival Don screenshot](screenshots/festival-don.jpg)
+
 A native landscape iPhone drum duel: two guests, one shared song clock, red center notes, blue rim notes, two-hand accents and rolling festival percussion. The interface is drawn natively with animated vector drum mascots, patterned festival scenery, two scrolling staffs, a soul gauge, live rival scores and a confetti result screen.
 
 **Bundle ID:** `ai.devin.festivaldon.rhythm`

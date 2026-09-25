@@ -132,8 +132,20 @@ struct RaceEngine {
   var overtakes = 0
   var feedback = ""
   var feedbackRemaining = 0.0
+  var offRoad = false
   var finished: Bool { drivers.first?.finishTime != nil }
   var player: Driver { drivers[0] }
+  /// Driver indices from leader to last: finishers by time, then everyone else by progress.
+  var standings: [Int] {
+    drivers.indices.sorted { lhs, rhs in
+      let a = drivers[lhs]
+      let b = drivers[rhs]
+      if let at = a.finishTime, let bt = b.finishTime { return at < bt }
+      if a.finishTime != nil { return true }
+      if b.finishTime != nil { return false }
+      return a.tracker.progress > b.tracker.progress
+    }
+  }
   var position: Int {
     guard mode == .picnic else { return 1 }
     return 1
@@ -211,6 +223,7 @@ struct RaceEngine {
       var targetSpeed = isPlayer ? 17.4 : 17.0 + Double(index) * 0.30
       if driver.boost > 0 { targetSpeed = 26 }
       if offRoad { targetSpeed = 8 }
+      if isPlayer { self.offRoad = offRoad }
       if isPlayer && drifting {
         targetSpeed *= 0.90
         if abs(turn) > 0.12 && !offRoad && driver.speed > 10 {
@@ -266,6 +279,9 @@ struct RaceEngine {
         drivers[0].speed *= 0.985
       }
     }
-    if position < oldPosition { overtakes += oldPosition - position }
+    if position < oldPosition {
+      overtakes += oldPosition - position
+      notify(position == 1 ? "YOU LEAD!" : "OVERTAKE!")
+    }
   }
 }

@@ -1,49 +1,36 @@
-A server app built using [Shelf](https://pub.dev/packages/shelf),
-configured to enable running with [Docker](https://www.docker.com/).
+# Brickfolk server
 
-This sample code handles HTTP GET requests to `/` and `/echo/<message>`
+The authoritative Dart server is shared by the native macOS, iPhone and iPad
+clients. It owns identities, social state, room lifecycle, simulation,
+results/checksums and SQLite persistence. Requires Dart 3.13.3 or newer.
 
-# Running the sample
-
-## Running with the Dart SDK
-
-You can run the example with the [Dart SDK](https://dart.dev/get-dart)
-like this:
-
-```
-$ dart run bin/server.dart
-Server listening on port 8080
+```sh
+dart pub get
+dart run bin/server.dart --port 8080 --db brickfolk.sqlite
+curl http://localhost:8080/health
 ```
 
-And then from a second terminal:
-```
-$ curl http://0.0.0.0:8080
-Hello, World!
-$ curl http://0.0.0.0:8080/echo/I_love_Dart
-I_love_Dart
+Connect native clients to `ws://<server>:8080/ws`. Use `--host 127.0.0.1` for
+local-only development; the default `0.0.0.0` permits same-LAN devices.
+
+For isolated protocol tests:
+
+```sh
+dart run bin/server.dart --host 127.0.0.1 --port 8088 --db :memory: \
+  --test-mode --seed 73 --match-length-scale 0.08 --results-ms 1000
 ```
 
-## Running with Docker
+Test mode exposes `/test/state` and `/test/control` and uses a fixed clock.
+Do not enable it on a public service. Normal clients need only `/health` and
+`/ws`. Terminate TLS in a reverse proxy to offer `wss://`.
 
-If you have [Docker Desktop](https://www.docker.com/get-started) installed, you
-can build and run with the `docker` command:
-
-```
-$ docker build . -t myserver
-$ docker run -it -p 8080:8080 myserver
-Server listening on port 8080
-```
-
-And then from a second terminal:
-```
-$ curl http://0.0.0.0:8080
-Hello, World!
-$ curl http://0.0.0.0:8080/echo/I_love_Dart
-I_love_Dart
+```sh
+dart analyze --fatal-infos
+dart test
+# Bundles SQLite's native library through Dart build hooks:
+dart build cli -o build/cli
 ```
 
-You should see the logging printed in the first terminal:
-```
-2021-05-06T15:47:04.620417  0:00:00.000158 GET     [200] /
-2021-05-06T15:47:08.392928  0:00:00.001216 GET     [200] /echo/I_love_Dart
-```
+`tool/export_apple_content.dart` exports shared definitions into the checked-in
+Swift resource; run it after changes to the catalog, rewards or world geometry.
+See [the main README](../README.md) and [protocol](../PROTOCOL.md).

@@ -1,0 +1,566 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05FC055E32E9715F9F7BFF6C /* OFL-JetBrainsMono.txt in Resources */ = {isa = PBXBuildFile; fileRef = EBD32DA2AA6B99391C6C42BA /* OFL-JetBrainsMono.txt */; };
+		05FD57E32E42E88BDC0E4B59 /* ResultsAndHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A15DF48E1CA7F0583516B50 /* ResultsAndHelp.swift */; };
+		0C817BCB0E4D84E558511EAB /* Nunito-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 19A9410BDBCA2764E283FE76 /* Nunito-Black.ttf */; };
+		16B14618FFCA20129288342C /* Nunito-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5180E8C983F257045D4AC0EB /* Nunito-Bold.ttf */; };
+		1AA71F12C33F7890CEF3A5ED /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90F58531A882095B75BD819F /* Configuration.swift */; };
+		1B1CE4D98D46CF4AE98A5FAB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 73AF944D5B96658B7747D77A /* Assets.xcassets */; };
+		1D264A0C48C5F325297D1F49 /* OFL-JetBrainsMono.txt in Resources */ = {isa = PBXBuildFile; fileRef = EBD32DA2AA6B99391C6C42BA /* OFL-JetBrainsMono.txt */; };
+		262E0F3108FB4A541E881C9E /* Nunito-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 31A717FC46171F05DC1BAFF8 /* Nunito-ExtraBold.ttf */; };
+		2C7B162F68DAFDC7FEF35D0A /* GameClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3613FCC5C13C423B22A7606B /* GameClient.swift */; };
+		38C94BB5FB85DF47EFCD0D73 /* OFL-Nunito.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5BDF5C85AF258359093DC3CD /* OFL-Nunito.txt */; };
+		44017BE55BFF94E43D3F19D3 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A6512A2934699FB0E5130F /* Theme.swift */; };
+		4EAFD518E1A37169BF8FCAA4 /* arcade-kitchen.png in Resources */ = {isa = PBXBuildFile; fileRef = 076755226F87BEE9FDFF6562 /* arcade-kitchen.png */; };
+		55E3783FADC3A5D0F9E0AC52 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C8EA3B957CCFB4A57FFFB79 /* Assets.xcassets */; };
+		5CBE2759094EAD02B6A512C9 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90F58531A882095B75BD819F /* Configuration.swift */; };
+		657EA66504413152982A549E /* arcade-kitchen.png in Resources */ = {isa = PBXBuildFile; fileRef = 076755226F87BEE9FDFF6562 /* arcade-kitchen.png */; };
+		684FED5D2FF96B689061C77D /* Nunito-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 19A9410BDBCA2764E283FE76 /* Nunito-Black.ttf */; };
+		6933CAA7173928E4C8E2F068 /* Nunito-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2D14E7A4C5DD350B228534F7 /* Nunito-SemiBold.ttf */; };
+		6F6BA84A512FB55C03A9797F /* PlatformControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9AB8B596322E93F8E6F39E /* PlatformControls.swift */; };
+		709D00457A1243FF71AE638C /* OFL-Nunito.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5BDF5C85AF258359093DC3CD /* OFL-Nunito.txt */; };
+		728909A8B92739DFD40B4383 /* JetBrainsMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0420071ED9F2BD4082F24614 /* JetBrainsMono-Medium.ttf */; };
+		7881E4DB92033E6345E436DF /* Nunito-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 31A717FC46171F05DC1BAFF8 /* Nunito-ExtraBold.ttf */; };
+		79A601CC8170B1BCF0D1E476 /* levels.json in Resources */ = {isa = PBXBuildFile; fileRef = BD9B7BC20C413C2EF60B8354 /* levels.json */; };
+		8267CC826A282D57E8A01DD5 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610A14168103EBC9BD078024 /* Protocol.swift */; };
+		84E2F31B04FD5A22DE9C3F24 /* Nunito-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F383BC99F765D9FD7D097FA2 /* Nunito-Regular.ttf */; };
+		8E615837272339E44D6D4BB9 /* KitchenCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 625C313EA8CD8BF96E990C06 /* KitchenCanvas.swift */; };
+		8FB012F6817F90EC89A68804 /* Nunito-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5180E8C983F257045D4AC0EB /* Nunito-Bold.ttf */; };
+		925094F2C65552438C3C2AA0 /* GameClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3613FCC5C13C423B22A7606B /* GameClient.swift */; };
+		98D2CEB3222BBA331C0C5931 /* PlatformControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9AB8B596322E93F8E6F39E /* PlatformControls.swift */; };
+		A3A5D219D597EC21C393783B /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8207CF0CEC7E3940C197597E /* GameView.swift */; };
+		B33D044C032D87A07A75C275 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCC522E751A8B4A8AC1B783 /* Models.swift */; };
+		B3D496D0DC42638E2FE1F82E /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610A14168103EBC9BD078024 /* Protocol.swift */; };
+		B4E6BC7C55B81259C77222F4 /* levels.json in Resources */ = {isa = PBXBuildFile; fileRef = BD9B7BC20C413C2EF60B8354 /* levels.json */; };
+		B542BE6C2F1CA21103B5B030 /* KitchenCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 625C313EA8CD8BF96E990C06 /* KitchenCanvas.swift */; };
+		B675062E1EB29677ABED85AC /* Nunito-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2D14E7A4C5DD350B228534F7 /* Nunito-SemiBold.ttf */; };
+		CBFAC18F3584C5D888A5EA6B /* Nunito-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F383BC99F765D9FD7D097FA2 /* Nunito-Regular.ttf */; };
+		D82BD982ABB69BD59040D961 /* PanicPantryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93151D5E46566F716BE8A97 /* PanicPantryApp.swift */; };
+		D93A2A3306BE68210006475A /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8207CF0CEC7E3940C197597E /* GameView.swift */; };
+		E2D52A822C8075A815C61CD4 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCC522E751A8B4A8AC1B783 /* Models.swift */; };
+		E6ED4F7690A51F541614FEC9 /* PanicPantryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93151D5E46566F716BE8A97 /* PanicPantryApp.swift */; };
+		E73A179CB8E719B4F1E86011 /* JetBrainsMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0420071ED9F2BD4082F24614 /* JetBrainsMono-Medium.ttf */; };
+		EFEEB156200E5A2B5FAF4F0E /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A6512A2934699FB0E5130F /* Theme.swift */; };
+		FD647A9B646BDAFFD71E9C6F /* ResultsAndHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A15DF48E1CA7F0583516B50 /* ResultsAndHelp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0420071ED9F2BD4082F24614 /* JetBrainsMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "JetBrainsMono-Medium.ttf"; sourceTree = "<group>"; };
+		076755226F87BEE9FDFF6562 /* arcade-kitchen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arcade-kitchen.png"; sourceTree = "<group>"; };
+		19A9410BDBCA2764E283FE76 /* Nunito-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-Black.ttf"; sourceTree = "<group>"; };
+		2C8EA3B957CCFB4A57FFFB79 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2D14E7A4C5DD350B228534F7 /* Nunito-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-SemiBold.ttf"; sourceTree = "<group>"; };
+		31A717FC46171F05DC1BAFF8 /* Nunito-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-ExtraBold.ttf"; sourceTree = "<group>"; };
+		3613FCC5C13C423B22A7606B /* GameClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameClient.swift; sourceTree = "<group>"; };
+		36B410260385D15CEBFA8EDA /* PanicPantry-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "PanicPantry-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5180E8C983F257045D4AC0EB /* Nunito-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-Bold.ttf"; sourceTree = "<group>"; };
+		57A6512A2934699FB0E5130F /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		5BDF5C85AF258359093DC3CD /* OFL-Nunito.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-Nunito.txt"; sourceTree = "<group>"; };
+		610A14168103EBC9BD078024 /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		625C313EA8CD8BF96E990C06 /* KitchenCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KitchenCanvas.swift; sourceTree = "<group>"; };
+		73AF944D5B96658B7747D77A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8207CF0CEC7E3940C197597E /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		90F58531A882095B75BD819F /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		9A15DF48E1CA7F0583516B50 /* ResultsAndHelp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsAndHelp.swift; sourceTree = "<group>"; };
+		A9C59E4A882AB9CAE4909F6F /* PanicPantry-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PanicPantry-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B93151D5E46566F716BE8A97 /* PanicPantryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanicPantryApp.swift; sourceTree = "<group>"; };
+		BD9B7BC20C413C2EF60B8354 /* levels.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = levels.json; sourceTree = "<group>"; };
+		EB9AB8B596322E93F8E6F39E /* PlatformControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformControls.swift; sourceTree = "<group>"; };
+		EBD32DA2AA6B99391C6C42BA /* OFL-JetBrainsMono.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-JetBrainsMono.txt"; sourceTree = "<group>"; };
+		ECCC522E751A8B4A8AC1B783 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		F383BC99F765D9FD7D097FA2 /* Nunito-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-Regular.ttf"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1CBEEA89B4189DF306247138 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				8207CF0CEC7E3940C197597E /* GameView.swift */,
+				625C313EA8CD8BF96E990C06 /* KitchenCanvas.swift */,
+				B93151D5E46566F716BE8A97 /* PanicPantryApp.swift */,
+				EB9AB8B596322E93F8E6F39E /* PlatformControls.swift */,
+				9A15DF48E1CA7F0583516B50 /* ResultsAndHelp.swift */,
+				57A6512A2934699FB0E5130F /* Theme.swift */,
+			);
+			name = App;
+			path = Sources/App;
+			sourceTree = "<group>";
+		};
+		4F303518E5FE27195E23C3C2 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BD9B7BC20C413C2EF60B8354 /* levels.json */,
+			);
+			name = Resources;
+			path = Sources/PantryKit/Resources;
+			sourceTree = "<group>";
+		};
+		4F64C64D0EC7109C4082B211 /* PantryKit */ = {
+			isa = PBXGroup;
+			children = (
+				90F58531A882095B75BD819F /* Configuration.swift */,
+				3613FCC5C13C423B22A7606B /* GameClient.swift */,
+				ECCC522E751A8B4A8AC1B783 /* Models.swift */,
+				610A14168103EBC9BD078024 /* Protocol.swift */,
+			);
+			name = PantryKit;
+			path = Sources/PantryKit;
+			sourceTree = "<group>";
+		};
+		5DEFCDA6F4FDEF6C72668312 /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				0420071ED9F2BD4082F24614 /* JetBrainsMono-Medium.ttf */,
+				19A9410BDBCA2764E283FE76 /* Nunito-Black.ttf */,
+				5180E8C983F257045D4AC0EB /* Nunito-Bold.ttf */,
+				31A717FC46171F05DC1BAFF8 /* Nunito-ExtraBold.ttf */,
+				F383BC99F765D9FD7D097FA2 /* Nunito-Regular.ttf */,
+				2D14E7A4C5DD350B228534F7 /* Nunito-SemiBold.ttf */,
+				EBD32DA2AA6B99391C6C42BA /* OFL-JetBrainsMono.txt */,
+				5BDF5C85AF258359093DC3CD /* OFL-Nunito.txt */,
+			);
+			path = fonts;
+			sourceTree = "<group>";
+		};
+		C092977AC58D5CE2CB368EA5 /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				73AF944D5B96658B7747D77A /* Assets.xcassets */,
+			);
+			name = macOS;
+			path = Assets/macOS;
+			sourceTree = "<group>";
+		};
+		D528EAA4266733796C951963 = {
+			isa = PBXGroup;
+			children = (
+				1CBEEA89B4189DF306247138 /* App */,
+				F8E0BB26A7ECAF2E4D865AC7 /* iOS */,
+				C092977AC58D5CE2CB368EA5 /* macOS */,
+				4F64C64D0EC7109C4082B211 /* PantryKit */,
+				E922674FCAE2FB9E48F1A5F4 /* Resources */,
+				4F303518E5FE27195E23C3C2 /* Resources */,
+				F13931F7545115B435B58472 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E922674FCAE2FB9E48F1A5F4 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				076755226F87BEE9FDFF6562 /* arcade-kitchen.png */,
+				5DEFCDA6F4FDEF6C72668312 /* fonts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F13931F7545115B435B58472 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				36B410260385D15CEBFA8EDA /* PanicPantry-iOS.app */,
+				A9C59E4A882AB9CAE4909F6F /* PanicPantry-macOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F8E0BB26A7ECAF2E4D865AC7 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				2C8EA3B957CCFB4A57FFFB79 /* Assets.xcassets */,
+			);
+			name = iOS;
+			path = Assets/iOS;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		14147DDD200C78FFC6C74A2F /* PanicPantry-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0ECF58402337F7D1C7036199 /* Build configuration list for PBXNativeTarget "PanicPantry-macOS" */;
+			buildPhases = (
+				0B6C69F7D127A3FB206C8152 /* Sources */,
+				F4CE251E7159A405B61EBE42 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "PanicPantry-macOS";
+			packageProductDependencies = (
+			);
+			productName = "PanicPantry-macOS";
+			productReference = A9C59E4A882AB9CAE4909F6F /* PanicPantry-macOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		3B00CF911A8AD56233306659 /* PanicPantry-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 39B47A1F8B017A0A54B5B1B2 /* Build configuration list for PBXNativeTarget "PanicPantry-iOS" */;
+			buildPhases = (
+				A931981657329FF87044C755 /* Sources */,
+				4C0736FBC5E58A482205DD7F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "PanicPantry-iOS";
+			packageProductDependencies = (
+			);
+			productName = "PanicPantry-iOS";
+			productReference = 36B410260385D15CEBFA8EDA /* PanicPantry-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BFF64766DE88B5A0923B9DBE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					14147DDD200C78FFC6C74A2F = {
+						ProvisioningStyle = Automatic;
+					};
+					3B00CF911A8AD56233306659 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = D0E4D45D98C9AA5A9A841CAD /* Build configuration list for PBXProject "PanicPantry" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = D528EAA4266733796C951963;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F13931F7545115B435B58472 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3B00CF911A8AD56233306659 /* PanicPantry-iOS */,
+				14147DDD200C78FFC6C74A2F /* PanicPantry-macOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4C0736FBC5E58A482205DD7F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55E3783FADC3A5D0F9E0AC52 /* Assets.xcassets in Resources */,
+				E73A179CB8E719B4F1E86011 /* JetBrainsMono-Medium.ttf in Resources */,
+				0C817BCB0E4D84E558511EAB /* Nunito-Black.ttf in Resources */,
+				16B14618FFCA20129288342C /* Nunito-Bold.ttf in Resources */,
+				262E0F3108FB4A541E881C9E /* Nunito-ExtraBold.ttf in Resources */,
+				CBFAC18F3584C5D888A5EA6B /* Nunito-Regular.ttf in Resources */,
+				6933CAA7173928E4C8E2F068 /* Nunito-SemiBold.ttf in Resources */,
+				05FC055E32E9715F9F7BFF6C /* OFL-JetBrainsMono.txt in Resources */,
+				709D00457A1243FF71AE638C /* OFL-Nunito.txt in Resources */,
+				657EA66504413152982A549E /* arcade-kitchen.png in Resources */,
+				79A601CC8170B1BCF0D1E476 /* levels.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4CE251E7159A405B61EBE42 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1B1CE4D98D46CF4AE98A5FAB /* Assets.xcassets in Resources */,
+				728909A8B92739DFD40B4383 /* JetBrainsMono-Medium.ttf in Resources */,
+				684FED5D2FF96B689061C77D /* Nunito-Black.ttf in Resources */,
+				8FB012F6817F90EC89A68804 /* Nunito-Bold.ttf in Resources */,
+				7881E4DB92033E6345E436DF /* Nunito-ExtraBold.ttf in Resources */,
+				84E2F31B04FD5A22DE9C3F24 /* Nunito-Regular.ttf in Resources */,
+				B675062E1EB29677ABED85AC /* Nunito-SemiBold.ttf in Resources */,
+				1D264A0C48C5F325297D1F49 /* OFL-JetBrainsMono.txt in Resources */,
+				38C94BB5FB85DF47EFCD0D73 /* OFL-Nunito.txt in Resources */,
+				4EAFD518E1A37169BF8FCAA4 /* arcade-kitchen.png in Resources */,
+				B4E6BC7C55B81259C77222F4 /* levels.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0B6C69F7D127A3FB206C8152 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5CBE2759094EAD02B6A512C9 /* Configuration.swift in Sources */,
+				925094F2C65552438C3C2AA0 /* GameClient.swift in Sources */,
+				D93A2A3306BE68210006475A /* GameView.swift in Sources */,
+				8E615837272339E44D6D4BB9 /* KitchenCanvas.swift in Sources */,
+				B33D044C032D87A07A75C275 /* Models.swift in Sources */,
+				E6ED4F7690A51F541614FEC9 /* PanicPantryApp.swift in Sources */,
+				98D2CEB3222BBA331C0C5931 /* PlatformControls.swift in Sources */,
+				B3D496D0DC42638E2FE1F82E /* Protocol.swift in Sources */,
+				05FD57E32E42E88BDC0E4B59 /* ResultsAndHelp.swift in Sources */,
+				EFEEB156200E5A2B5FAF4F0E /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A931981657329FF87044C755 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1AA71F12C33F7890CEF3A5ED /* Configuration.swift in Sources */,
+				2C7B162F68DAFDC7FEF35D0A /* GameClient.swift in Sources */,
+				A3A5D219D597EC21C393783B /* GameView.swift in Sources */,
+				B542BE6C2F1CA21103B5B030 /* KitchenCanvas.swift in Sources */,
+				E2D52A822C8075A815C61CD4 /* Models.swift in Sources */,
+				D82BD982ABB69BD59040D961 /* PanicPantryApp.swift in Sources */,
+				6F6BA84A512FB55C03A9797F /* PlatformControls.swift in Sources */,
+				8267CC826A282D57E8A01DD5 /* Protocol.swift in Sources */,
+				FD647A9B646BDAFFD71E9C6F /* ResultsAndHelp.swift in Sources */,
+				44017BE55BFF94E43D3F19D3 /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		53C7A0C52BDCA9F9F4D02477 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/macOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "Config/macOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		5EC9A429844969140D3B5E2E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.panicpantry.panicPantry;
+				PRODUCT_NAME = PanicPantry;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		730210E920AB665B607B5BC1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "Config/iOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		830E6B38AA1D58DE9CE15721 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.panicpantry.panicPantry;
+				PRODUCT_NAME = PanicPantry;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		9E30C2E21D5A62E90CA231DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "Config/iOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		E2FE02CAE374014E1CFC1D0A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/macOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "Config/macOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0ECF58402337F7D1C7036199 /* Build configuration list for PBXNativeTarget "PanicPantry-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				53C7A0C52BDCA9F9F4D02477 /* Debug */,
+				E2FE02CAE374014E1CFC1D0A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		39B47A1F8B017A0A54B5B1B2 /* Build configuration list for PBXNativeTarget "PanicPantry-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				730210E920AB665B607B5BC1 /* Debug */,
+				9E30C2E21D5A62E90CA231DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D0E4D45D98C9AA5A9A841CAD /* Build configuration list for PBXProject "PanicPantry" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				830E6B38AA1D58DE9CE15721 /* Debug */,
+				5EC9A429844969140D3B5E2E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BFF64766DE88B5A0923B9DBE /* Project object */;
+}

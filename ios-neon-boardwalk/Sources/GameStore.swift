@@ -2,6 +2,12 @@ import AVFoundation
 import Combine
 import UIKit
 
+struct Banner: Equatable {
+  let title: String
+  let detail: String
+  let isRecord: Bool
+}
+
 @MainActor
 final class GameStore: NSObject, ObservableObject {
   let world = BoardwalkScene()
@@ -10,7 +16,17 @@ final class GameStore: NSObject, ObservableObject {
   private(set) var newBest = false
   private(set) var previousBest = 0
   private(set) var shieldBreakTime = 0.0
-  @Published var showGuide = false
+  private(set) var countdown = 0.0
+  private(set) var banner: Banner?
+  private var bannerTime = 0.0
+  private var announcedBest = false
+  private var districtIndex = 0
+  @Published var showGuide: Bool {
+    didSet { if !showGuide { defaults.set(true, forKey: "boardwalk.guideSeen") } }
+  }
+  @Published var showControls: Bool {
+    didSet { defaults.set(showControls, forKey: "boardwalk.controls") }
+  }
   @Published var sound: Bool {
     didSet { defaults.set(sound, forKey: "boardwalk.sound") }
   }
@@ -32,6 +48,8 @@ final class GameStore: NSObject, ObservableObject {
       record = RunSnapshot()
     }
     sound = defaults.object(forKey: "boardwalk.sound") as? Bool ?? true
+    showControls = defaults.object(forKey: "boardwalk.controls") as? Bool ?? true
+    showGuide = record.runs == 0 && !defaults.bool(forKey: "boardwalk.guideSeen")
     super.init()
     try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
     displayLink = CADisplayLink(target: self, selector: #selector(frame(_:)))
@@ -44,6 +62,10 @@ final class GameStore: NSObject, ObservableObject {
     engine.start()
     newBest = false
     shieldBreakTime = 0
+    countdown = 0
+    banner = nil
+    announcedBest = false
+    districtIndex = 0
     showGuide = false
     previousTime = 0
     objectWillChange.send()
@@ -52,18 +74,76 @@ final class GameStore: NSObject, ObservableObject {
 
   func home() {
     engine = RunnerEngine()
+    countdown = 0
+    banner = nil
     objectWillChange.send()
   }
 
   func pause() {
     engine.pause()
+    countdown = 0
     objectWillChange.send()
   }
 
+  /// Resumes after a short 3-2-1 count so the rider is never hit the instant play restarts.
   func resume() {
-    engine.resume()
+    guard engine.phase == .paused, countdown == 0 else { return }
+    countdown = Self.countdownLength
     previousTime = 0
+    tone(520, duration: 0.06)
     objectWillChange.send()
+  }
+
+  static let countdownLength = 2.4
+
+  static func district(for distance: Double) -> (index: Int, name: String) {
+    let names = [
+      "SUNSET STRIP", "ELECTRIC MILE", "AFTER HOURS", "MIDNIGHT PIER", "STARLIGHT COAST",
+    ]
+    let limits = [500.0, 1_500, 4_000, 8_000]
+    let index = limits.firstIndex { distance < $0 } ?? limits.count
+    return (index, names[index])
+  }
+
+  private func show(_ next: Banner) {
+    banner = next
+    bannerTime = 2.6
+  }
+
+  private func tickCountdown(_ delta: Double) {
+    guard countdown > 0 else { return }
+    let step = Self.countdownLength / 3
+    let before = ceil(countdown / step)
+    countdown = max(0, countdown - delta)
+    if countdown == 0 {
+      engine.resume()
+      tone(780, duration: 0.1)
+    } else if ceil(countdown / step) < before {
+      tone(520, duration: 0.06)
+    }
+  }
+
+  private func trackMilestones(_ delta: Double) {
+    guard engine.phase == .running else { return }
+    let district = Self.district(for: engine.distance)
+    if district.index != districtIndex {
+      districtIndex = district.index
+      show(
+        Banner(
+          title: district.name, detail: "District 0\(district.index + 1) · the pace picks up",
+          isRecord: false))
+      tone(600, duration: 0.12)
+    }
+    if !announcedBest, record.bestDistance > 0, Int(engine.distance) > record.bestDistance {
+      announcedBest = true
+      show(
+        Banner(
+          title: "NEW PERSONAL BEST", detail: "Every metre from here is a record", isRecord: true))
+      tone(990, duration: 0.22)
+      UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+    bannerTime = max(0, bannerTime - delta)
+    if bannerTime == 0 { banner = nil }
   }
 
   func move(_ move: Move) {
@@ -82,7 +162,9 @@ final class GameStore: NSObject, ObservableObject {
     let oldShield = engine.shieldsCollected
     let oldGrace = engine.graceTime
     let oldPhase = engine.phase
+    tickCountdown(delta)
     engine.advance(delta)
+    trackMilestones(delta)
     if engine.phase == .running { shieldBreakTime = max(0, shieldBreakTime - delta) }
     if engine.graceTime > oldGrace {
       shieldBreakTime = 2

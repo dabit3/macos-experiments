@@ -353,4 +353,42 @@ void main() {
         .firstWhere((p) => p['platform'] == 'android');
     expect(me['placement'], greaterThan(1));
   });
+
+  test('host role passes to a connected player when the host drops mid-match',
+      () async {
+    final a = await connect('macos');
+    final b = await connect('ios');
+    a.send({
+      't': Protocol.createRoom,
+      'mode': 'duos',
+      'fast': true,
+      'seed': 11,
+      'code': 'HOSTX'
+    });
+    await a.waitFor(Protocol.roomState);
+    b.send({'t': Protocol.joinRoom, 'code': 'HOSTX'});
+    await b.waitFor(Protocol.roomState);
+    a.send({'t': Protocol.startMatch, 'fill': 4, 'countdownMs': 0});
+    await a.waitFor('you');
+    await b.waitFor('you');
+    final room = server.rooms['HOSTX']!;
+    room.paused = true;
+    await a.channel.sink.close();
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    b.drain(Protocol.roomState);
+    for (var i = 0; i < 20000 && !room.ended; i++) {
+      room.stepOnce();
+    }
+    expect(room.ended, isTrue);
+    await b.waitFor(Protocol.matchEnd);
+    final rs = await b.waitFor(Protocol.roomState);
+    final me = (rs['players'] as List<Object?>)
+        .cast<Map<String, Object?>>()
+        .firstWhere((p) => p['id'] == rs['you']);
+    expect(me['host'], isTrue);
+    b.send({'t': 'returnToLobby'});
+    final lobby = await b.waitFor(Protocol.roomState);
+    expect(lobby['phase'], 'lobby');
+    await b.channel.sink.close();
+  });
 }

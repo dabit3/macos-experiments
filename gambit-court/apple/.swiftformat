@@ -1,0 +1,5 @@
+--swiftversion 5.9
+--indent 4
+--self remove
+--stripunusedargs closure-only
+--exclude .build,build,GambitCourt.xcodeproj,Resources

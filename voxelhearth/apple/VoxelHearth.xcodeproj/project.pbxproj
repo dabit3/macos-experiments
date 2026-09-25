@@ -1,0 +1,789 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02EC91151748D83FA6AA0040 /* OFL-Fraunces.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1E8AA905AADBCBC7CDB733EC /* OFL-Fraunces.txt */; };
+		0E1EA120775FCECEA33B7BAB /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93871ECAB95CF0F5616F24E7 /* Renderer.swift */; };
+		13076172217EA83CA5F56173 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9979D695FDF868DBDD8E1 /* Game.swift */; };
+		1B8FEBAAD7F4EE6DD476A53F /* eat.wav in Resources */ = {isa = PBXBuildFile; fileRef = 717A34D8863752895B267460 /* eat.wav */; };
+		1BA8766DB8D0235E3D49C262 /* HearthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 47524E39A8CDF8EC6B14542F /* HearthCore */; };
+		1C88F026696DDE4AEBC7E96E /* GameScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268674500BF1647D6BE89B88 /* GameScreens.swift */; };
+		1F459101F316DFC3D68EE5C6 /* atlas.rgba in Resources */ = {isa = PBXBuildFile; fileRef = F53B8894178422D47F50A915 /* atlas.rgba */; };
+		25C135AFFB558063AEC4BF2F /* chat.wav in Resources */ = {isa = PBXBuildFile; fileRef = FD852CAA266BD380DC4D4BB0 /* chat.wav */; };
+		27B056ADD2BB683F8CD6C959 /* hurt.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2694F6E805A209C45D560E98 /* hurt.wav */; };
+		28ADCDE4D8B5137B930160DA /* hearth-keyart.png in Resources */ = {isa = PBXBuildFile; fileRef = 517B4A40440394DAE34EC96B /* hearth-keyart.png */; };
+		2B11E78FBE1CC804DB1ED066 /* match_end.wav in Resources */ = {isa = PBXBuildFile; fileRef = E0E3FAE8581CC05F6EA74C3F /* match_end.wav */; };
+		2D309E3E79B381C57DE01EC6 /* break_soft.wav in Resources */ = {isa = PBXBuildFile; fileRef = 47AF9D8E444DDCE00AC5EE5C /* break_soft.wav */; };
+		2DA39D2F64F62909728608F3 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9979D695FDF868DBDD8E1 /* Game.swift */; };
+		2DC4BDF7AFCD941C9D686EE6 /* night.wav in Resources */ = {isa = PBXBuildFile; fileRef = C7444CBD88364B0F574AD661 /* night.wav */; };
+		2EFE7A24A9D3C12F636154A5 /* chat.wav in Resources */ = {isa = PBXBuildFile; fileRef = FD852CAA266BD380DC4D4BB0 /* chat.wav */; };
+		2F30B6C856DC877B68B45201 /* smelt.wav in Resources */ = {isa = PBXBuildFile; fileRef = 93E6EDDAE74E0BCBDDE7BB35 /* smelt.wav */; };
+		2F55AE10ECEB28B2A304C0A1 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93871ECAB95CF0F5616F24E7 /* Renderer.swift */; };
+		338906C13E184CC53D47BAD2 /* match_start.wav in Resources */ = {isa = PBXBuildFile; fileRef = 566837FEB42CF547E48243E1 /* match_start.wav */; };
+		33ACE7595DBEB5F43707D8C7 /* Outfit-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D2D4767A7D6AD3E1BC3CE2D4 /* Outfit-Variable.ttf */; };
+		3463CB53BE99C4428FCA6BAE /* break_hard.wav in Resources */ = {isa = PBXBuildFile; fileRef = F465D9762A06D87654A29E3B /* break_hard.wav */; };
+		388A317D9BE7695F996AEBBA /* ui_confirm.wav in Resources */ = {isa = PBXBuildFile; fileRef = F5184BC5D2A4ECE2D3FC3D46 /* ui_confirm.wav */; };
+		3AD01F4DBAEDF15BBFEE37BD /* match_end.wav in Resources */ = {isa = PBXBuildFile; fileRef = E0E3FAE8581CC05F6EA74C3F /* match_end.wav */; };
+		3BAA0A53C3D68D9C02973BF2 /* ui_tap.wav in Resources */ = {isa = PBXBuildFile; fileRef = B3781818B9AC80670718F421 /* ui_tap.wav */; };
+		3E83BFB4E7B164179946C0EF /* pickup.wav in Resources */ = {isa = PBXBuildFile; fileRef = 68A6A2A3F6E519F6A7542672 /* pickup.wav */; };
+		47CBD42230E3AB7D42CD0F60 /* OFL-Outfit.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09BAF94B64BD21ED1E0F9B1A /* OFL-Outfit.txt */; };
+		4865CEB62D9CF102DE4FD021 /* tiles.rgba in Resources */ = {isa = PBXBuildFile; fileRef = 4F973405EE57CD41ED3F7347 /* tiles.rgba */; };
+		4881C4C13310052D51647AF7 /* dig.wav in Resources */ = {isa = PBXBuildFile; fileRef = D4B5B477D6F41EDEEB38C159 /* dig.wav */; };
+		4E05511C34014E13FA856250 /* HearthApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA756A48E053111C6993A8A /* HearthApp.swift */; };
+		54299F003D4CEE055649779D /* Voxel.metal in Sources */ = {isa = PBXBuildFile; fileRef = 700E1E2DC5A049CD82D6E78B /* Voxel.metal */; };
+		58D853D6C9DD513BCFD0933E /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEC2CD5F300864FDCFBDF32 /* Session.swift */; };
+		58EF37D2BFF0500BC5ED32F1 /* night.wav in Resources */ = {isa = PBXBuildFile; fileRef = C7444CBD88364B0F574AD661 /* night.wav */; };
+		5C5DF1C9491B94BC41D36D55 /* hearth-keyart.png in Resources */ = {isa = PBXBuildFile; fileRef = 517B4A40440394DAE34EC96B /* hearth-keyart.png */; };
+		5D62DF778ADB26138B389E89 /* NativeViewport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2004F762892D992BA6C32464 /* NativeViewport.swift */; };
+		6A189336BEA2E46976B7D0FA /* break_soft.wav in Resources */ = {isa = PBXBuildFile; fileRef = 47AF9D8E444DDCE00AC5EE5C /* break_soft.wav */; };
+		6CD40BD2D80D1BD89D3DEAC9 /* NativeViewport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2004F762892D992BA6C32464 /* NativeViewport.swift */; };
+		6E99CDA9D12C8C85DCD78EE6 /* eat.wav in Resources */ = {isa = PBXBuildFile; fileRef = 717A34D8863752895B267460 /* eat.wav */; };
+		7318F3046FA0F0165F5E795D /* place.wav in Resources */ = {isa = PBXBuildFile; fileRef = BE4D0A9D8C318B58AB256C09 /* place.wav */; };
+		7AA424CB572410FB793DB3CC /* ui_tap.wav in Resources */ = {isa = PBXBuildFile; fileRef = B3781818B9AC80670718F421 /* ui_tap.wav */; };
+		7FB26C0ED7500FEB3F3D30E0 /* PixelifySans-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7E20519FC3B2CEF3F2D918A /* PixelifySans-Variable.ttf */; };
+		8213A6A9FEFD90E77FAF01F0 /* ready.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1B0C311FE8488D2E47ECB909 /* ready.wav */; };
+		87610EB04BFE70AA499B6F34 /* match_start.wav in Resources */ = {isa = PBXBuildFile; fileRef = 566837FEB42CF547E48243E1 /* match_start.wav */; };
+		8E89982409586135F7F60656 /* OFL-Outfit.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09BAF94B64BD21ED1E0F9B1A /* OFL-Outfit.txt */; };
+		92EF1788FD133312E1315B97 /* OFL-Fraunces.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1E8AA905AADBCBC7CDB733EC /* OFL-Fraunces.txt */; };
+		941E581EE03DA4E268703305 /* OFL-PixelifySans.txt in Resources */ = {isa = PBXBuildFile; fileRef = 55F74D9399F960A65E5A6719 /* OFL-PixelifySans.txt */; };
+		9AAEA3094F997CBC6B7E6B84 /* break_hard.wav in Resources */ = {isa = PBXBuildFile; fileRef = F465D9762A06D87654A29E3B /* break_hard.wav */; };
+		9B08D53F324C3B50ED756B7A /* hurt.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2694F6E805A209C45D560E98 /* hurt.wav */; };
+		9B9818901E5E5564E2EEE8AB /* OFL-PixelifySans.txt in Resources */ = {isa = PBXBuildFile; fileRef = 55F74D9399F960A65E5A6719 /* OFL-PixelifySans.txt */; };
+		9C12E09911F8E9D9F36DAD1A /* place.wav in Resources */ = {isa = PBXBuildFile; fileRef = BE4D0A9D8C318B58AB256C09 /* place.wav */; };
+		9FFDFD31B8E8B8174F73EAF3 /* tiles.rgba in Resources */ = {isa = PBXBuildFile; fileRef = 4F973405EE57CD41ED3F7347 /* tiles.rgba */; };
+		A10078D42CFE42F1860C8D88 /* craft.wav in Resources */ = {isa = PBXBuildFile; fileRef = A1F6D8F30580C7F4337AEEE0 /* craft.wav */; };
+		A144E16DC871EC2EFFEEB2C1 /* atlas.rgba in Resources */ = {isa = PBXBuildFile; fileRef = F53B8894178422D47F50A915 /* atlas.rgba */; };
+		B12CDC5F0BB1B67AE52A8674 /* Fraunces-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E74E5EC6CC3192B7389E4E62 /* Fraunces-Variable.ttf */; };
+		B1748E5171A7D8DC7AF693A6 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEC2CD5F300864FDCFBDF32 /* Session.swift */; };
+		B2BE7B7A72C46603F32AE35F /* macOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82D761FECE4ECB80E2725689 /* macOS.xcassets */; };
+		B32CAA0A9B6074611AD7BD48 /* sleep.wav in Resources */ = {isa = PBXBuildFile; fileRef = A479B17972E5F2350BB8D708 /* sleep.wav */; };
+		B52266221244906A37165212 /* sleep.wav in Resources */ = {isa = PBXBuildFile; fileRef = A479B17972E5F2350BB8D708 /* sleep.wav */; };
+		BBC7BEBD9A22BE384C14097C /* ui_back.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2D501E5AFA4C230F3C8DBE8F /* ui_back.wav */; };
+		BD41E4A4227BA491F22D1A23 /* splash.wav in Resources */ = {isa = PBXBuildFile; fileRef = 32CDDDD90A0DFCA3AC68D661 /* splash.wav */; };
+		C0173F6F7A8A251BD1E0AD2A /* Fraunces-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E74E5EC6CC3192B7389E4E62 /* Fraunces-Variable.ttf */; };
+		C06688C9225AD1A2FB296058 /* PixelifySans-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7E20519FC3B2CEF3F2D918A /* PixelifySans-Variable.ttf */; };
+		CA170DEF5DFE4707C0DC01EB /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9979D695FDF868DBDD8E1 /* Game.swift */; };
+		CBEA2D0A037A579A452CF9DD /* ready.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1B0C311FE8488D2E47ECB909 /* ready.wav */; };
+		CDBDCD8B7708A30A54BCAF4A /* HearthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 7300E46E4BC7B207128E63A3 /* HearthCore */; };
+		CE9362BC9387C3714E7A8265 /* smelt.wav in Resources */ = {isa = PBXBuildFile; fileRef = 93E6EDDAE74E0BCBDDE7BB35 /* smelt.wav */; };
+		D0EA96015EAAA33D1DD39E10 /* dig.wav in Resources */ = {isa = PBXBuildFile; fileRef = D4B5B477D6F41EDEEB38C159 /* dig.wav */; };
+		D3108449E59CF5585A167098 /* Outfit-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D2D4767A7D6AD3E1BC3CE2D4 /* Outfit-Variable.ttf */; };
+		D85C2249F908F831E81BFD3E /* pickup.wav in Resources */ = {isa = PBXBuildFile; fileRef = 68A6A2A3F6E519F6A7542672 /* pickup.wav */; };
+		DBEE6B1C3ADF9C2DBB12BCBA /* HearthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 75FA42F7FA059F5A6964A569 /* HearthCore */; };
+		E0259A259A601C03DDE560BD /* HearthApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA756A48E053111C6993A8A /* HearthApp.swift */; };
+		E82AC2827C5FB2F5FBD31FA0 /* ui_confirm.wav in Resources */ = {isa = PBXBuildFile; fileRef = F5184BC5D2A4ECE2D3FC3D46 /* ui_confirm.wav */; };
+		F22C0E651425859D8E324363 /* splash.wav in Resources */ = {isa = PBXBuildFile; fileRef = 32CDDDD90A0DFCA3AC68D661 /* splash.wav */; };
+		F3FEE4A95EB0DE2D2C34C1B2 /* iOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF9B97ECE7989DF0AD8CB57C /* iOS.xcassets */; };
+		F8AD24B5FC4A413AC155A1C9 /* craft.wav in Resources */ = {isa = PBXBuildFile; fileRef = A1F6D8F30580C7F4337AEEE0 /* craft.wav */; };
+		FA0746BDEE566C6438146003 /* ui_back.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2D501E5AFA4C230F3C8DBE8F /* ui_back.wav */; };
+		FC25699F09164269AA68F54C /* ClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA3F0F81F9D683BA2A5951A /* ClientTests.swift */; };
+		FCC1DBDE4CA35B3411D9D532 /* Voxel.metal in Sources */ = {isa = PBXBuildFile; fileRef = 700E1E2DC5A049CD82D6E78B /* Voxel.metal */; };
+		FCDD0B542EDBA7CF51F6D090 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEC2CD5F300864FDCFBDF32 /* Session.swift */; };
+		FFFB04B29DAB4AD20F95799C /* GameScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268674500BF1647D6BE89B88 /* GameScreens.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		029EF5EA65768CAA315F1FC5 /* VoxelHearth-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VoxelHearth-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		09BAF94B64BD21ED1E0F9B1A /* OFL-Outfit.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-Outfit.txt"; sourceTree = "<group>"; };
+		1B0C311FE8488D2E47ECB909 /* ready.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ready.wav; sourceTree = "<group>"; };
+		1E8AA905AADBCBC7CDB733EC /* OFL-Fraunces.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-Fraunces.txt"; sourceTree = "<group>"; };
+		2004F762892D992BA6C32464 /* NativeViewport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeViewport.swift; sourceTree = "<group>"; };
+		25F7074AC77DCF8D53C57BA9 /* VoxelHearth-LogicTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VoxelHearth-LogicTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		268674500BF1647D6BE89B88 /* GameScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScreens.swift; sourceTree = "<group>"; };
+		2694F6E805A209C45D560E98 /* hurt.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hurt.wav; sourceTree = "<group>"; };
+		2D501E5AFA4C230F3C8DBE8F /* ui_back.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ui_back.wav; sourceTree = "<group>"; };
+		32CDDDD90A0DFCA3AC68D661 /* splash.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = splash.wav; sourceTree = "<group>"; };
+		47AF9D8E444DDCE00AC5EE5C /* break_soft.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = break_soft.wav; sourceTree = "<group>"; };
+		4AA756A48E053111C6993A8A /* HearthApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HearthApp.swift; sourceTree = "<group>"; };
+		4F973405EE57CD41ED3F7347 /* tiles.rgba */ = {isa = PBXFileReference; path = tiles.rgba; sourceTree = "<group>"; };
+		517B4A40440394DAE34EC96B /* hearth-keyart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "hearth-keyart.png"; sourceTree = "<group>"; };
+		55F74D9399F960A65E5A6719 /* OFL-PixelifySans.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-PixelifySans.txt"; sourceTree = "<group>"; };
+		566837FEB42CF547E48243E1 /* match_start.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = match_start.wav; sourceTree = "<group>"; };
+		57A9979D695FDF868DBDD8E1 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
+		5BEC2CD5F300864FDCFBDF32 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
+		68A6A2A3F6E519F6A7542672 /* pickup.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = pickup.wav; sourceTree = "<group>"; };
+		700E1E2DC5A049CD82D6E78B /* Voxel.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Voxel.metal; sourceTree = "<group>"; };
+		717A34D8863752895B267460 /* eat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = eat.wav; sourceTree = "<group>"; };
+		82D761FECE4ECB80E2725689 /* macOS.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = macOS.xcassets; sourceTree = "<group>"; };
+		93871ECAB95CF0F5616F24E7 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		93E6EDDAE74E0BCBDDE7BB35 /* smelt.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = smelt.wav; sourceTree = "<group>"; };
+		A1F6D8F30580C7F4337AEEE0 /* craft.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = craft.wav; sourceTree = "<group>"; };
+		A479B17972E5F2350BB8D708 /* sleep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sleep.wav; sourceTree = "<group>"; };
+		B047E924D804476D449BD470 /* VoxelHearth-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "VoxelHearth-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3781818B9AC80670718F421 /* ui_tap.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ui_tap.wav; sourceTree = "<group>"; };
+		BE4D0A9D8C318B58AB256C09 /* place.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = place.wav; sourceTree = "<group>"; };
+		C7444CBD88364B0F574AD661 /* night.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = night.wav; sourceTree = "<group>"; };
+		CF9B97ECE7989DF0AD8CB57C /* iOS.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = iOS.xcassets; sourceTree = "<group>"; };
+		D2D4767A7D6AD3E1BC3CE2D4 /* Outfit-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Outfit-Variable.ttf"; sourceTree = "<group>"; };
+		D4B5B477D6F41EDEEB38C159 /* dig.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = dig.wav; sourceTree = "<group>"; };
+		DEA3F0F81F9D683BA2A5951A /* ClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTests.swift; sourceTree = "<group>"; };
+		E0E3FAE8581CC05F6EA74C3F /* match_end.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = match_end.wav; sourceTree = "<group>"; };
+		E74E5EC6CC3192B7389E4E62 /* Fraunces-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Fraunces-Variable.ttf"; sourceTree = "<group>"; };
+		F465D9762A06D87654A29E3B /* break_hard.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = break_hard.wav; sourceTree = "<group>"; };
+		F5184BC5D2A4ECE2D3FC3D46 /* ui_confirm.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ui_confirm.wav; sourceTree = "<group>"; };
+		F53B8894178422D47F50A915 /* atlas.rgba */ = {isa = PBXFileReference; path = atlas.rgba; sourceTree = "<group>"; };
+		F7E20519FC3B2CEF3F2D918A /* PixelifySans-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PixelifySans-Variable.ttf"; sourceTree = "<group>"; };
+		FD852CAA266BD380DC4D4BB0 /* chat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = chat.wav; sourceTree = "<group>"; };
+		FFE5ADB5234C114583F925CD /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Core; path = Core; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3A053CFFCB46793C67319013 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1BA8766DB8D0235E3D49C262 /* HearthCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D44DD70A105A82035974FE1C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DBEE6B1C3ADF9C2DBB12BCBA /* HearthCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5D37461D400542B1B0BDE55 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CDBDCD8B7708A30A54BCAF4A /* HearthCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0294F6549CF0FA7DF8DF7036 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				FFE5ADB5234C114583F925CD /* Core */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		485EDF39083B5D3812AC2D11 = {
+			isa = PBXGroup;
+			children = (
+				0294F6549CF0FA7DF8DF7036 /* Packages */,
+				83800949FB5E3F8654CB77F4 /* Resources */,
+				EE4C0F66437CDBBAEA04F569 /* Sources */,
+				60811077D7EB791DC1E2AD25 /* Tests */,
+				57042CC2F76E7F02542C901B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		57042CC2F76E7F02542C901B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B047E924D804476D449BD470 /* VoxelHearth-iOS.app */,
+				25F7074AC77DCF8D53C57BA9 /* VoxelHearth-LogicTests.xctest */,
+				029EF5EA65768CAA315F1FC5 /* VoxelHearth-macOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		60811077D7EB791DC1E2AD25 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				DEA3F0F81F9D683BA2A5951A /* ClientTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		83800949FB5E3F8654CB77F4 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F53B8894178422D47F50A915 /* atlas.rgba */,
+				517B4A40440394DAE34EC96B /* hearth-keyart.png */,
+				CF9B97ECE7989DF0AD8CB57C /* iOS.xcassets */,
+				82D761FECE4ECB80E2725689 /* macOS.xcassets */,
+				4F973405EE57CD41ED3F7347 /* tiles.rgba */,
+				9E05AE2CCAE75C9681E897FC /* audio */,
+				EA15B6D284CDED46DC2A5EA7 /* fonts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		9E05AE2CCAE75C9681E897FC /* audio */ = {
+			isa = PBXGroup;
+			children = (
+				F465D9762A06D87654A29E3B /* break_hard.wav */,
+				47AF9D8E444DDCE00AC5EE5C /* break_soft.wav */,
+				FD852CAA266BD380DC4D4BB0 /* chat.wav */,
+				A1F6D8F30580C7F4337AEEE0 /* craft.wav */,
+				D4B5B477D6F41EDEEB38C159 /* dig.wav */,
+				717A34D8863752895B267460 /* eat.wav */,
+				2694F6E805A209C45D560E98 /* hurt.wav */,
+				E0E3FAE8581CC05F6EA74C3F /* match_end.wav */,
+				566837FEB42CF547E48243E1 /* match_start.wav */,
+				C7444CBD88364B0F574AD661 /* night.wav */,
+				68A6A2A3F6E519F6A7542672 /* pickup.wav */,
+				BE4D0A9D8C318B58AB256C09 /* place.wav */,
+				1B0C311FE8488D2E47ECB909 /* ready.wav */,
+				A479B17972E5F2350BB8D708 /* sleep.wav */,
+				93E6EDDAE74E0BCBDDE7BB35 /* smelt.wav */,
+				32CDDDD90A0DFCA3AC68D661 /* splash.wav */,
+				2D501E5AFA4C230F3C8DBE8F /* ui_back.wav */,
+				F5184BC5D2A4ECE2D3FC3D46 /* ui_confirm.wav */,
+				B3781818B9AC80670718F421 /* ui_tap.wav */,
+			);
+			path = audio;
+			sourceTree = "<group>";
+		};
+		EA15B6D284CDED46DC2A5EA7 /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				E74E5EC6CC3192B7389E4E62 /* Fraunces-Variable.ttf */,
+				1E8AA905AADBCBC7CDB733EC /* OFL-Fraunces.txt */,
+				09BAF94B64BD21ED1E0F9B1A /* OFL-Outfit.txt */,
+				55F74D9399F960A65E5A6719 /* OFL-PixelifySans.txt */,
+				D2D4767A7D6AD3E1BC3CE2D4 /* Outfit-Variable.ttf */,
+				F7E20519FC3B2CEF3F2D918A /* PixelifySans-Variable.ttf */,
+			);
+			path = fonts;
+			sourceTree = "<group>";
+		};
+		EE4C0F66437CDBBAEA04F569 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				57A9979D695FDF868DBDD8E1 /* Game.swift */,
+				268674500BF1647D6BE89B88 /* GameScreens.swift */,
+				4AA756A48E053111C6993A8A /* HearthApp.swift */,
+				2004F762892D992BA6C32464 /* NativeViewport.swift */,
+				93871ECAB95CF0F5616F24E7 /* Renderer.swift */,
+				5BEC2CD5F300864FDCFBDF32 /* Session.swift */,
+				700E1E2DC5A049CD82D6E78B /* Voxel.metal */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		780503296F5DC1DDC167A1E6 /* VoxelHearth-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C8DC9AF1A2B2F783EB532439 /* Build configuration list for PBXNativeTarget "VoxelHearth-iOS" */;
+			buildPhases = (
+				AB965C879F707D5E671F68E8 /* Sources */,
+				24305040E2092D22A4FD22DD /* Resources */,
+				D44DD70A105A82035974FE1C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "VoxelHearth-iOS";
+			packageProductDependencies = (
+				75FA42F7FA059F5A6964A569 /* HearthCore */,
+			);
+			productName = "VoxelHearth-iOS";
+			productReference = B047E924D804476D449BD470 /* VoxelHearth-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8F75179C07DEAE19F9002CAC /* VoxelHearth-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ADF73D56F92A9BCC46E7E66F /* Build configuration list for PBXNativeTarget "VoxelHearth-macOS" */;
+			buildPhases = (
+				C3550AEB216AB861A0799027 /* Sources */,
+				4A77D2E0007B8199A4639B8A /* Resources */,
+				3A053CFFCB46793C67319013 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "VoxelHearth-macOS";
+			packageProductDependencies = (
+				47524E39A8CDF8EC6B14542F /* HearthCore */,
+			);
+			productName = "VoxelHearth-macOS";
+			productReference = 029EF5EA65768CAA315F1FC5 /* VoxelHearth-macOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E6A9CF86FF3E00EFEC92C3B1 /* VoxelHearth-LogicTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB565951A5FF59894608D765 /* Build configuration list for PBXNativeTarget "VoxelHearth-LogicTests" */;
+			buildPhases = (
+				80636628A875EB1A5D424B46 /* Sources */,
+				F5D37461D400542B1B0BDE55 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "VoxelHearth-LogicTests";
+			packageProductDependencies = (
+				7300E46E4BC7B207128E63A3 /* HearthCore */,
+			);
+			productName = "VoxelHearth-LogicTests";
+			productReference = 25F7074AC77DCF8D53C57BA9 /* VoxelHearth-LogicTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5EE01780768FC59073B52B4F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					780503296F5DC1DDC167A1E6 = {
+						ProvisioningStyle = Automatic;
+					};
+					8F75179C07DEAE19F9002CAC = {
+						ProvisioningStyle = Automatic;
+					};
+					E6A9CF86FF3E00EFEC92C3B1 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = D994F5F2036B2183F04F1896 /* Build configuration list for PBXProject "VoxelHearth" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 485EDF39083B5D3812AC2D11;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				DF8E67BA65AF209D29B53D3E /* XCLocalSwiftPackageReference "Core" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 57042CC2F76E7F02542C901B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E6A9CF86FF3E00EFEC92C3B1 /* VoxelHearth-LogicTests */,
+				780503296F5DC1DDC167A1E6 /* VoxelHearth-iOS */,
+				8F75179C07DEAE19F9002CAC /* VoxelHearth-macOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		24305040E2092D22A4FD22DD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0173F6F7A8A251BD1E0AD2A /* Fraunces-Variable.ttf in Resources */,
+				92EF1788FD133312E1315B97 /* OFL-Fraunces.txt in Resources */,
+				8E89982409586135F7F60656 /* OFL-Outfit.txt in Resources */,
+				941E581EE03DA4E268703305 /* OFL-PixelifySans.txt in Resources */,
+				D3108449E59CF5585A167098 /* Outfit-Variable.ttf in Resources */,
+				C06688C9225AD1A2FB296058 /* PixelifySans-Variable.ttf in Resources */,
+				A144E16DC871EC2EFFEEB2C1 /* atlas.rgba in Resources */,
+				3463CB53BE99C4428FCA6BAE /* break_hard.wav in Resources */,
+				2D309E3E79B381C57DE01EC6 /* break_soft.wav in Resources */,
+				25C135AFFB558063AEC4BF2F /* chat.wav in Resources */,
+				A10078D42CFE42F1860C8D88 /* craft.wav in Resources */,
+				D0EA96015EAAA33D1DD39E10 /* dig.wav in Resources */,
+				6E99CDA9D12C8C85DCD78EE6 /* eat.wav in Resources */,
+				5C5DF1C9491B94BC41D36D55 /* hearth-keyart.png in Resources */,
+				9B08D53F324C3B50ED756B7A /* hurt.wav in Resources */,
+				F3FEE4A95EB0DE2D2C34C1B2 /* iOS.xcassets in Resources */,
+				3AD01F4DBAEDF15BBFEE37BD /* match_end.wav in Resources */,
+				87610EB04BFE70AA499B6F34 /* match_start.wav in Resources */,
+				2DC4BDF7AFCD941C9D686EE6 /* night.wav in Resources */,
+				3E83BFB4E7B164179946C0EF /* pickup.wav in Resources */,
+				7318F3046FA0F0165F5E795D /* place.wav in Resources */,
+				CBEA2D0A037A579A452CF9DD /* ready.wav in Resources */,
+				B32CAA0A9B6074611AD7BD48 /* sleep.wav in Resources */,
+				CE9362BC9387C3714E7A8265 /* smelt.wav in Resources */,
+				BD41E4A4227BA491F22D1A23 /* splash.wav in Resources */,
+				9FFDFD31B8E8B8174F73EAF3 /* tiles.rgba in Resources */,
+				BBC7BEBD9A22BE384C14097C /* ui_back.wav in Resources */,
+				388A317D9BE7695F996AEBBA /* ui_confirm.wav in Resources */,
+				3BAA0A53C3D68D9C02973BF2 /* ui_tap.wav in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4A77D2E0007B8199A4639B8A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B12CDC5F0BB1B67AE52A8674 /* Fraunces-Variable.ttf in Resources */,
+				02EC91151748D83FA6AA0040 /* OFL-Fraunces.txt in Resources */,
+				47CBD42230E3AB7D42CD0F60 /* OFL-Outfit.txt in Resources */,
+				9B9818901E5E5564E2EEE8AB /* OFL-PixelifySans.txt in Resources */,
+				33ACE7595DBEB5F43707D8C7 /* Outfit-Variable.ttf in Resources */,
+				7FB26C0ED7500FEB3F3D30E0 /* PixelifySans-Variable.ttf in Resources */,
+				1F459101F316DFC3D68EE5C6 /* atlas.rgba in Resources */,
+				9AAEA3094F997CBC6B7E6B84 /* break_hard.wav in Resources */,
+				6A189336BEA2E46976B7D0FA /* break_soft.wav in Resources */,
+				2EFE7A24A9D3C12F636154A5 /* chat.wav in Resources */,
+				F8AD24B5FC4A413AC155A1C9 /* craft.wav in Resources */,
+				4881C4C13310052D51647AF7 /* dig.wav in Resources */,
+				1B8FEBAAD7F4EE6DD476A53F /* eat.wav in Resources */,
+				28ADCDE4D8B5137B930160DA /* hearth-keyart.png in Resources */,
+				27B056ADD2BB683F8CD6C959 /* hurt.wav in Resources */,
+				B2BE7B7A72C46603F32AE35F /* macOS.xcassets in Resources */,
+				2B11E78FBE1CC804DB1ED066 /* match_end.wav in Resources */,
+				338906C13E184CC53D47BAD2 /* match_start.wav in Resources */,
+				58EF37D2BFF0500BC5ED32F1 /* night.wav in Resources */,
+				D85C2249F908F831E81BFD3E /* pickup.wav in Resources */,
+				9C12E09911F8E9D9F36DAD1A /* place.wav in Resources */,
+				8213A6A9FEFD90E77FAF01F0 /* ready.wav in Resources */,
+				B52266221244906A37165212 /* sleep.wav in Resources */,
+				2F30B6C856DC877B68B45201 /* smelt.wav in Resources */,
+				F22C0E651425859D8E324363 /* splash.wav in Resources */,
+				4865CEB62D9CF102DE4FD021 /* tiles.rgba in Resources */,
+				FA0746BDEE566C6438146003 /* ui_back.wav in Resources */,
+				E82AC2827C5FB2F5FBD31FA0 /* ui_confirm.wav in Resources */,
+				7AA424CB572410FB793DB3CC /* ui_tap.wav in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		80636628A875EB1A5D424B46 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC25699F09164269AA68F54C /* ClientTests.swift in Sources */,
+				2DA39D2F64F62909728608F3 /* Game.swift in Sources */,
+				58D853D6C9DD513BCFD0933E /* Session.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB965C879F707D5E671F68E8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CA170DEF5DFE4707C0DC01EB /* Game.swift in Sources */,
+				1C88F026696DDE4AEBC7E96E /* GameScreens.swift in Sources */,
+				4E05511C34014E13FA856250 /* HearthApp.swift in Sources */,
+				5D62DF778ADB26138B389E89 /* NativeViewport.swift in Sources */,
+				0E1EA120775FCECEA33B7BAB /* Renderer.swift in Sources */,
+				B1748E5171A7D8DC7AF693A6 /* Session.swift in Sources */,
+				FCC1DBDE4CA35B3411D9D532 /* Voxel.metal in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3550AEB216AB861A0799027 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				13076172217EA83CA5F56173 /* Game.swift in Sources */,
+				FFFB04B29DAB4AD20F95799C /* GameScreens.swift in Sources */,
+				E0259A259A601C03DDE560BD /* HearthApp.swift in Sources */,
+				6CD40BD2D80D1BD89D3DEAC9 /* NativeViewport.swift in Sources */,
+				2F55AE10ECEB28B2A304C0A1 /* Renderer.swift in Sources */,
+				FCDD0B542EDBA7CF51F6D090 /* Session.swift in Sources */,
+				54299F003D4CEE055649779D /* Voxel.metal in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3ED1421968617025AD1B6237 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/macOS.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "Config/macOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voxelhearth.voxelhearth;
+				PRODUCT_NAME = VoxelHearth;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		413CCA45B4F0BA605D138C4C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = "Config/iOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voxelhearth.voxelhearth;
+				PRODUCT_NAME = VoxelHearth;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		736133B993F585E75A4195CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				METAL_FAST_MATH = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		77E9CA53E348CD5E05DC923A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = "Config/iOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voxelhearth.voxelhearth;
+				PRODUCT_NAME = VoxelHearth;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7BAA0A8035795165F33624E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.voxelhearth.logic-tests";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B78CACF662F3171A55B09E86 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				METAL_FAST_MATH = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		BB372517FFA9AA1187510613 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/macOS.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "Config/macOS-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voxelhearth.voxelhearth;
+				PRODUCT_NAME = VoxelHearth;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		BD802F1D04C1F618EE0151B3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.voxelhearth.logic-tests";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		ADF73D56F92A9BCC46E7E66F /* Build configuration list for PBXNativeTarget "VoxelHearth-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB372517FFA9AA1187510613 /* Debug */,
+				3ED1421968617025AD1B6237 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C8DC9AF1A2B2F783EB532439 /* Build configuration list for PBXNativeTarget "VoxelHearth-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				413CCA45B4F0BA605D138C4C /* Debug */,
+				77E9CA53E348CD5E05DC923A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D994F5F2036B2183F04F1896 /* Build configuration list for PBXProject "VoxelHearth" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B78CACF662F3171A55B09E86 /* Debug */,
+				736133B993F585E75A4195CF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		EB565951A5FF59894608D765 /* Build configuration list for PBXNativeTarget "VoxelHearth-LogicTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BD802F1D04C1F618EE0151B3 /* Debug */,
+				7BAA0A8035795165F33624E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		DF8E67BA65AF209D29B53D3E /* XCLocalSwiftPackageReference "Core" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Core;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		47524E39A8CDF8EC6B14542F /* HearthCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HearthCore;
+		};
+		7300E46E4BC7B207128E63A3 /* HearthCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HearthCore;
+		};
+		75FA42F7FA059F5A6964A569 /* HearthCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HearthCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 5EE01780768FC59073B52B4F /* Project object */;
+}

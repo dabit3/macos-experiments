@@ -1,5 +1,7 @@
 # Voxel Vanguard
 
+![Voxel Vanguard screenshot](screenshots/voxel-vanguard.jpg)
+
 A native landscape **iPhone** cooperative voxel dungeon crawler inspired by
 Minecraft Dungeons Arcade (2021). Two distinct guests explore the Mossgate,
 cross suspended bridges into the Sundered Crypt, collect gear cards and defeat

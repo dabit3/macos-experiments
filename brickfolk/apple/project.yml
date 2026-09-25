@@ -1,0 +1,93 @@
+name: Brickfolk
+options:
+  minimumXcodeGenVersion: 2.44.0
+  deploymentTarget:
+    iOS: "17.0"
+    macOS: "14.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: 1
+    CODE_SIGN_STYLE: Automatic
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+packages:
+  BrickfolkCore:
+    path: .
+targetTemplates:
+  NativeApp:
+    type: application
+    sources:
+      - path: Sources/BrickfolkApp
+        excludes:
+          - Resources/OriginalArtwork
+    dependencies:
+      - package: BrickfolkCore
+        product: BrickfolkCore
+    info:
+      path: Config/${target_name}-Info.plist
+      properties:
+        CFBundleDisplayName: Brickfolk
+        NSLocalNetworkUsageDescription: Brickfolk connects to your local multiplayer server to play with friends.
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+          NSAllowsLocalNetworking: true
+        UIAppFonts:
+          - Inter-Regular.ttf
+          - Inter-Medium.ttf
+          - Inter-SemiBold.ttf
+          - Inter-Bold.ttf
+          - Inter-ExtraBold.ttf
+targets:
+  Brickfolk-iOS:
+    templates: [NativeApp]
+    platform: iOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.brickfolk.brickfolkApp
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTS_MACCATALYST: NO
+    info:
+      properties:
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+  Brickfolk-macOS:
+    templates: [NativeApp]
+    platform: macOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.brickfolk.app
+        ENABLE_APP_SANDBOX: YES
+    info:
+      properties:
+        LSApplicationCategoryType: public.app-category.games
+        NSHighResolutionCapable: true
+    entitlements:
+      path: Config/Brickfolk-macOS.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+schemes:
+  Brickfolk-iOS:
+    build:
+      targets:
+        Brickfolk-iOS: all
+    run:
+      config: Debug
+  Brickfolk-macOS:
+    build:
+      targets:
+        Brickfolk-macOS: all
+    run:
+      config: Debug
