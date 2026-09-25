@@ -25,7 +25,7 @@ the existing authoritative Dart server. The client has no Flutter dependency.
   results; native local movement prediction and snapshot interpolation.
 
 Original artwork, procedural textures/item icons, key art, sound cues, app
-icons, Outfit, Fraunces and Pixelify Sans fonts are retained. Font licenses live
+icons, Outfit (sans) and Pixelify Sans (pixel display) fonts are retained. Font licenses live
 beside the fonts in `apple/Resources/fonts/`. The original ink/navy, teal, gold
 and cream visual palette remains the default.
 

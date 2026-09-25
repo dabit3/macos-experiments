@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		02EC91151748D83FA6AA0040 /* OFL-Fraunces.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1E8AA905AADBCBC7CDB733EC /* OFL-Fraunces.txt */; };
 		0E1EA120775FCECEA33B7BAB /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93871ECAB95CF0F5616F24E7 /* Renderer.swift */; };
 		13076172217EA83CA5F56173 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9979D695FDF868DBDD8E1 /* Game.swift */; };
 		1B8FEBAAD7F4EE6DD476A53F /* eat.wav in Resources */ = {isa = PBXBuildFile; fileRef = 717A34D8863752895B267460 /* eat.wav */; };
@@ -49,7 +48,6 @@
 		8213A6A9FEFD90E77FAF01F0 /* ready.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1B0C311FE8488D2E47ECB909 /* ready.wav */; };
 		87610EB04BFE70AA499B6F34 /* match_start.wav in Resources */ = {isa = PBXBuildFile; fileRef = 566837FEB42CF547E48243E1 /* match_start.wav */; };
 		8E89982409586135F7F60656 /* OFL-Outfit.txt in Resources */ = {isa = PBXBuildFile; fileRef = 09BAF94B64BD21ED1E0F9B1A /* OFL-Outfit.txt */; };
-		92EF1788FD133312E1315B97 /* OFL-Fraunces.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1E8AA905AADBCBC7CDB733EC /* OFL-Fraunces.txt */; };
 		941E581EE03DA4E268703305 /* OFL-PixelifySans.txt in Resources */ = {isa = PBXBuildFile; fileRef = 55F74D9399F960A65E5A6719 /* OFL-PixelifySans.txt */; };
 		9AAEA3094F997CBC6B7E6B84 /* break_hard.wav in Resources */ = {isa = PBXBuildFile; fileRef = F465D9762A06D87654A29E3B /* break_hard.wav */; };
 		9B08D53F324C3B50ED756B7A /* hurt.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2694F6E805A209C45D560E98 /* hurt.wav */; };
@@ -58,14 +56,12 @@
 		9FFDFD31B8E8B8174F73EAF3 /* tiles.rgba in Resources */ = {isa = PBXBuildFile; fileRef = 4F973405EE57CD41ED3F7347 /* tiles.rgba */; };
 		A10078D42CFE42F1860C8D88 /* craft.wav in Resources */ = {isa = PBXBuildFile; fileRef = A1F6D8F30580C7F4337AEEE0 /* craft.wav */; };
 		A144E16DC871EC2EFFEEB2C1 /* atlas.rgba in Resources */ = {isa = PBXBuildFile; fileRef = F53B8894178422D47F50A915 /* atlas.rgba */; };
-		B12CDC5F0BB1B67AE52A8674 /* Fraunces-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E74E5EC6CC3192B7389E4E62 /* Fraunces-Variable.ttf */; };
 		B1748E5171A7D8DC7AF693A6 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEC2CD5F300864FDCFBDF32 /* Session.swift */; };
 		B2BE7B7A72C46603F32AE35F /* macOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82D761FECE4ECB80E2725689 /* macOS.xcassets */; };
 		B32CAA0A9B6074611AD7BD48 /* sleep.wav in Resources */ = {isa = PBXBuildFile; fileRef = A479B17972E5F2350BB8D708 /* sleep.wav */; };
 		B52266221244906A37165212 /* sleep.wav in Resources */ = {isa = PBXBuildFile; fileRef = A479B17972E5F2350BB8D708 /* sleep.wav */; };
 		BBC7BEBD9A22BE384C14097C /* ui_back.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2D501E5AFA4C230F3C8DBE8F /* ui_back.wav */; };
 		BD41E4A4227BA491F22D1A23 /* splash.wav in Resources */ = {isa = PBXBuildFile; fileRef = 32CDDDD90A0DFCA3AC68D661 /* splash.wav */; };
-		C0173F6F7A8A251BD1E0AD2A /* Fraunces-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E74E5EC6CC3192B7389E4E62 /* Fraunces-Variable.ttf */; };
 		C06688C9225AD1A2FB296058 /* PixelifySans-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F7E20519FC3B2CEF3F2D918A /* PixelifySans-Variable.ttf */; };
 		CA170DEF5DFE4707C0DC01EB /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A9979D695FDF868DBDD8E1 /* Game.swift */; };
 		CBEA2D0A037A579A452CF9DD /* ready.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1B0C311FE8488D2E47ECB909 /* ready.wav */; };
@@ -91,7 +87,6 @@
 		029EF5EA65768CAA315F1FC5 /* VoxelHearth-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VoxelHearth-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		09BAF94B64BD21ED1E0F9B1A /* OFL-Outfit.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-Outfit.txt"; sourceTree = "<group>"; };
 		1B0C311FE8488D2E47ECB909 /* ready.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ready.wav; sourceTree = "<group>"; };
-		1E8AA905AADBCBC7CDB733EC /* OFL-Fraunces.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-Fraunces.txt"; sourceTree = "<group>"; };
 		2004F762892D992BA6C32464 /* NativeViewport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeViewport.swift; sourceTree = "<group>"; };
 		25F7074AC77DCF8D53C57BA9 /* VoxelHearth-LogicTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VoxelHearth-LogicTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		268674500BF1647D6BE89B88 /* GameScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScreens.swift; sourceTree = "<group>"; };
@@ -123,7 +118,6 @@
 		D4B5B477D6F41EDEEB38C159 /* dig.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = dig.wav; sourceTree = "<group>"; };
 		DEA3F0F81F9D683BA2A5951A /* ClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTests.swift; sourceTree = "<group>"; };
 		E0E3FAE8581CC05F6EA74C3F /* match_end.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = match_end.wav; sourceTree = "<group>"; };
-		E74E5EC6CC3192B7389E4E62 /* Fraunces-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Fraunces-Variable.ttf"; sourceTree = "<group>"; };
 		F465D9762A06D87654A29E3B /* break_hard.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = break_hard.wav; sourceTree = "<group>"; };
 		F5184BC5D2A4ECE2D3FC3D46 /* ui_confirm.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ui_confirm.wav; sourceTree = "<group>"; };
 		F53B8894178422D47F50A915 /* atlas.rgba */ = {isa = PBXFileReference; path = atlas.rgba; sourceTree = "<group>"; };
@@ -240,8 +234,6 @@
 		EA15B6D284CDED46DC2A5EA7 /* fonts */ = {
 			isa = PBXGroup;
 			children = (
-				E74E5EC6CC3192B7389E4E62 /* Fraunces-Variable.ttf */,
-				1E8AA905AADBCBC7CDB733EC /* OFL-Fraunces.txt */,
 				09BAF94B64BD21ED1E0F9B1A /* OFL-Outfit.txt */,
 				55F74D9399F960A65E5A6719 /* OFL-PixelifySans.txt */,
 				D2D4767A7D6AD3E1BC3CE2D4 /* Outfit-Variable.ttf */,
@@ -375,8 +367,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C0173F6F7A8A251BD1E0AD2A /* Fraunces-Variable.ttf in Resources */,
-				92EF1788FD133312E1315B97 /* OFL-Fraunces.txt in Resources */,
 				8E89982409586135F7F60656 /* OFL-Outfit.txt in Resources */,
 				941E581EE03DA4E268703305 /* OFL-PixelifySans.txt in Resources */,
 				D3108449E59CF5585A167098 /* Outfit-Variable.ttf in Resources */,
@@ -411,8 +401,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B12CDC5F0BB1B67AE52A8674 /* Fraunces-Variable.ttf in Resources */,
-				02EC91151748D83FA6AA0040 /* OFL-Fraunces.txt in Resources */,
 				47CBD42230E3AB7D42CD0F60 /* OFL-Outfit.txt in Resources */,
 				9B9818901E5E5564E2EEE8AB /* OFL-PixelifySans.txt in Resources */,
 				33ACE7595DBEB5F43707D8C7 /* Outfit-Variable.ttf in Resources */,

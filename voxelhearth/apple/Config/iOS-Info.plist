@@ -33,7 +33,6 @@
 	<array>
 		<string>Outfit-Variable.ttf</string>
 		<string>PixelifySans-Variable.ttf</string>
-		<string>Fraunces-Variable.ttf</string>
 	</array>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>

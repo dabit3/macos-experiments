@@ -40,7 +40,6 @@ targetTemplates:
         UIAppFonts:
           - Outfit-Variable.ttf
           - PixelifySans-Variable.ttf
-          - Fraunces-Variable.ttf
 targets:
   VoxelHearth-LogicTests:
     type: bundle.unit-test
