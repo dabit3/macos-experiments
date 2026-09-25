@@ -5,10 +5,11 @@ struct ResultsPanel: View {
   let width: CGFloat
 
   var body: some View {
+    let won = (client.me?.rank ?? 1) == 1 && (client.me?.finish ?? 0) > 0
     let rank = client.me?.rank ?? 1
     let (number, suffix) = ordinal(rank)
     let fill: [Color] =
-      rank == 1 ? [sunshine, .orange] : [.white, Color(red: 0.55, green: 0.8, blue: 1)]
+      won ? [sunshine, .orange] : [.white, Color(red: 0.55, green: 0.8, blue: 1)]
     let next = Course.names[(client.state?.track ?? 0) == 0 ? 1 : 0]
     return ZStack {
       LinearGradient(
@@ -23,9 +24,9 @@ struct ResultsPanel: View {
             OutlinedText(text: suffix, size: 40, fill: fill, stroke: 3).padding(.top, 16)
           }
           OutlinedText(
-            text: rank == 1 ? "SUPERSTAR!" : "SO CLOSE!", size: 32,
-            fill: rank == 1 ? [.white, sunshine] : [.white, skyBlue], stroke: 2.5)
-          Text(rank == 1 ? "You took the checkered flag." : "Grab a rematch and take it back.")
+            text: won ? "SUPERSTAR!" : "SO CLOSE!", size: 32,
+            fill: won ? [.white, sunshine] : [.white, skyBlue], stroke: 2.5)
+          Text(won ? "You took the checkered flag." : "Grab a rematch and take it back.")
             .font(label(12)).foregroundStyle(.white).shadow(color: ink, radius: 0, x: 1, y: 1)
         }.frame(width: width * 0.36)
         VStack(alignment: .leading, spacing: 9) {
