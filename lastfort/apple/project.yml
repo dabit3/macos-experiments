@@ -20,7 +20,6 @@ targets:
     sources:
       - Sources
       - path: Resources
-        excludes: [island-keyart.webp]
         buildPhase: resources
     settings:
       base:
@@ -48,18 +47,12 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-        UIAppFonts:
-          - Rajdhani-Regular.ttf
-          - Rajdhani-Medium.ttf
-          - Rajdhani-SemiBold.ttf
-          - Rajdhani-Bold.ttf
   Lastfort-macOS:
     type: application
     platform: macOS
     sources:
       - Sources
       - path: Resources
-        excludes: [island-keyart.webp]
         buildPhase: resources
     settings:
       base:

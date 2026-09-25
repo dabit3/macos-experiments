@@ -1,22 +1,5 @@
-import CoreText
 import SwiftUI
 
-extension Color {
-  init(rgb: UInt32) {
-    self.init(
-      red: Double((rgb >> 16) & 255) / 255, green: Double((rgb >> 8) & 255) / 255,
-      blue: Double(rgb & 255) / 255)
-  }
-  static let fortTeal = Color(rgb: 0x56F5CB)
-  static let fortEmber = Color(rgb: 0xFF7A2F)
-  static let fortStorm = Color(rgb: 0x7B5CFF)
-  static let fortHealth = Color(rgb: 0x52D273)
-  static let fortShield = Color(rgb: 0x4DA3FF)
-  static let fortDanger = Color(rgb: 0xFF4D5E)
-  static let fortWarning = Color(rgb: 0xDFFF62)
-  static let fortBackground = Color(rgb: 0x09162E)
-  static let fortSurface = Color(rgb: 0x112648)
-}
 extension GraphicsContext {
   func rectangle(_ rect: CGRect, _ color: Color, radius: Double = 0) {
     fill(Path(roundedRect: rect, cornerRadius: radius), with: .color(color))
@@ -35,7 +18,7 @@ extension GraphicsContext {
   }
   func label(_ text: String, _ x: Double, _ y: Double, size: Double = 12, color: Color = .white) {
     draw(
-      Text(text).font(.custom("Rajdhani-Bold", size: size)).foregroundColor(color),
+      Text(text).font(.system(size: size, weight: .bold)).foregroundColor(color),
       at: CGPoint(x: x, y: y))
   }
 }
@@ -74,7 +57,7 @@ struct CosmeticArt: View {
         canvas.line(
           [CGPoint(x: -12, y: -19), CGPoint(x: 0, y: -6), CGPoint(x: 16, y: -25)], accent, width: 5)
         canvas.rectangle(CGRect(x: -31, y: -100, width: 62, height: 63), primary, radius: 19)
-        canvas.rectangle(CGRect(x: -26, y: -77, width: 52, height: 23), .fortBackground, radius: 8)
+        canvas.rectangle(CGRect(x: -26, y: -77, width: 52, height: 23), .lfInk, radius: 8)
         canvas.rectangle(CGRect(x: -21, y: -72, width: 42, height: 8), accent, radius: 3)
         canvas.line(
           [CGPoint(x: -20, y: -90), CGPoint(x: -5, y: -94)], .white.opacity(0.7), width: 3)
@@ -138,27 +121,5 @@ struct CosmeticArt: View {
         }
       }
     }.accessibilityLabel(cosmetic.name)
-  }
-}
-
-func registerFonts() {
-  for name in ["Regular", "Medium", "SemiBold", "Bold"] {
-    if let url = Bundle.main.url(forResource: "Rajdhani-\(name)", withExtension: "ttf") {
-      CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
-    }
-  }
-}
-
-struct FortButtonStyle: ButtonStyle {
-  var primary = false
-  func makeBody(configuration: Configuration) -> some View {
-    configuration.label.font(.custom("Rajdhani-Bold", size: 18))
-      .padding(.horizontal, 18).padding(.vertical, 10)
-      .background(
-        primary ? Color.fortTeal : Color.fortSurface, in: RoundedRectangle(cornerRadius: 9)
-      )
-      .foregroundStyle(primary ? Color.fortBackground : .white)
-      .overlay(RoundedRectangle(cornerRadius: 9).stroke(.white.opacity(0.16)))
-      .opacity(configuration.isPressed ? 0.7 : 1)
   }
 }

@@ -148,10 +148,18 @@ struct TouchStick: View {
   let action: (CGVector) -> Void
   @State private var offset = CGSize.zero
   var body: some View {
-    Circle().fill(.black.opacity(0.3)).overlay(Circle().stroke(.white.opacity(0.5), lineWidth: 2))
-      .overlay(Circle().fill(.white.opacity(0.55)).frame(width: 40, height: 40).offset(offset))
+    let active = offset != .zero
+    Circle().fill(.black.opacity(active ? 0.45 : 0.3))
+      .overlay(Circle().strokeBorder(.white.opacity(active ? 0.6 : 0.3), lineWidth: 1.5))
+      .overlay(
+        Circle().fill(.white.opacity(active ? 0.9 : 0.6))
+          .frame(width: diameter * 0.42, height: diameter * 0.42).offset(offset)
+          .shadow(color: .black.opacity(0.3), radius: 3, y: 1)
+          .animation(.easeOut(duration: active ? 0 : 0.15), value: offset)
+      )
       .overlay(alignment: .bottom) {
-        Text(label).font(.custom("Rajdhani-Bold", size: 12)).offset(y: 20)
+        Text(label).font(.system(size: 11, weight: .semibold)).foregroundStyle(.white.opacity(0.8))
+          .offset(y: 18)
       }
       .frame(width: diameter, height: diameter)
       .gesture(

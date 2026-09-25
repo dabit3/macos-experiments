@@ -103,7 +103,7 @@ struct GameCanvas: View {
           let sufficient = (me.mats?[safe: (me.bmat ?? .wood).index] ?? 0) >= rules.pieceCost
           let free = island.structures[island.key(tile.x, tile.y)] == nil
           let color: Color =
-            sufficient && free && island.inBounds(tile.x, tile.y) ? .fortTeal : .fortDanger
+            sufficient && free && island.inBounds(tile.x, tile.y) ? .lfShield : .lfDanger
           world.rectangle(box, color.opacity(0.2), radius: 0.2)
           world.stroke(
             Path(roundedRect: box, cornerRadius: 0.2), with: .color(color), lineWidth: 0.18)
@@ -118,8 +118,8 @@ struct GameCanvas: View {
             x: storm.cx - storm.r, y: storm.cy - storm.r, width: storm.r * 2, height: storm.r * 2)
           outside.addEllipse(in: eye)
           world.fill(
-            outside, with: .color(.fortStorm.opacity(0.35)), style: FillStyle(eoFill: true))
-          world.stroke(Path(ellipseIn: eye), with: .color(.fortStorm), lineWidth: 0.5)
+            outside, with: .color(.lfStorm.opacity(0.35)), style: FillStyle(eoFill: true))
+          world.stroke(Path(ellipseIn: eye), with: .color(.lfStorm), lineWidth: 0.5)
           world.stroke(
             Path(
               ellipseIn: CGRect(
@@ -129,11 +129,11 @@ struct GameCanvas: View {
             style: StrokeStyle(lineWidth: 0.15, dash: [0.8, 0.8]))
         }
         if let bus = match.state?.bus {
-          world.ellipse(bus.x, bus.y - 3, 7, 9, .fortTeal)
+          world.ellipse(bus.x, bus.y - 3, 7, 9, .lfShield)
           world.rectangle(
-            CGRect(x: bus.x - 1.6, y: bus.y + 1, width: 3.2, height: 5.8), .fortEmber, radius: 0.5)
+            CGRect(x: bus.x - 1.6, y: bus.y + 1, width: 3.2, height: 5.8), .lfAccent, radius: 0.5)
           world.rectangle(
-            CGRect(x: bus.x - 1.2, y: bus.y + 1.4, width: 2.4, height: 1.2), .fortShield,
+            CGRect(x: bus.x - 1.2, y: bus.y + 1.4, width: 2.4, height: 1.2), .lfShield,
             radius: 0.2)
           world.line(
             [CGPoint(x: bus.x - 2, y: bus.y - 1), CGPoint(x: bus.x - 1, y: bus.y + 1)], .white,
@@ -183,10 +183,10 @@ struct GameCanvas: View {
       if value.e == .door {
         context.rectangle(
           CGRect(x: rect.midX - 0.65, y: rect.minY, width: 1.3, height: rect.height),
-          .fortBackground.opacity(0.9), radius: 0.1)
+          .lfInk.opacity(0.9), radius: 0.1)
       } else if value.e == .window {
         context.rectangle(
-          CGRect(x: rect.midX - 0.7, y: rect.midY - 0.65, width: 1.4, height: 1.3), .fortBackground,
+          CGRect(x: rect.midX - 0.7, y: rect.midY - 0.65, width: 1.4, height: 1.3), .lfInk,
           radius: 0.1)
       }
     } else if value.p == .ramp {
@@ -207,7 +207,7 @@ struct GameCanvas: View {
       context.rectangle(
         CGRect(
           x: rect.minX, y: rect.maxY - 0.2,
-          width: rect.width * Double(value.hp) / Double(value.max), height: 0.18), .fortHealth)
+          width: rect.width * Double(value.hp) / Double(value.max), height: 0.18), .lfHealth)
     }
   }
   private func drawNode(_ node: ResourceNode, context: GraphicsContext) {
@@ -248,7 +248,7 @@ struct GameCanvas: View {
         CGRect(x: x - 1, y: y - 1.7, width: 2, height: 3.6), Color(rgb: palette[node.v % 4]),
         radius: 0.4)
       context.rectangle(
-        CGRect(x: x - 0.8, y: y - 0.6, width: 1.6, height: 1.2), .fortBackground, radius: 0.3)
+        CGRect(x: x - 0.8, y: y - 0.6, width: 1.6, height: 1.2), .lfInk, radius: 0.3)
     }
     if node.hp < node.max { context.label("\(node.hp)", x, y - 2, size: 0.7) }
   }
@@ -264,7 +264,7 @@ struct GameCanvas: View {
       context.rectangle(CGRect(x: x - 0.2, y: y, width: 0.4, height: 0.5), color)
     case .consumable:
       context.rectangle(
-        CGRect(x: x - 0.4, y: y - 0.5, width: 0.8, height: 1), .fortShield, radius: 0.2)
+        CGRect(x: x - 0.4, y: y - 0.5, width: 0.8, height: 1), .lfShield, radius: 0.2)
       context.rectangle(CGRect(x: x - 0.2, y: y - 0.65, width: 0.4, height: 0.2), .white)
     case .ammo:
       for offset in [-0.32, 0, 0.32] {
@@ -294,7 +294,7 @@ struct GameCanvas: View {
     if mate || player.id == match.localID {
       canvas.stroke(
         Path(ellipseIn: CGRect(x: -1.1, y: -1.1, width: 2.2, height: 2.2)),
-        with: .color(player.id == match.localID ? .white : .fortTeal), lineWidth: 0.15)
+        with: .color(player.id == match.localID ? .white : .lfShield), lineWidth: 0.15)
     }
     if player.alt > 0.02 {
       let glider = catalogue.cosmetic(player.ld.g)
@@ -310,7 +310,7 @@ struct GameCanvas: View {
     let pick = catalogue.cosmetic(player.ld.p)
     body.rectangle(
       CGRect(x: 0.3, y: -0.12, width: player.slot > 0 ? 1.8 : 1.6, height: 0.24),
-      player.slot > 0 ? .fortBackground : Color(rgb: pick?.secondary ?? 0x3E2A18), radius: 0.1)
+      player.slot > 0 ? .lfInk : Color(rgb: pick?.secondary ?? 0x3E2A18), radius: 0.1)
     if player.slot == 0 {
       body.rectangle(
         CGRect(x: 1.4, y: -0.5, width: 0.4, height: 1), Color(rgb: pick?.primary ?? 0x8B6B4A),
@@ -323,7 +323,7 @@ struct GameCanvas: View {
     body.rectangle(CGRect(x: -0.74, y: -0.55, width: 0.98, height: 1.1), secondary, radius: 0.25)
     body.rectangle(CGRect(x: -0.48, y: -0.53, width: 1.17, height: 1.06), primary, radius: 0.4)
     body.rectangle(
-      CGRect(x: 0.38, y: -0.36, width: 0.28, height: 0.72), .fortBackground, radius: 0.12)
+      CGRect(x: 0.38, y: -0.36, width: 0.28, height: 0.72), .lfInk, radius: 0.12)
     body.rectangle(CGRect(x: 0.47, y: -0.27, width: 0.1, height: 0.54), accent, radius: 0.05)
     body.line(
       [CGPoint(x: -0.32, y: -0.23), CGPoint(x: 0.15, y: -0.32)], .white.opacity(0.65), width: 0.08)
@@ -335,12 +335,12 @@ struct GameCanvas: View {
     }
     canvas.label(
       player.n + (player.con ? "" : " · offline"), 0, -2.6, size: 0.72,
-      color: mate ? .fortTeal : .white)
+      color: mate ? .lfShield : .white)
     if mate && player.id != match.localID {
       canvas.rectangle(
-        CGRect(x: -1.3, y: -1.8, width: 2.6 * Double(player.hp) / 100, height: 0.2), .fortHealth)
+        CGRect(x: -1.3, y: -1.8, width: 2.6 * Double(player.hp) / 100, height: 0.2), .lfHealth)
       canvas.rectangle(
-        CGRect(x: -1.3, y: -2.1, width: 2.6 * Double(player.sh) / 100, height: 0.18), .fortShield)
+        CGRect(x: -1.3, y: -2.1, width: 2.6 * Double(player.sh) / 100, height: 0.18), .lfShield)
     }
   }
   private func drawEffects(context: GraphicsContext, at date: Date) {
@@ -352,13 +352,13 @@ struct GameCanvas: View {
         for shot in shots {
           context.line(
             [CGPoint(x: shooter.x, y: shooter.y), CGPoint(x: shot.x, y: shot.y)],
-            .fortWarning.opacity(1 - age / 0.18), width: 0.09)
+            .lfAmber.opacity(1 - age / 0.18), width: 0.09)
         }
       }
       if age < 0.8, let damage = event.d, let victim = match.players[event.p ?? 0] {
         context.label(
           "\(damage)", victim.x, victim.y - 2 - age * 2, size: 1.1,
-          color: event.sh == true ? .fortShield : .fortDanger)
+          color: event.sh == true ? .lfShield : .lfDanger)
       }
     }
   }

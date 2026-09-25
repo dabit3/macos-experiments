@@ -29,13 +29,6 @@
 	</dict>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Lastfort connects to your local multiplayer game server.</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Rajdhani-Regular.ttf</string>
-		<string>Rajdhani-Medium.ttf</string>
-		<string>Rajdhani-SemiBold.ttf</string>
-		<string>Rajdhani-Bold.ttf</string>
-	</array>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>

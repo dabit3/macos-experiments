@@ -19,9 +19,9 @@ clients have been retired as part of this Apple migration.
 apple/
   Lastfort.xcodeproj      checked-in native Xcode project and shared schemes
   project.yml            XcodeGen source
-  Sources/App/           native screens, artwork, renderer and input
+  Sources/App/           native screens, design system (Theme.swift), artwork, renderer and input
   Sources/Model/         typed protocol, prediction, networking and persistence
-  Resources/             original art, Rajdhani fonts/license and catalogue
+  Resources/             app icon, launch colours and generated catalogue/fixtures
   Tests/                 Swift model, deterministic-world and live protocol tests
 core/                    unchanged pure Dart rules, simulation, world and bots
 server/                  unchanged authoritative Dart WebSocket server
@@ -189,13 +189,12 @@ is claimed by the protocol tests.
 ```sh
 dart run lastfort/apple/Tools/export_assets.dart
 swift lastfort/apple/Tools/generate_icon.swift
-sips -s format png lastfort/apple/Resources/island-keyart.webp \
-  --out lastfort/apple/Resources/Assets.xcassets/IslandKeyart.imageset/island-keyart.png
 xcodegen generate --spec lastfort/apple/project.yml
 ```
 
 The catalogue and fixtures are generated from `core/`; they are not demo
-snapshots used by the app. Original key artwork and all four Rajdhani fonts
-are preserved; the SIL Open Font License is in
-`apple/Resources/fonts/OFL-Rajdhani.txt`. Cosmetic shapes are drawn with native
-Canvas using the original palette/shape catalogue.
+snapshots used by the app. The UI uses the system sans-serif (SF) with a
+condensed heavy display style and monospaced digits; there are no bundled
+fonts or bitmap key art. The lobby backdrop is the actual island for the
+room's seed, rendered from `core`'s deterministic terrain, and cosmetic shapes
+are drawn with native Canvas from the palette/shape catalogue.

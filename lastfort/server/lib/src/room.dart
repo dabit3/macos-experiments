@@ -139,12 +139,18 @@ class Room {
       caches.remove(c.token);
       ready.remove(c.token);
       playerIds.remove(c.token);
-      if (hostToken == c.token && members.isNotEmpty) {
-        hostToken = members.keys.first;
-      }
+      _ensureHost();
       broadcastRoomState();
     }
     if (members.isEmpty) _scheduleCleanup();
+  }
+
+  /// Hands the host role to a connected member when the host has gone, so a
+  /// host who dropped mid-match never leaves the room without a host.
+  void _ensureHost() {
+    if (!members.containsKey(hostToken) && members.isNotEmpty) {
+      hostToken = members.keys.first;
+    }
   }
 
   void _removeFromMatch(Player p) {
@@ -448,6 +454,10 @@ class Room {
       _timer = null;
       final summary = s.summary!;
       broadcast({'t': Protocol.matchEnd, 'summary': summary});
+      if (!members.containsKey(hostToken)) {
+        _ensureHost();
+        broadcastRoomState();
+      }
       if (members.isEmpty) _scheduleCleanup();
     }
   }
