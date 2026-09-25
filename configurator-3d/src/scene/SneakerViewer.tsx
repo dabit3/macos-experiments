@@ -51,7 +51,7 @@ const PART_SHOTS: Record<PartId, THREE.Vector3> = {
   overlays: new THREE.Vector3(3.6, 1.5, 3.0),
   stripe: new THREE.Vector3(0.35, 0.75, 4.85),
   laces: new THREE.Vector3(0.7, 3.7, 3.4),
-  tongue: new THREE.Vector3(1.8, 3.0, 3.8),
+  tongue: new THREE.Vector3(1.9, 4.3, 4.7),
   heel: new THREE.Vector3(-5.1, 0.7, 0),
   sole: new THREE.Vector3(1.0, 0.3, 4.85),
   outsole: new THREE.Vector3(3.0, 0.08, 3.8),

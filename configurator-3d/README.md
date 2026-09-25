@@ -58,6 +58,6 @@ npm run build    # tsc -b && vite build
 
 ## Recording
 
-Recording: https://app.devin.ai/attachments/aae3463e-b6ed-4d34-8a8a-3627f80bea9b/court-classic-5846fa1-edited.mp4
+Recording: https://app.devin.ai/attachments/519f79e7-62a6-48a5-9442-de3cec6cb515/configurator-c9a95bf-edited.mp4
 
-The complete showcase and additional checks passed on `5846fa1`. The exported PNG was 250,102 bytes, 1150 × 983 RGBA. Chrome reported software-WebGL fallback warnings without console errors; initial scene loading in the restored tab required an additional wait.
+Steps 1–9 passed on `c9a95bf` with native mouse and keyboard; the exported PNG was 332,023 bytes, 1150 × 983 RGBA, and the share URL restored every field including the label technique. Follow-up commits widened the laces/tongue guided shots and made the label preview a canvas (the original run logged `ERR_INVALID_URL` for the old data-URL preview); both were re-verified in the browser.
