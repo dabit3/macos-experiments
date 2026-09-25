@@ -1211,7 +1211,10 @@ final class RaceWorld {
         tag.isHidden = p.id == playerID
         node.addChildNode(tag)
       }
-      let gap = hypot(p.x - me.x, p.z - me.z)
+      let eye = cameraNode.presentation.position
+      let gap = min(
+        hypot(p.x - me.x, p.z - me.z),
+        hypot(p.x - Double(eye.x), p.z - Double(eye.z)))
       node.childNode(withName: "tag", recursively: false)?.opacity = CGFloat(
         min(1, max(0, (gap - 14) / 10)))
       let factor: Float = 0.42
