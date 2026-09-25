@@ -161,7 +161,15 @@ final class RaceClient: ObservableObject {
   @Published var code = "STAR"
   @Published var racer = 0
   @Published var track = 0
-  @Published var autoDrive = false
+  @Published var autoDrive = false {
+    didSet {
+      guard oldValue, !autoDrive else { return }
+      steer = 0
+      throttle = false
+      brake = false
+      drift = false
+    }
+  }
   @Published var steer = 0.0
   @Published var throttle = false
   @Published var brake = false
