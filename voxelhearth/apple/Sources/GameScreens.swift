@@ -723,6 +723,7 @@ struct InventoryScreen: View {
           backpack(slot)
           if session.mode == "creative" { creativePanel(slot) }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .panel(padding: 20)
         .padding(12)
       }
@@ -749,10 +750,15 @@ struct InventoryScreen: View {
       : "Select another slot to move \(Registry.shared.item(item.id).name)."
   }
   private func slotGrid(_ range: Range<Int>, _ slot: CGFloat) -> some View {
-    HStack(spacing: 4) {
-      ForEach(range, id: \.self) { index in
-        SlotView(stack: session.inventory[index], selected: picked == index, size: slot) {
-          tap(index)
+    VStack(alignment: .leading, spacing: 4) {
+      ForEach(Array(stride(from: range.lowerBound, to: range.upperBound, by: 9)), id: \.self) {
+        row in
+        HStack(spacing: 4) {
+          ForEach(row..<min(row + 9, range.upperBound), id: \.self) { index in
+            SlotView(stack: session.inventory[index], selected: picked == index, size: slot) {
+              tap(index)
+            }
+          }
         }
       }
     }
