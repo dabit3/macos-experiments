@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Havik · Computer-use demo</title>
+  <style>
+    :root{font-family:Inter,system-ui,sans-serif;color:#e7edeb;background:#111917;color-scheme:dark}
+    *{box-sizing:border-box}body{margin:0}button,select,a{font:inherit}button,select{cursor:pointer}
+    button:focus-visible,a:focus-visible,select:focus-visible,video:focus-visible{outline:2px solid #91d9b6;outline-offset:3px}
+    header{height:78px;padding:16px 28px;border-bottom:1px solid #34423c;display:flex;align-items:center;justify-content:space-between}
+    h1{font-size:20px;font-weight:550;letter-spacing:-.4px;margin:0}h1 strong{letter-spacing:3px;font-size:18px;margin-right:17px}header p{font-size:12px;color:#9cafa4;margin:5px 0 0}
+    .badge{font-size:11px;letter-spacing:1px;color:#9bdfb8;background:#263c30;border:1px solid #43614e;border-radius:4px;padding:8px 12px}
+    main{display:grid;grid-template-columns:minmax(0,1fr) 380px;height:calc(100vh - 78px);min-height:520px}
+    .viewer{min-width:0;padding:26px;display:flex;flex-direction:column;gap:16px;overflow:auto}
+    .video-wrap{background:#070b09;display:flex;align-items:center;justify-content:center;border:1px solid #34423c;border-radius:6px;overflow:hidden;min-height:0}
+    video{display:block;width:100%;max-height:calc(100vh - 330px);min-height:220px;object-fit:contain}
+    .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:#aebfb5;font-size:12px}
+    .controls button,select,.download{background:#223128;border:1px solid #45584a;color:#eef6f0;border-radius:4px;padding:8px 12px;text-decoration:none}
+    .controls label{display:flex;gap:7px;align-items:center}.controls .spacer{flex:1}.controls input{accent-color:#8bd3a8}
+    .now{padding:16px 18px;border:1px solid #344c3e;background:#1b2a21;border-radius:5px}
+    .eyebrow{font-size:10px;letter-spacing:1.5px;color:#9ab6a5;margin:0 0 8px;text-transform:uppercase}
+    #current-step{font-size:14px;line-height:1.5;margin:0;overflow-wrap:anywhere}
+    .note{font-size:12px;line-height:1.7;color:#97aba0;margin:0}
+    .error{border:1px solid #9f7950;background:#342b21;padding:12px;border-radius:4px;color:#f1d5ae;font-size:12px}
+    .error label{display:block;margin-top:8px}.error input{max-width:100%}
+    aside{border-left:1px solid #34423c;background:#17211b;display:flex;min-height:0;flex-direction:column}
+    .aside-head{padding:20px;border-bottom:1px solid #34423c}.aside-head h2{font-size:14px;margin:0 0 8px}
+    .aside-head p{font-size:11px;line-height:1.5;color:#9fb3a5;margin:0}
+    .follow{display:flex;gap:7px;align-items:center;font-size:12px;margin-top:14px;color:#c2d4c6}
+    #steps{overflow:auto;list-style:none;padding:12px;margin:0;scroll-behavior:smooth;flex:1}
+    .event{margin:0 0 5px}
+    .event button,.unmapped{width:100%;text-align:left;padding:11px 12px;display:grid;grid-template-columns:45px 1fr;gap:8px;background:transparent;border:1px solid transparent;color:#b2c1b7;border-radius:4px;font-size:11px;line-height:1.6}
+    .event button:hover{background:#22352a;border-color:#3c5444}.event time{font-variant-numeric:tabular-nums;color:#7d9586}
+    .event .label{overflow-wrap:anywhere}.event.action .label{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+    .event.test_start{margin-top:15px}.event.test_start button{font-weight:600;color:#e3eee7;background:#23332a}
+    .event.assertion .label{color:#94d7ab}.event.active button{background:#314b39;border-color:#7abc91;color:white;box-shadow:inset 3px 0 #8ed5a4}
+    .event.active time{color:#cbecda}.event.past{opacity:.7}.unmapped{border-color:#594d37;color:#baa589}.unmapped time{color:#baa589}
+    details{font-size:12px;color:#abc0b0}summary{cursor:pointer}pre{overflow:auto;padding:12px;background:#0e1511;border-radius:4px;line-height:1.7;font-size:11px}
+    @media(max-width:1050px){main{grid-template-columns:minmax(0,1fr) 330px}.viewer{padding:16px}header{padding:14px 18px}}
+    @media(max-width:700px){header{height:auto;min-height:78px}.badge{display:none}h1{font-size:15px}h1 strong{display:block;margin-bottom:6px}main{display:block;height:auto}.viewer{overflow:visible}video{min-height:0;max-height:none}aside{height:600px;border-left:0;border-top:1px solid #34423c}}
+  </style>
+</head>
+<body>
+  <header>
+    <div><h1><strong>HAVIK</strong> Computer-use test recording</h1><p>Real browser interactions · Original action log · Synchronized playback</p></div>
+    <span class="badge">WEBM / VP9</span>
+  </header>
+  <main>
+    <section class="viewer" aria-label="Recorded browser video">
+      <div class="video-wrap"><video id="video" controls preload="metadata" playsinline aria-label="Havik computer-use test video"></video></div>
+      <div id="error" class="error" hidden>
+        The video could not load. For offline playback, extract the ZIP and open index.html.
+        <label>Or select the downloaded WebM: <input id="local-video" type="file" accept=".webm,video/webm"></label>
+      </div>
+      <div class="controls">
+        <button id="restart" type="button">Restart</button>
+        <label>Speed <select id="speed" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+        <label><input id="loop" type="checkbox"> Loop</label>
+        <span id="clock" aria-label="Playback time">00:00 / 01:10</span><span class="spacer"></span>
+        <a class="download" id="download" download>Download WebM</a>
+      </div>
+      <div class="now"><p class="eyebrow">Current recorded step</p><p id="current-step" aria-live="polite">Press play, or choose a step on the right.</p></div>
+      <p class="note">Recorded with mouse and keyboard on the production app. Idle periods are compressed; timestamps use the processed video timeline. The sidebar contains the captured computer actions and test assertions, not a generated simulation.</p>
+      <p id="timing-note" class="note" hidden></p>
+      <details><summary>Reproduce programmatic checks</summary><pre>cd havik
+npm ci
+npm run lint
+npm run typecheck
+npm test
+npm run build
+npm audit
+npm run preview -- --host 0.0.0.0 --port 4173</pre><p class="note">Original application checks: 22 tests passed; lint, typecheck and build passed. The detailed test report documents the broader browser run and final favicon recheck.</p></details>
+    </section>
+    <aside aria-label="Programmatic test steps">
+      <div class="aside-head"><h2>Programmatic test steps</h2><p id="summary"></p><label class="follow"><input type="checkbox" id="follow" checked> Follow playback</label></div>
+      <ol id="steps"></ol>
+    </aside>
+  </main>
+  <script id="recording-data" type="application/json">__RECORDING_DATA__</script>
+  <script>
+    const recording = JSON.parse(document.getElementById("recording-data").textContent);
+    const video = document.getElementById("video");
+    const steps = document.getElementById("steps");
+    const follow = document.getElementById("follow");
+    const error = document.getElementById("error");
+    let active = -1;
+    let attemptedFallback = false;
+    let objectUrl = null;
+    const timeText = (time) => `${Math.floor(time / 60).toString().padStart(2, "0")}:${Math.floor(time % 60).toString().padStart(2, "0")}`;
+    function labelFor(event) {
+      if (event.type === "test_start") return event.test;
+      if (event.type === "assertion") return `${(event.test_result || "recorded").toUpperCase()} · ${event.assertion}`;
+      if (event.type === "setup") return event.description;
+      const coordinates = Number.isFinite(event.x) ? `({ x: ${event.x}, y: ${event.y} })` : "";
+      if (event.action_type === "key") return `keyboard.key(${JSON.stringify(event.display_text || "")})`;
+      if (event.action_type === "type") return "keyboard.type(…)  [text masked by recorder]";
+      if (event.action_type === "scroll") return `mouse.scroll(${JSON.stringify(event.display_text || "")}${coordinates ? ", " + coordinates.slice(1, -1) : ""})`;
+      return `mouse.${event.action_type || "action"}${coordinates}`;
+    }
+    const rows = recording.annotations.map((event) => {
+      const row = document.createElement("li");
+      row.className = `event ${event.type}`;
+      const control = document.createElement(event.seekable ? "button" : "div");
+      const time = document.createElement("time");
+      const label = document.createElement("span");
+      label.className = "label";
+      label.textContent = labelFor(event);
+      time.textContent = event.seekable ? timeText(event.time) : "After";
+      control.append(time, label);
+      if (event.seekable) {
+        control.type = "button";
+        control.title = `Seek to ${event.time.toFixed(2)} seconds`;
+        control.addEventListener("click", () => {
+          video.currentTime = event.time;
+          update();
+        });
+      } else {
+        control.className = "unmapped";
+        control.title = "Annotation falls after the available video; no seek target.";
+      }
+      row.append(control);
+      steps.append(row);
+      return row;
+    });
+    function update() {
+      let next = -1;
+      for (let i = 0; i < recording.annotations.length; i++) {
+        const event = recording.annotations[i];
+        if (event.seekable && event.time <= video.currentTime + 0.025) next = i;
+      }
+      document.getElementById("clock").textContent = `${timeText(video.currentTime)} / ${timeText(video.duration || recording.duration)}`;
+      if (next === active) return;
+      active = next;
+      rows.forEach((row, i) => {
+        row.classList.toggle("active", i === active);
+        row.classList.toggle("past", i < active);
+        const button = row.querySelector("button");
+        if (button) {
+          if (i === active) button.setAttribute("aria-current", "step");
+          else button.removeAttribute("aria-current");
+        }
+      });
+      document.getElementById("current-step").textContent = active < 0
+        ? "Press play, or choose a step on the right."
+        : labelFor(recording.annotations[active]);
+      if (active >= 0 && follow.checked) {
+        const row = rows[active];
+        steps.scrollTo({ top: row.offsetTop - steps.offsetTop - steps.clientHeight / 3, behavior: "smooth" });
+      }
+    }
+    function loadVideo(url) {
+      error.hidden = true;
+      video.src = url;
+      document.getElementById("download").href = url;
+    }
+    video.addEventListener("error", () => {
+      if (!attemptedFallback && recording.fallback) {
+        attemptedFallback = true;
+        loadVideo(recording.fallback);
+      } else error.hidden = false;
+    });
+    document.getElementById("local-video").addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file || !file.name.toLowerCase().endsWith(".webm")) return;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      objectUrl = URL.createObjectURL(file);
+      attemptedFallback = true;
+      loadVideo(objectUrl);
+    });
+    document.getElementById("restart").addEventListener("click", () => {
+      video.currentTime = 0;
+      update();
+      video.play().catch(() => { error.hidden = false; });
+    });
+    document.getElementById("speed").addEventListener("change", (event) => { video.playbackRate = Number(event.target.value); });
+    document.getElementById("loop").addEventListener("change", (event) => { video.loop = event.target.checked; });
+    for (const name of ["timeupdate", "seeking", "seeked", "loadedmetadata", "ended"]) video.addEventListener(name, update);
+    const testCount = recording.annotations.filter((event) => event.type === "test_start").length;
+    const unmapped = recording.annotations.filter((event) => !event.seekable).length;
+    document.getElementById("summary").textContent = `${testCount} test groups · ${recording.annotations.length} original events. Click a timestamp to inspect that moment.`;
+    if (unmapped) {
+      const note = document.getElementById("timing-note");
+      note.hidden = false;
+      note.textContent = `${unmapped} final annotations extend beyond the processed clip. They are listed as “After” without a seek target; their timestamps have not been fabricated.`;
+    }
+    loadVideo(recording.video);
+    update();
+  </script>
+</body>
+</html>

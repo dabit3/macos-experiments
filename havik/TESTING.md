@@ -1,5 +1,19 @@
 # Havik — verification and reproduction
 
+## Interactive recording artifact
+
+`tools/build-test-artifact.mjs` packages genuine recording annotations as a standalone HTML player: WebM on the left, timestamped computer actions and assertions on the right. Clicking a step seeks the video; playback follows the active step. It also supports speed, loop and offline local-file playback.
+
+```sh
+npm run test:artifact
+node tools/build-test-artifact.mjs \
+  path/to/annotations.json 69.834 havik-verified.webm path/to/index.html
+```
+
+Use the actual `ffprobe` duration, and place the WebM alongside the generated HTML. An optional fifth argument supplies an HTTPS WebM attachment fallback. Bundle both files in a ZIP for offline delivery. The generated artifact needs no dependencies or server; open `index.html` after extracting. The browser preview can also serve that directory with a static server.
+
+Synchronization uses the recorder's `edited_time_s` values, preserving the underlying mouse/key events and assertions. Any annotation beyond the available clip remains visible as “After,” without an invented seek target. Original internal MP4 paths are stripped; only WebM is packaged. The app itself is unchanged by the artifact generator.
+
 ## Clean installation and commands
 
 From the repository:
