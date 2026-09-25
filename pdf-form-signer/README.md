@@ -62,4 +62,4 @@ fixing a validation error, clicking Generate PDF, and then checking the download
 
 ## Recording
 
-Recording: https://app.devin.ai/attachments/ba11739f-14a1-48f4-a223-37e969f81eb9/pdf-form-signer-redesign-e30d294-edited.mp4
+Recording: https://app.devin.ai/attachments/21117ff9-b9a5-4598-b41e-9a0d3b0fcbed/pdf-signer-sans-polish-pr301-edited.mp4
