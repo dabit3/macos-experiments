@@ -71,6 +71,7 @@ struct LobbyView: View {
     @Binding var showGuide: Bool
     @FocusState private var focus: Field?
     @State private var copied = false
+    @State private var roomInput = ""
 
     enum Field { case name, room, server }
 
@@ -149,14 +150,14 @@ struct LobbyView: View {
             HStack(alignment: .top, spacing: 8) {
                 field("GUEST NAME", text: $client.name, prompt: "Guest", focus: .name)
                     .frame(maxWidth: .infinity)
-                field("ROOM CODE", text: $client.roomCode, prompt: "BLANK = NEW", focus: .room, code: true)
+                field("ROOM CODE", text: $roomInput, prompt: "BLANK = NEW", focus: .room, code: true)
                     .frame(width: 150)
-                    .onChange(of: client.roomCode) { _, value in
-                        let clean = String(value.uppercased().filter { $0.isLetter || $0.isNumber }.prefix(8))
-                        guard clean != value else { return }
-                        DispatchQueue.main.async {
-                            if client.roomCode == value { client.roomCode = clean }
-                        }
+                    .onAppear { roomInput = client.roomCode }
+                    .onChange(of: roomInput) { _, value in
+                        client.roomCode = String(value.uppercased().filter { $0.isLetter || $0.isNumber }.prefix(8))
+                    }
+                    .onChange(of: focus) { _, value in
+                        if value != .room { roomInput = client.roomCode }
                     }
             }
             field("SERVER ADDRESS", text: $client.address, prompt: "ws://host:8787", focus: .server)
