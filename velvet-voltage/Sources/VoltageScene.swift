@@ -62,15 +62,28 @@ final class VoltageScene: SKScene {
   @discardableResult
   private func label(
     _ text: String, x: Double, y: Double, size: CGFloat, color: UIColor,
-    font: String = "AvenirNextCondensed-DemiBold", parent: SKNode? = nil
+    weight: UIFont.Weight = .semibold, width: UIFont.Width = .condensed, kern: CGFloat = 0,
+    parent: SKNode? = nil
   ) -> SKLabelNode {
-    let node = SKLabelNode(fontNamed: font)
-    node.text = text
-    node.fontSize = size
-    node.fontColor = color
+    let node = SKLabelNode()
+    node.attributedText = Self.styled(
+      text, size: size, color: color, weight: weight, width: width, kern: kern)
     node.position = CGPoint(x: x, y: y)
     (parent ?? self).addChild(node)
     return node
+  }
+
+  private static func styled(
+    _ text: String, size: CGFloat, color: UIColor, weight: UIFont.Weight = .semibold,
+    width: UIFont.Width = .condensed, kern: CGFloat = 0
+  ) -> NSAttributedString {
+    NSAttributedString(
+      string: text,
+      attributes: [
+        .font: UIFont.systemFont(ofSize: size, weight: weight, width: width),
+        .foregroundColor: color,
+        .kern: kern,
+      ])
   }
 
   @discardableResult
@@ -105,11 +118,6 @@ final class VoltageScene: SKScene {
     mural.colorBlendFactor = 0.2
     crop.addChild(mural)
     addChild(crop)
-    for x in [11.0, 379.0] {
-      line(
-        [CGPoint(x: x, y: 65), CGPoint(x: x, y: 559)],
-        color: Ink.cream.withAlphaComponent(0.18), width: 1)
-    }
     for x in [30.0, 360.0] {
       for y in [38.0, 583.0] { screw(x: x, y: y) }
     }
@@ -150,17 +158,19 @@ final class VoltageScene: SKScene {
     plaque.fillColor = Ink.background.withAlphaComponent(0.97)
     plaque.strokeColor = Ink.brass.withAlphaComponent(0.65)
     addChild(plaque)
-    label("M I D N I G H T   C I R C U I T", x: 195, y: 293, size: 12, color: Ink.cream)
-    progressLabel = label("FOLLOW THE LIGHT", x: 195, y: 272, size: 12, color: Ink.cream)
+    label("MIDNIGHT CIRCUIT", x: 195, y: 292, size: 11, color: Ink.brass, kern: 3)
+    progressLabel = label("FOLLOW THE LIGHT", x: 195, y: 271, size: 13, color: Ink.cream, kern: 1)
     for index in 0..<3 {
       progressLights.append(
         circle(
           radius: 4, at: CGPoint(x: 175 + index * 20, y: 257),
           fill: Ink.background, stroke: Ink.brass, width: 0.5))
     }
-    label("Velvet", x: 195, y: 215, size: 25, color: Ink.cream, font: "Baskerville-Italic")
-    label("V O L T A G E", x: 195, y: 198, size: 13, color: Ink.cream)
-    label("ELECTRIC PINBALL • No. 01", x: 195, y: 180, size: 9, color: Ink.brass)
+    label(
+      "VELVET", x: 195, y: 206, size: 17, color: Ink.cream.withAlphaComponent(0.85),
+      weight: .black, width: .expanded, kern: 4)
+    label(
+      "VOLTAGE", x: 195, y: 189, size: 10, color: Ink.brass, weight: .bold, kern: 5)
     leftNode = makeFlipper()
     rightNode = makeFlipper()
     for x in [114.0, 276.0] { screw(x: x, y: 101, z: 8) }
@@ -205,7 +215,8 @@ final class VoltageScene: SKScene {
     knob.strokeColor = Ink.cream.withAlphaComponent(0.7)
     knob.lineWidth = 0.8
     plunger.addChild(knob)
-    let hint = label("PULL", x: 0, y: -108, size: 9, color: Ink.cyan, parent: plunger)
+    let hint = label(
+      "PULL", x: 0, y: -108, size: 10, color: Ink.cyan, weight: .bold, kern: 1.5, parent: plunger)
     hint.name = "hint"
     let arrow = label("\u{2193}", x: 0, y: -122, size: 12, color: Ink.cyan, parent: plunger)
     arrow.name = "hint"
@@ -261,15 +272,19 @@ final class VoltageScene: SKScene {
     circle(
       radius: 21, at: .zero, fill: Ink.panel, stroke: Ink.brass.withAlphaComponent(0.5), width: 0.5,
       parent: cap)
-    label(
-      "0\(index + 1)", x: 0, y: -8, size: 25, color: Ink.cream, font: "Baskerville", parent: cap)
-    let tab = SKShapeNode(rect: CGRect(x: -44, y: -57, width: 88, height: 21), cornerRadius: 3)
-    tab.fillColor = Ink.background
-    tab.strokeColor = Ink.brass.withAlphaComponent(0.5)
-    tab.lineWidth = 0.5
+    let number = label(
+      "0\(index + 1)", x: 0, y: 0, size: 18, color: Ink.cream, weight: .heavy, width: .expanded,
+      kern: 1, parent: cap)
+    number.verticalAlignmentMode = .center
+    let tab = SKShapeNode(rect: CGRect(x: -38, y: -61, width: 76, height: 18), cornerRadius: 9)
+    tab.fillColor = Ink.background.withAlphaComponent(0.92)
+    tab.strokeColor = Ink.brass.withAlphaComponent(0.6)
+    tab.lineWidth = 0.75
     cap.addChild(tab)
-    label(
-      ["ARCADE", "SPIRE", "RIVIERA"][index], x: 0, y: -52, size: 14, color: Ink.cream, parent: cap)
+    let name = label(
+      ["ARCADE", "SPIRE", "RIVIERA"][index], x: 0, y: -52, size: 11, color: Ink.cream,
+      weight: .bold, kern: 2, parent: cap)
+    name.verticalAlignmentMode = .center
     districtCaps.append(cap)
   }
 
@@ -338,10 +353,13 @@ final class VoltageScene: SKScene {
     }
     let dim = session.screen == .playing ? max(0, 0.5 - 0.17 * Double(hits)) : 0.2
     mural.colorBlendFactor += (dim - mural.colorBlendFactor) * min(1, dt * 3)
-    progressLabel.text =
+    let progress =
       engine.score.circuits > 0
       ? "\(engine.score.circuits) CIRCUIT\(engine.score.circuits == 1 ? "" : "S") LIVE"
       : "LIGHT ALL THREE DISTRICTS"
+    if progressLabel.attributedText?.string != progress {
+      progressLabel.attributedText = Self.styled(progress, size: 13, color: Ink.cream, kern: 1)
+    }
     for (index, lamp) in progressLights.enumerated() {
       lamp.fillColor =
         index < engine.score.nextDistrict ? Ink.cyan : Ink.brass.withAlphaComponent(0.3)

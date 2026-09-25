@@ -2,6 +2,16 @@ import SpriteKit
 import SwiftUI
 import UIKit
 
+extension Font {
+  static func caps(_ size: CGFloat, _ weight: Font.Weight = .semibold) -> Font {
+    .system(size: size, weight: weight).width(.condensed)
+  }
+
+  static func display(_ size: CGFloat, _ weight: Font.Weight = .heavy) -> Font {
+    .system(size: size, weight: weight).width(.expanded)
+  }
+}
+
 @main
 struct VelvetVoltageApp: App {
   var body: some Scene {
@@ -96,8 +106,8 @@ struct VoltageView: View {
   private var launchCue: some View {
     VStack(spacing: 5) {
       if game.inFlight {
-        Text(game.coaching ? "TOUCH\nA SIDE" : "FLIP")
-          .foregroundStyle(Color(Ink.brass))
+        Text(game.coaching ? "TOUCH\nA SIDE" : "IN PLAY")
+          .foregroundStyle(Color(Ink.brass).opacity(0.7))
       } else {
         GeometryReader { proxy in
           ZStack(alignment: .leading) {
@@ -112,18 +122,17 @@ struct VoltageView: View {
           .contentTransition(.numericText())
       }
     }
-    .font(.custom("AvenirNextCondensed-Bold", size: 11)).tracking(1.4)
+    .font(.caps(11, .bold)).tracking(1.4)
     .multilineTextAlignment(.center)
     .foregroundStyle(game.inFlight ? Color(Ink.brass) : Color(Ink.cyan))
     .frame(width: 84)
     .frame(maxHeight: .infinity)
     .background(
-      RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(0.45))
+      RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(game.inFlight ? 0 : 0.45))
     )
     .overlay(
       RoundedRectangle(cornerRadius: 12).stroke(
-        (game.inFlight ? Color(Ink.brass) : Color(Ink.cyan)).opacity(game.inFlight ? 0.35 : 0.8),
-        lineWidth: 1)
+        Color(Ink.cyan).opacity(game.inFlight ? 0 : 0.8), lineWidth: 1)
     )
     .accessibilityHidden(true)
   }
@@ -169,7 +178,7 @@ struct VoltageView: View {
   private var masthead: some View {
     VStack(spacing: 0) {
       HStack {
-        eyebrow("No. 01  /  ELECTRIC PINBALL")
+        eyebrow("NO. 01  /  ELECTRIC PINBALL")
         Spacer()
         Button {
           settings = true
@@ -189,14 +198,14 @@ struct VoltageView: View {
         VStack(alignment: .leading, spacing: 3) {
           eyebrow("HOUSE RECORD")
           Text(game.best > 0 ? "\(game.best.formatted()) V" : "UNCLAIMED")
-            .font(.custom("AvenirNextCondensed-DemiBold", size: 21))
+            .font(.caps(21))
             .foregroundStyle(Color(Ink.cream))
         }
         Spacer()
         VStack(alignment: .trailing, spacing: 3) {
           eyebrow("CIRCUITS LIT")
           Text("\(game.lifetimeCircuits)")
-            .font(.custom("AvenirNextCondensed-DemiBold", size: 21))
+            .font(.caps(21))
             .foregroundStyle(Color(Ink.cream))
         }
       }
@@ -205,7 +214,7 @@ struct VoltageView: View {
         game.showTutorial()
       } label: {
         Text("HOW TO PLAY")
-          .font(.custom("AvenirNextCondensed-DemiBold", size: 12)).tracking(1.8)
+          .font(.caps(12)).tracking(1.8)
           .frame(maxWidth: .infinity, minHeight: 44)
       }
       .foregroundStyle(Color(Ink.brass))
@@ -227,7 +236,7 @@ struct VoltageView: View {
         }
         Spacer(minLength: 0)
         VStack(alignment: .trailing, spacing: 5) {
-          Text("\(game.score.multiplier)×").font(.custom("Baskerville-Italic", size: 24))
+          Text("\(game.score.multiplier)×").font(.display(20, .bold)).monospacedDigit()
             .foregroundStyle(Color(Ink.cyan))
             .accessibilityLabel("Multiplier \(game.score.multiplier) times")
           HStack(spacing: 5) {
@@ -237,7 +246,7 @@ struct VoltageView: View {
               ).frame(width: 7, height: 7)
             }
             Text("BALL \(game.ballNumber)")
-              .font(.custom("AvenirNextCondensed-DemiBold", size: 11)).tracking(1)
+              .font(.caps(11)).tracking(1)
               .foregroundStyle(Color(Ink.cream))
           }
           .accessibilityElement(children: .ignore)
@@ -266,15 +275,13 @@ struct VoltageView: View {
   private var circuitStrip: some View {
     VStack(spacing: 4) {
       Text(game.banner)
-        .font(.custom("AvenirNextCondensed-DemiBold", size: 14)).tracking(1.6)
+        .font(.caps(14)).tracking(1.6)
         .foregroundStyle(Color(Ink.cyan)).lineLimit(1).minimumScaleFactor(0.7)
         .frame(maxWidth: .infinity)
-        .contentTransition(.opacity)
         .accessibilityIdentifier("bannerText")
       districtRow
     }
     .padding(.horizontal, 6)
-    .animation(.easeInOut(duration: 0.2), value: game.banner)
     .accessibilityElement(children: .combine)
   }
 
@@ -289,7 +296,7 @@ struct VoltageView: View {
             .frame(width: 7, height: 7)
             .shadow(color: Color(Ink.cyan).opacity(next ? 0.9 : 0), radius: 4)
           Text(["ARCADE", "SPIRE", "RIVIERA"][index])
-            .font(.custom("AvenirNextCondensed-DemiBold", size: 12)).tracking(1.2)
+            .font(.caps(12)).tracking(1.2)
             .foregroundStyle(
               next ? Color(Ink.cyan) : lit ? Color(Ink.cream) : Color(Ink.brass).opacity(0.7))
         }
@@ -309,10 +316,10 @@ struct VoltageView: View {
         eyebrow("HOW TO PLAY")
         Spacer()
         Button("Close") { game.screen = .home }
-          .font(.custom("AvenirNextCondensed-DemiBold", size: 12))
+          .font(.caps(12))
           .accessibilityIdentifier("tutorialClose")
       }
-      Text("Make the\ncity hum.").font(.custom("Baskerville-Italic", size: 42)).foregroundStyle(
+      Text("MAKE THE\nCITY HUM").font(.display(30)).tracking(1).lineSpacing(-2).foregroundStyle(
         Color(Ink.cream))
       ControlDiagram().frame(height: 96)
       lesson(
@@ -339,11 +346,11 @@ struct VoltageView: View {
 
   private func lesson(_ number: String, title: String, text: String) -> some View {
     HStack(alignment: .top, spacing: 12) {
-      Text(number).font(.system(size: 12, weight: .medium, design: .monospaced)).foregroundStyle(
+      Text(number).font(.caps(13, .bold)).monospacedDigit().foregroundStyle(
         Color(Ink.cyan))
       VStack(alignment: .leading, spacing: 4) {
-        Text(title).font(.system(size: 14, weight: .semibold))
-        Text(text).font(.system(size: 12)).foregroundStyle(Color(Ink.cream).opacity(0.7)).fixedSize(
+        Text(title).font(.system(size: 15, weight: .semibold))
+        Text(text).font(.system(size: 13)).foregroundStyle(Color(Ink.cream).opacity(0.7)).fixedSize(
           horizontal: false, vertical: true)
       }.foregroundStyle(Color(Ink.cream))
     }
@@ -357,7 +364,7 @@ struct VoltageView: View {
       VStack(spacing: 21) {
         eyebrow("PAUSED")
         DecoRule().frame(height: 10)
-        Text("The night\ncan wait.").font(.custom("Baskerville-Italic", size: 51))
+        Text("THE NIGHT\nCAN WAIT").font(.display(32)).tracking(1)
           .multilineTextAlignment(.center)
         HStack(spacing: 24) {
           stat("VOLTAGE", "\(game.score.points.formatted())")
@@ -365,21 +372,27 @@ struct VoltageView: View {
           stat("POWER", "\(game.score.multiplier)×")
         }
         primary("RESUME", icon: "play.fill", identifier: "resumeButton") { game.paused = false }
-        Button("Restart game") { confirmRestart = true }.frame(minHeight: 44)
-          .accessibilityIdentifier("restartButton")
-        Button("Settings") { settings = true }.frame(minHeight: 44)
-        Button("Return to club") {
-          game.screen = .home
-          game.paused = false
-        }.frame(minHeight: 44)
-      }.padding(36).foregroundStyle(Color(Ink.cream))
+        VStack(spacing: 10) {
+          secondary("RESTART GAME", icon: "arrow.counterclockwise") { confirmRestart = true }
+            .accessibilityIdentifier("restartButton")
+          HStack(spacing: 10) {
+            secondary("SETTINGS", icon: "slider.horizontal.3") { settings = true }
+              .accessibilityIdentifier("pauseSettingsButton")
+            secondary("HOME", icon: "house") {
+              game.screen = .home
+              game.paused = false
+            }
+            .accessibilityIdentifier("pauseHomeButton")
+          }
+        }
+      }.padding(32).foregroundStyle(Color(Ink.cream))
     }
   }
 
   private func stat(_ title: String, _ value: String) -> some View {
     VStack(spacing: 3) {
       eyebrow(title)
-      Text(value).font(.custom("AvenirNextCondensed-DemiBold", size: 18))
+      Text(value).font(.caps(18))
     }
   }
 
@@ -392,28 +405,10 @@ struct VoltageView: View {
           game.newGame()
         }
         HStack(spacing: 10) {
-          Button {
-            share()
-          } label: {
-            Label("SHARE POSTER", systemImage: "square.and.arrow.up")
-              .font(.custom("AvenirNextCondensed-DemiBold", size: 12)).tracking(1.4)
-              .frame(maxWidth: .infinity, minHeight: 48)
-          }
-          .background(Color(Ink.brass).opacity(0.1), in: RoundedRectangle(cornerRadius: 9))
-          .overlay(
-            RoundedRectangle(cornerRadius: 9).stroke(Color(Ink.brass).opacity(0.5), lineWidth: 0.7)
-          )
-          .accessibilityIdentifier("shareButton")
-          Button {
-            game.screen = .home
-          } label: {
-            Image(systemName: "house").frame(width: 52, height: 48)
-          }
-          .background(Color(Ink.brass).opacity(0.1), in: RoundedRectangle(cornerRadius: 9))
-          .overlay(
-            RoundedRectangle(cornerRadius: 9).stroke(Color(Ink.brass).opacity(0.5), lineWidth: 0.7)
-          )
-          .accessibilityLabel("Return home").accessibilityIdentifier("homeButton")
+          secondary("SHARE POSTER", icon: "square.and.arrow.up") { share() }
+            .accessibilityIdentifier("shareButton")
+          secondary("HOME", icon: "house") { game.screen = .home }
+            .accessibilityLabel("Return home").accessibilityIdentifier("homeButton")
         }.foregroundStyle(Color(Ink.cream))
       }
     }.padding(24)
@@ -465,8 +460,23 @@ struct VoltageView: View {
   }
 
   private func eyebrow(_ text: String) -> some View {
-    Text(text).font(.custom("AvenirNextCondensed-DemiBold", size: 10)).tracking(1.5)
+    Text(text).font(.caps(11)).tracking(1.8)
       .foregroundStyle(Color(Ink.brass))
+  }
+
+  private func secondary(
+    _ text: String, icon: String, action: @escaping () -> Void
+  ) -> some View {
+    Button(action: action) {
+      Label(text, systemImage: icon)
+        .font(.caps(13)).tracking(1.6)
+        .frame(maxWidth: .infinity, minHeight: 48)
+    }
+    .foregroundStyle(Color(Ink.cream))
+    .background(Color(Ink.brass).opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+    .overlay(
+      RoundedRectangle(cornerRadius: 10).stroke(Color(Ink.brass).opacity(0.45), lineWidth: 1)
+    )
   }
 
   private func primary(
@@ -478,8 +488,8 @@ struct VoltageView: View {
         Spacer()
         Image(systemName: icon)
       }
-      .font(.custom("AvenirNextCondensed-Bold", size: 15))
-      .padding(.horizontal, 22).frame(height: 54)
+      .font(.caps(17, .bold))
+      .padding(.horizontal, 22).frame(height: 56)
     }.buttonStyle(MachineButtonStyle(color: Color(Ink.coral))).accessibilityIdentifier(identifier)
   }
 }
@@ -494,7 +504,7 @@ struct FlipperPad: View {
         Image(systemName: left ? "hand.point.up.left.fill" : "hand.point.up.right.fill")
           .font(.system(size: 11, weight: .semibold))
         Text(left ? "LEFT HALF · FLIP" : "FLIP · RIGHT HALF")
-          .font(.custom("AvenirNextCondensed-DemiBold", size: 11)).tracking(1.4)
+          .font(.caps(11)).tracking(1.4)
         if left { Spacer(minLength: 0) }
       }
       .foregroundStyle(held ? Color(Ink.coral) : Color(Ink.brass).opacity(0.8))
@@ -524,11 +534,11 @@ struct ControlDiagram: View {
           Spacer()
           Label("RIGHT FLIPPER", systemImage: "hand.tap")
         }
-        .font(.custom("AvenirNextCondensed-DemiBold", size: 10)).tracking(1)
+        .font(.caps(10)).tracking(1)
         .foregroundStyle(Color(Ink.coral)).padding(.horizontal, 16).offset(y: h * 0.28)
         VStack(spacing: 2) {
           Image(systemName: "arrow.down").font(.system(size: 13, weight: .bold))
-          Text("PULL TO LAUNCH").font(.custom("AvenirNextCondensed-DemiBold", size: 9)).tracking(1)
+          Text("PULL TO LAUNCH").font(.caps(9)).tracking(1)
         }.foregroundStyle(Color(Ink.cyan)).position(x: w * 0.5, y: h * 0.32)
       }
     }
@@ -538,12 +548,12 @@ struct ControlDiagram: View {
 
 struct BrandLockup: View {
   var body: some View {
-    VStack(spacing: -5) {
-      Text("Velvet").font(.custom("Baskerville-Italic", size: 58))
-      HStack(spacing: 10) {
-        Rectangle().frame(width: 21, height: 0.7)
-        Text("VOLTAGE").font(.custom("AvenirNextCondensed-DemiBold", size: 21)).tracking(6)
-        Rectangle().frame(width: 21, height: 0.7)
+    VStack(spacing: 6) {
+      Text("VELVET").font(.display(44, .black)).tracking(6)
+      HStack(spacing: 12) {
+        Rectangle().frame(width: 28, height: 1)
+        Text("VOLTAGE").font(.caps(18, .semibold)).tracking(10)
+        Rectangle().frame(width: 28, height: 1)
       }.foregroundStyle(Color(Ink.brass))
     }
     .foregroundStyle(Color(Ink.cream))
@@ -570,11 +580,11 @@ struct MachineButtonStyle: ButtonStyle {
       .foregroundStyle(Color(Ink.background))
       .background(
         LinearGradient(colors: [color, color.opacity(0.85)], startPoint: .top, endPoint: .bottom),
-        in: RoundedRectangle(cornerRadius: 9)
+        in: RoundedRectangle(cornerRadius: 10)
       )
-      .overlay(RoundedRectangle(cornerRadius: 9).stroke(Color.white.opacity(0.25), lineWidth: 0.7))
+      .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.white.opacity(0.25), lineWidth: 0.7))
       .background(
-        RoundedRectangle(cornerRadius: 9).fill(color.opacity(0.3)).offset(y: 3)
+        RoundedRectangle(cornerRadius: 10).fill(color.opacity(0.3)).offset(y: 3)
       )
       .offset(y: configuration.isPressed ? 2 : 0)
       .brightness(configuration.isPressed ? -0.1 : 0)
@@ -641,11 +651,11 @@ struct ScorePoster: View {
             startPoint: .top, endPoint: .bottom)
           VStack(spacing: 7) {
             Text("THE ELECTRIC SOCIAL CLUB")
-              .font(.custom("AvenirNextCondensed-DemiBold", size: 9)).tracking(2.5)
-            Text("What a night.").font(.custom("Baskerville-Italic", size: 38))
+              .font(.caps(9)).tracking(2.5)
+            Text("WHAT A NIGHT").font(.display(30)).tracking(2)
             Spacer()
             Text(score.circuits > 0 ? "YOU BROUGHT THE CITY TO LIFE" : "THE CITY WANTS AN ENCORE")
-              .font(.custom("AvenirNextCondensed-DemiBold", size: 9)).tracking(1.4)
+              .font(.caps(9)).tracking(1.4)
           }.foregroundStyle(Color(Ink.cream)).padding(.vertical, 21)
         }
         .frame(height: proxy.size.height * 0.48)
@@ -654,27 +664,27 @@ struct ScorePoster: View {
             Text("AFTER HOURS")
             Spacer()
             Text("SESSION COMPLETE")
-          }.font(.custom("AvenirNextCondensed-DemiBold", size: 9)).tracking(1.4)
+          }.font(.caps(9)).tracking(1.4)
           Rectangle().frame(height: 0.7).opacity(0.3).padding(.top, 10)
           Spacer(minLength: 10)
           DotMatrixScore(value: score.points, color: Color(Ink.background))
             .frame(height: min(49, proxy.size.height * 0.085))
             .accessibilityIdentifier("resultScore")
-          Text("VOLTS GENERATED").font(.custom("AvenirNextCondensed-DemiBold", size: 9))
+          Text("VOLTS GENERATED").font(.caps(9))
             .tracking(3).padding(.top, 9)
           Spacer(minLength: 10)
           HStack(spacing: 28) {
             Text("\(score.circuits) \(score.circuits == 1 ? "CIRCUIT" : "CIRCUITS")")
             Text("\(score.multiplier)× POWER")
-          }.font(.custom("AvenirNextCondensed-DemiBold", size: 14)).tracking(1)
+          }.font(.caps(14)).tracking(1)
           Text(newRecord ? "A NEW HOUSE RECORD" : "PERSONAL BEST  \(best.formatted()) V")
-            .font(.custom("AvenirNextCondensed-DemiBold", size: 10)).tracking(1.2).padding(.top, 8)
+            .font(.caps(10)).tracking(1.2).padding(.top, 8)
           Spacer(minLength: 10)
           Rectangle().frame(height: 0.7).opacity(0.3)
           HStack(alignment: .firstTextBaseline) {
-            Text("Velvet Voltage").font(.custom("Baskerville-Italic", size: 21))
+            Text("VELVET VOLTAGE").font(.display(13)).tracking(2.5)
             Spacer()
-            Text("PLAY IT AGAIN.").font(.custom("AvenirNextCondensed-DemiBold", size: 8)).tracking(
+            Text("PLAY IT AGAIN.").font(.caps(8)).tracking(
               1.3)
           }.padding(.top, 10)
         }
