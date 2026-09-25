@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   FINISHES,
   FINISH_LABELS,
+  LABEL_STYLES,
+  LABEL_STYLE_LABELS,
+  LOOKS,
   MAX_TEXT,
   PALETTE,
   PART_HINTS,
@@ -10,10 +13,14 @@ import {
   normalizeHex,
   relativeLuminance,
   sanitizeText,
+  THREADS,
+  inkColor,
   type Finish,
+  type LabelStyle,
   type PartId,
   type SneakerConfig,
 } from '../config'
+import { LABEL_H, LABEL_W, drawLabel } from '../scene/engraving'
 import { Icon } from './Icon'
 
 type Section = 'materials' | 'personalise' | 'save'
@@ -23,9 +30,11 @@ interface Props {
   selected: PartId | null
   section: Section
   onSection: (section: Section) => void
-  onSelect: (part: PartId | null) => void
-  onUpdatePart: (part: PartId, patch: Partial<{ color: string; finish: Finish }>) => void
-  onText: (text: string) => void
+  onSelect: (part: PartId) => void
+  onStep: (delta: 1 | -1) => void
+  onLook: (id: string) => void
+  onUpdatePart: (part: PartId, patch: Partial<{ color: string; finish: Finish }>, key?: string) => void
+  onLabel: (patch: Partial<{ text: string; ink: string; label: LabelStyle }>) => void
   shareUrl: string
   onShare: () => void
   onDownload: () => void
@@ -33,7 +42,39 @@ interface Props {
 
 const SECTIONS = ['materials', 'personalise', 'save'] as const
 const SECTION_LABELS = { materials: 'Materials', personalise: 'Personalise', save: 'Your design' }
-const FINISH_HINTS = { matte: 'Soft leather', gloss: 'Patent shine', metallic: 'Brushed foil' }
+const FINISH_HINTS = { matte: 'Soft leather', suede: 'Napped velvet', gloss: 'Patent shine', metallic: 'Brushed foil' }
+const LABEL_HINTS = { embroidered: 'Satin thread', debossed: 'Pressed leather', foil: 'Hot-stamped' }
+
+/** The heel label as it renders on the shoe, flattened onto the tab colour. */
+function LabelPreview({ text, ink, style, tab }: { text: string; ink: string; style: LabelStyle; tab: string }) {
+  const ref = useRef<HTMLCanvasElement>(null)
+  useEffect(() => {
+    const ctx = ref.current?.getContext('2d')
+    if (!ctx) return
+    const art = drawLabel(text, inkColor(ink, tab), style)
+    ctx.clearRect(0, 0, LABEL_W, LABEL_H)
+    ctx.fillStyle = tab
+    ctx.beginPath()
+    ctx.roundRect(0, 0, LABEL_W, LABEL_H, 70)
+    ctx.fill()
+    const sheen = ctx.createLinearGradient(0, 0, 0, LABEL_H)
+    sheen.addColorStop(0, 'rgba(255,255,255,0.14)')
+    sheen.addColorStop(0.5, 'rgba(255,255,255,0)')
+    sheen.addColorStop(1, 'rgba(0,0,0,0.14)')
+    ctx.fillStyle = sheen
+    ctx.fill()
+    ctx.drawImage(art.color, 0, 0)
+  }, [text, ink, style, tab])
+  return (
+    <canvas
+      ref={ref}
+      width={LABEL_W}
+      height={LABEL_H}
+      role="img"
+      aria-label={`Heel label preview: ${text || 'brand mark'}`}
+    />
+  )
+}
 
 export function Sidebar({
   config,
@@ -41,14 +82,22 @@ export function Sidebar({
   section,
   onSection,
   onSelect,
+  onStep,
+  onLook,
   onUpdatePart,
-  onText,
+  onLabel,
   shareUrl,
   onShare,
   onDownload,
 }: Props) {
   const id = selected ?? 'upper'
   const current = config.parts[id]
+  const index = PART_IDS.indexOf(id)
+  const activeLook = LOOKS.find((look) =>
+    PART_IDS.every(
+      (p) => look.parts[p].color === config.parts[p].color && look.parts[p].finish === config.parts[p].finish,
+    ),
+  )
   const [hexDraft, setHexDraft] = useState<{ part: PartId; base: string; value: string } | null>(null)
   const hexValue = hexDraft?.part === id && hexDraft.base === current.color ? hexDraft.value : current.color
   const colorName = PALETTE.find((p) => p.hex === current.color)?.name ?? 'Custom colour'
@@ -101,9 +150,49 @@ export function Sidebar({
           <>
             <section className="panel">
               <header className="panel-head">
-                <h3>Choose your canvas</h3>
-                <span>8 panels. No limits.</span>
+                <h3>Start from an icon</h3>
+                <span>{activeLook ? activeLook.name : 'Custom'}</span>
               </header>
+              <div className="look-strip" role="group" aria-label="Curated colourways">
+                {LOOKS.map((look) => (
+                  <button
+                    key={look.id}
+                    type="button"
+                    className={`look-card ${activeLook?.id === look.id ? 'is-active' : ''}`}
+                    aria-pressed={activeLook?.id === look.id}
+                    onClick={() => onLook(look.id)}
+                    data-testid={`look-${look.id}`}
+                  >
+                    <span className="look-chips" aria-hidden="true">
+                      {(['upper', 'overlays', 'stripe', 'sole', 'outsole'] as const).map((p) => (
+                        <i key={p} style={{ backgroundColor: look.parts[p].color }} />
+                      ))}
+                    </span>
+                    <span className="look-name">{look.name}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+            <section className="panel stepper-panel">
+              <div className="part-stepper">
+                <button type="button" className="step-btn" onClick={() => onStep(-1)} aria-label="Previous part">
+                  <Icon name="chevronLeft" size={18} />
+                </button>
+                <div className="step-title">
+                  <small>
+                    Step {String(index + 1).padStart(2, '0')} of 08 · {PART_HINTS[id]}
+                  </small>
+                  <strong data-testid="active-part">{PART_LABELS[id]}</strong>
+                </div>
+                <button type="button" className="step-btn" onClick={() => onStep(1)} aria-label="Next part">
+                  <Icon name="chevronRight" size={18} />
+                </button>
+              </div>
+              <div className="step-progress" aria-hidden="true">
+                {PART_IDS.map((p, i) => (
+                  <i key={p} className={i <= index ? 'is-done' : ''} />
+                ))}
+              </div>
               <ul className="part-list">
                 {PART_IDS.map((part) => {
                   const style = config.parts[part]
@@ -156,7 +245,7 @@ export function Sidebar({
                   <input
                     type="color"
                     value={current.color}
-                    onChange={(e) => onUpdatePart(id, { color: e.target.value })}
+                    onChange={(e) => onUpdatePart(id, { color: e.target.value }, `picker-${id}`)}
                     aria-label="Custom colour picker"
                   />
                   Custom colour
@@ -196,6 +285,18 @@ export function Sidebar({
                   </button>
                 ))}
               </div>
+              <button
+                type="button"
+                className="next-step"
+                onClick={() => (index === PART_IDS.length - 1 ? onSection('personalise') : onStep(1))}
+                data-testid="next-step"
+              >
+                <span>
+                  <small>Next</small>
+                  {index === PART_IDS.length - 1 ? 'Personalise the heel' : PART_LABELS[PART_IDS[index + 1]]}
+                </span>
+                <Icon name="arrow" size={18} />
+              </button>
             </section>
           </>
         )}
@@ -203,24 +304,15 @@ export function Sidebar({
           <section className="personalise-panel">
             <span className="eyebrow">THE DETAIL THAT MAKES IT YOURS</span>
             <h3>Leave your mark.</h3>
-            <p>
-              A name. A number. A little reminder.
-              <br />
-              Your signature, stitched into the heel.
-            </p>
-            <div
-              className="label-preview"
-              style={{
-                backgroundColor: config.parts.heel.color,
-                color: relativeLuminance(config.parts.heel.color) > 0.35 ? '#252520' : '#f2eee3',
-              }}
-            >
-              <span>COURT / 01</span>
-              <strong>{config.text || 'YOUR NAME'}</strong>
-              <small>ONE OF ONE</small>
-            </div>
+            <p>A name, a number, a reminder — finished on the heel tab by hand.</p>
+            <figure className="label-preview" data-testid="label-preview">
+              <LabelPreview text={config.text} ink={config.ink} style={config.label} tab={config.parts.heel.color} />
+              <figcaption>
+                {LABEL_STYLE_LABELS[config.label]} · {config.text || 'Brand mark'}
+              </figcaption>
+            </figure>
             <label className="field-label" htmlFor="engraving">
-              Engraving <span>UP TO 8 CHARACTERS</span>
+              Your text <span>UP TO 8 CHARACTERS</span>
             </label>
             <div className="engrave-row">
               <input
@@ -232,7 +324,7 @@ export function Sidebar({
                 placeholder="YOUR NAME"
                 spellCheck={false}
                 autoComplete="off"
-                onChange={(e) => onText(sanitizeText(e.target.value))}
+                onChange={(e) => onLabel({ text: sanitizeText(e.target.value) })}
                 aria-label="Engraving text"
                 data-testid="engrave-input"
               />
@@ -240,10 +332,70 @@ export function Sidebar({
                 {config.text.length}/{MAX_TEXT}
               </span>
             </div>
-            <p className="field-help">Letters, numbers, spaces and . - &amp; !</p>
-            <button type="button" className="text-button" onClick={() => onSelect('heel')}>
-              Change the heel colour <Icon name="arrow" />
-            </button>
+            <p className="field-help">Letters, numbers, spaces and . - &amp; ! · Leave empty for the brand mark.</p>
+
+            <div className="field-label">Technique</div>
+            <div className="label-styles" role="group" aria-label="Label technique">
+              {LABEL_STYLES.map((style) => (
+                <button
+                  key={style}
+                  type="button"
+                  className={`label-style ${config.label === style ? 'is-active' : ''}`}
+                  aria-pressed={config.label === style}
+                  onClick={() => onLabel({ label: style })}
+                  data-testid={`label-${style}`}
+                >
+                  <strong>{LABEL_STYLE_LABELS[style]}</strong>
+                  <small>{LABEL_HINTS[style]}</small>
+                </button>
+              ))}
+            </div>
+
+            <div className="field-label">
+              Thread colour <span>{config.label === 'embroidered' ? '' : 'EMBROIDERY ONLY'}</span>
+            </div>
+            <div className="thread-row" role="group" aria-label="Thread colour">
+              {THREADS.map((thread) => {
+                const on = config.ink === thread.id
+                const hex = thread.hex || inkColor('auto', config.parts.heel.color)
+                return (
+                  <button
+                    key={thread.id}
+                    type="button"
+                    className={`thread ${on ? 'is-active' : ''} ${thread.id === 'auto' ? 'is-auto' : ''}`}
+                    aria-pressed={on}
+                    disabled={config.label !== 'embroidered'}
+                    title={thread.name}
+                    onClick={() => onLabel({ ink: thread.id })}
+                    data-testid={`thread-${thread.id}`}
+                  >
+                    <span style={{ backgroundColor: hex }} />
+                    {thread.id === 'auto' ? 'Auto' : <span className="sr-only">{thread.name}</span>}
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className="field-label">
+              Heel tab colour <span>{PALETTE.find((p) => p.hex === config.parts.heel.color)?.name ?? 'Custom'}</span>
+            </div>
+            <div className="swatch-grid compact" role="group" aria-label="Heel tab colour">
+              {PALETTE.map((p) => (
+                <button
+                  key={p.hex}
+                  type="button"
+                  aria-pressed={config.parts.heel.color === p.hex}
+                  className={`swatch ${config.parts.heel.color === p.hex ? 'is-active' : ''}`}
+                  style={{ backgroundColor: p.hex, color: relativeLuminance(p.hex) > 0.35 ? '#111' : '#fff' }}
+                  title={p.name}
+                  onClick={() => onUpdatePart('heel', { color: p.hex })}
+                  data-testid={`heel-swatch-${p.name.toLowerCase().replace(/ /g, '-')}`}
+                >
+                  {config.parts.heel.color === p.hex && <Icon name="check" size={14} />}
+                  <span className="sr-only">{p.name}</span>
+                </button>
+              ))}
+            </div>
           </section>
         )}
         {section === 'save' && (

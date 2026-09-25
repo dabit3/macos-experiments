@@ -5,6 +5,8 @@ import { Icon } from './components/Icon'
 import {
   DEFAULT_CONFIG,
   FINISH_LABELS,
+  LOOKS,
+  PALETTE,
   PART_IDS,
   PART_LABELS,
   VIEWS,
@@ -12,6 +14,7 @@ import {
   encodeConfig,
   randomConfig,
   type Finish,
+  type LabelStyle,
   type PartId,
   type SneakerConfig,
   type ViewId,
@@ -32,6 +35,10 @@ export default function App() {
   const [toast, setToast] = useState<string | null>(null)
   const [ready, setReady] = useState(false)
   const [section, setSection] = useState<'materials' | 'personalise' | 'save'>('materials')
+  const [past, setPast] = useState<SneakerConfig[]>([])
+  const [future, setFuture] = useState<SneakerConfig[]>([])
+  const configRef = useRef(config)
+  const lastEdit = useRef<{ key: string; at: number } | null>(null)
   const apiRef = useRef<ViewerApi | null>(null)
   const toastTimer = useRef<number | null>(null)
 
@@ -40,6 +47,53 @@ export default function App() {
     if (toastTimer.current) window.clearTimeout(toastTimer.current)
     toastTimer.current = window.setTimeout(() => setToast(null), 2600)
   }, [])
+
+  useEffect(() => {
+    configRef.current = config
+  }, [config])
+
+  /**
+   * Records a design change in the undo history. Rapid edits with the same `key` (typing,
+   * dragging the colour picker) collapse into one step.
+   */
+  const commit = useCallback((update: (c: SneakerConfig) => SneakerConfig, key?: string) => {
+    const current = configRef.current
+    const next = update(current)
+    if (encodeConfig(next) === encodeConfig(current)) return
+    const now = performance.now()
+    const last = lastEdit.current
+    if (!(key && last && last.key === key && now - last.at < 900)) setPast((p) => [...p.slice(-59), current])
+    lastEdit.current = key ? { key, at: now } : null
+    setFuture([])
+    configRef.current = next
+    setConfig(next)
+  }, [])
+
+  const undo = useCallback(() => {
+    const previous = past[past.length - 1]
+    if (!previous) return
+    const current = configRef.current
+    setPast((p) => p.slice(0, -1))
+    setFuture((f) => [current, ...f])
+    lastEdit.current = null
+    const next = { ...previous, view: current.view, spin: current.spin }
+    configRef.current = next
+    setConfig(next)
+    showToast('Undone')
+  }, [past, showToast])
+
+  const redo = useCallback(() => {
+    const upcoming = future[0]
+    if (!upcoming) return
+    const current = configRef.current
+    setFuture((f) => f.slice(1))
+    setPast((p) => [...p, current])
+    lastEdit.current = null
+    const next = { ...upcoming, view: current.view, spin: current.spin }
+    configRef.current = next
+    setConfig(next)
+    showToast('Redone')
+  }, [future, showToast])
 
   // Keep the URL hash in sync so the address bar is always a share link.
   const shareUrl = `${window.location.origin}${window.location.pathname}${encodeConfig(config)}`
@@ -73,15 +127,52 @@ export default function App() {
     setConfig((c) => (c.view === view ? c : { ...c, view }))
   }, [])
 
-  const updatePart = useCallback((id: PartId, patch: Partial<{ color: string; finish: Finish }>) => {
-    setSelected(id)
-    setConfig((c) => ({ ...c, parts: { ...c.parts, [id]: { ...c.parts[id], ...patch } } }))
-  }, [])
+  const updatePart = useCallback(
+    (id: PartId, patch: Partial<{ color: string; finish: Finish }>, key?: string) => {
+      setSelected(id)
+      commit((c) => ({ ...c, parts: { ...c.parts, [id]: { ...c.parts[id], ...patch } } }), key)
+    },
+    [commit],
+  )
 
+  /** Selection from the 3D view: the part is already in shot, so the camera stays put. */
   const selectPart = useCallback((id: PartId | null) => {
     setSelected(id)
     if (id) setSection('materials')
   }, [])
+
+  /** Selection from the panel or stepper: fly the camera to the part. */
+  const focusPart = useCallback((id: PartId) => {
+    setSelected(id)
+    setSection('materials')
+    setCustomView(true)
+    apiRef.current?.focusPart(id)
+  }, [])
+
+  const stepPart = useCallback(
+    (delta: 1 | -1) => {
+      const index = selected ? PART_IDS.indexOf(selected) : delta === 1 ? -1 : 0
+      focusPart(PART_IDS[(index + delta + PART_IDS.length) % PART_IDS.length])
+    },
+    [selected, focusPart],
+  )
+
+  const applyLook = useCallback(
+    (id: string) => {
+      const look = LOOKS.find((l) => l.id === id)
+      if (!look) return
+      commit((c) => ({ ...c, parts: structuredClone(look.parts) }))
+      showToast(`${look.name} applied`)
+    },
+    [commit, showToast],
+  )
+
+  const updateLabel = useCallback(
+    (patch: Partial<{ text: string; ink: string; label: LabelStyle }>) => {
+      commit((c) => ({ ...c, ...patch }), patch.text !== undefined ? 'text' : undefined)
+    },
+    [commit],
+  )
 
   const changeSection = (next: typeof section) => {
     setSection(next)
@@ -92,14 +183,14 @@ export default function App() {
   const randomise = useCallback(() => {
     const next = seed + 1
     setSeed(next)
-    setConfig((c) => randomConfig(next, c))
+    commit((c) => randomConfig(next, c))
     showToast(`Randomised — seed #${next}`)
-  }, [seed, showToast])
+  }, [seed, commit, showToast])
 
   const reset = useCallback(() => {
-    setConfig((c) => ({ ...structuredClone(DEFAULT_CONFIG), view: c.view, spin: c.spin }))
+    commit((c) => ({ ...structuredClone(DEFAULT_CONFIG), view: c.view, spin: c.spin }))
     showToast('Reset to the default colourway')
-  }, [showToast])
+  }, [commit, showToast])
 
   const share = useCallback(async () => {
     try {
@@ -126,9 +217,28 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null
-      if (target && ['INPUT', 'TEXTAREA', 'BUTTON', 'SELECT'].includes(target.tagName)) return
+      const typing = target !== null && ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && !typing) {
+        const k = e.key.toLowerCase()
+        if (k === 'z' && !e.shiftKey) {
+          e.preventDefault()
+          undo()
+        } else if ((k === 'z' && e.shiftKey) || k === 'y') {
+          e.preventDefault()
+          redo()
+        }
+        return
+      }
+      if (typing || (target && target.tagName === 'BUTTON')) return
       if (e.ctrlKey || e.metaKey || e.altKey) return
       if (e.key === 'Escape') setSelected(null)
+      else if (e.key === 'ArrowRight' || e.key === ']') {
+        e.preventDefault()
+        stepPart(1)
+      } else if (e.key === 'ArrowLeft' || e.key === '[') {
+        e.preventDefault()
+        stepPart(-1)
+      }
       else if (e.key === ' ') {
         e.preventDefault()
         setConfig((c) => ({ ...c, spin: !c.spin }))
@@ -137,7 +247,7 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [randomise, setView])
+  }, [randomise, setView, undo, redo, stepPart])
 
   const status = selected ?? hovered
   const statusStyle = status ? config.parts[status] : null
@@ -171,6 +281,30 @@ export default function App() {
           <span className="nav-item">VOL. 01 — COURT CLASSIC</span>
         </nav>
         <div className="topbar-actions">
+          <div className="history" role="group" aria-label="History">
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={undo}
+              disabled={past.length === 0}
+              title="Undo (Ctrl+Z)"
+              aria-label="Undo"
+              data-testid="undo"
+            >
+              <Icon name="undo" size={18} />
+            </button>
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={redo}
+              disabled={future.length === 0}
+              title="Redo (Ctrl+Shift+Z)"
+              aria-label="Redo"
+              data-testid="redo"
+            >
+              <Icon name="redo" size={18} />
+            </button>
+          </div>
           <button type="button" className="btn ghost" onClick={reset}>
             Reset
           </button>
@@ -221,7 +355,7 @@ export default function App() {
             </span>
           </div>
           <div
-            className={`viewer-status ${selected ? 'is-selected' : ''} ${status ? 'is-visible' : ''}`}
+            className={`viewer-status ${status && !selected ? 'is-visible' : ''}`}
             data-testid="viewer-status"
           >
             {status && statusStyle ? (
@@ -231,7 +365,64 @@ export default function App() {
                 <span className="status-meta">
                   {statusStyle.color.toUpperCase()} · {FINISH_LABELS[statusStyle.finish]}
                 </span>
-                <span className="status-kind">{selected === status ? 'Selected' : 'Hover'}</span>
+                <span className="status-kind">Click to edit</span>
+              </>
+            ) : null}
+          </div>
+          <div className={`quickbar ${selected ? 'is-visible' : ''}`} data-testid="quickbar" aria-hidden={!selected}>
+            {selected ? (
+              <>
+                <button
+                  type="button"
+                  className="quick-step"
+                  onClick={() => stepPart(-1)}
+                  aria-label="Previous part"
+                  title="Previous part (←)"
+                >
+                  <Icon name="chevronLeft" size={16} />
+                </button>
+                <div className="quick-part">
+                  <small>
+                    {String(PART_IDS.indexOf(selected) + 1).padStart(2, '0')} / 08
+                  </small>
+                  <strong>{PART_LABELS[selected]}</strong>
+                </div>
+                <button
+                  type="button"
+                  className="quick-step"
+                  onClick={() => stepPart(1)}
+                  aria-label="Next part"
+                  title="Next part (→)"
+                >
+                  <Icon name="chevronRight" size={16} />
+                </button>
+                <div className="quick-swatches" role="group" aria-label={`${PART_LABELS[selected]} quick colours`}>
+                  {PALETTE.map((p) => {
+                    const on = config.parts[selected].color === p.hex
+                    return (
+                      <button
+                        key={p.hex}
+                        type="button"
+                        className={`quick-swatch ${on ? 'is-active' : ''}`}
+                        style={{ backgroundColor: p.hex }}
+                        title={p.name}
+                        aria-label={p.name}
+                        aria-pressed={on}
+                        onClick={() => updatePart(selected, { color: p.hex })}
+                        data-testid={`quick-${p.name.toLowerCase().replace(/ /g, '-')}`}
+                      />
+                    )
+                  })}
+                </div>
+                <button
+                  type="button"
+                  className="quick-close"
+                  onClick={() => setSelected(null)}
+                  aria-label="Done"
+                  title="Done (Esc)"
+                >
+                  <Icon name="check" size={16} />
+                </button>
               </>
             ) : null}
           </div>
@@ -252,11 +443,13 @@ export default function App() {
         <Sidebar
           config={config}
           selected={selected}
-          onSelect={selectPart}
+          onSelect={focusPart}
+          onStep={stepPart}
+          onLook={applyLook}
           section={section}
           onSection={changeSection}
           onUpdatePart={updatePart}
-          onText={(text) => setConfig((c) => ({ ...c, text }))}
+          onLabel={updateLabel}
           shareUrl={shareUrl}
           onShare={share}
           onDownload={download}
