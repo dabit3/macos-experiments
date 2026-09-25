@@ -25,12 +25,14 @@ for inset in [62.0, 76.0] {
 }
 let text = "V" as NSString
 let attributes: [NSAttributedString.Key: Any] = [
-  .font: NSFont(name: "Baskerville-Italic", size: 490)!,
+  .font: NSFont.systemFont(ofSize: 520, weight: .black, width: .expanded),
   .foregroundColor: NSColor(calibratedRed: 0.98, green: 0.92, blue: 0.78, alpha: 1),
 ]
-text.draw(at: NSPoint(x: 306, y: 125), withAttributes: attributes)
+let glyph = text.size(withAttributes: attributes)
+text.draw(at: NSPoint(x: (size - glyph.width) / 2, y: 150), withAttributes: attributes)
 cyan.setFill()
-NSBezierPath(ovalIn: NSRect(x: 500, y: 111, width: 24, height: 24)).fill()
+NSBezierPath(roundedRect: NSRect(x: 452, y: 128, width: 120, height: 14), xRadius: 7, yRadius: 7)
+  .fill()
 image.unlockFocus()
 let bitmap = NSBitmapImageRep(data: image.tiffRepresentation!)!
 let output = URL(fileURLWithPath: CommandLine.arguments[1])

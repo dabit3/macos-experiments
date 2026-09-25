@@ -1,3 +1,4 @@
+import LinkPresentation
 import SpriteKit
 import SwiftUI
 import UIKit
@@ -708,7 +709,32 @@ struct ShareSheet: UIViewControllerRepresentable {
   let image: UIImage
   let text: String
   func makeUIViewController(context: Context) -> UIActivityViewController {
-    UIActivityViewController(activityItems: [image, text], applicationActivities: nil)
+    UIActivityViewController(
+      activityItems: [PosterItem(image: image, title: text), text], applicationActivities: nil)
   }
   func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
+}
+
+final class PosterItem: NSObject, UIActivityItemSource {
+  let image: UIImage
+  let title: String
+  init(image: UIImage, title: String) {
+    self.image = image
+    self.title = title
+  }
+  func activityViewControllerPlaceholderItem(_ controller: UIActivityViewController) -> Any {
+    image
+  }
+  func activityViewController(
+    _ controller: UIActivityViewController, itemForActivityType type: UIActivity.ActivityType?
+  ) -> Any? { image }
+  func activityViewControllerLinkMetadata(_ controller: UIActivityViewController)
+    -> LPLinkMetadata?
+  {
+    let metadata = LPLinkMetadata()
+    metadata.title = "Velvet Voltage score poster"
+    metadata.imageProvider = NSItemProvider(object: image)
+    metadata.iconProvider = NSItemProvider(object: image)
+    return metadata
+  }
 }
