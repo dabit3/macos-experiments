@@ -209,26 +209,24 @@ struct GameScreen: View {
           ResultsScreen(session: session)
         }
       } else {
-        VStack(spacing: 10) {
-          topBar
-          Spacer()
-          if !game.blocked { reticle }
-          Spacer()
-          if !game.blocked {
-            if let line = session.chat.last {
-              HStack {
-                Text(line.system ? line.text : "\(line.from): \(line.text)")
-                  .font(Hearth.type(13)).lineLimit(2)
-                  .padding(.horizontal, 10).padding(.vertical, 6)
-                  .background(Capsule().fill(Hearth.ink.opacity(0.6)))
-                Spacer()
+        if !game.blocked { reticle }
+        GeometryReader { proxy in
+          VStack(spacing: 8) {
+            topBar
+            Spacer(minLength: 0)
+            if !game.blocked {
+              if let line = session.chat.last {
+                HStack {
+                  Text(line.system ? line.text : "\(line.from): \(line.text)")
+                    .font(Hearth.type(13)).lineLimit(2)
+                    .padding(.horizontal, 10).padding(.vertical, 6)
+                    .background(Capsule().fill(Hearth.ink.opacity(0.6)))
+                  Spacer()
+                }
+                .allowsHitTesting(false)
               }
-              .allowsHitTesting(false)
+              bottomBar(landscape: proxy.size.width > proxy.size.height)
             }
-            #if os(iOS)
-              if preferences.touch { TouchControls(game: game) }
-            #endif
-            hotbar
           }
         }
         .padding(12)
@@ -443,6 +441,23 @@ struct GameScreen: View {
         game.resetInput()
       }
     }
+  }
+  @ViewBuilder private func bottomBar(landscape: Bool) -> some View {
+    #if os(iOS)
+      if preferences.touch && landscape {
+        ZStack(alignment: .bottom) {
+          TouchControls(game: game)
+          hotbar.padding(.horizontal, 214)
+        }
+      } else if preferences.touch {
+        TouchControls(game: game)
+        hotbar
+      } else {
+        hotbar
+      }
+    #else
+      hotbar
+    #endif
   }
   private var hotbar: some View {
     VStack(spacing: 6) {
