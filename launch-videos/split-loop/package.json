@@ -1,0 +1,23 @@
+{
+  "name": "launch-video-split-loop",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render SplitLoop out/split-loop.mp4 --codec h264 --crf 14 --pixel-format yuv420p",
+    "still": "remotion still SplitLoop out/poster.png",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/inter": "5.2.8",
+    "@fontsource/roboto-mono": "5.2.8",
+    "@remotion/cli": "4.0.526",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "remotion": "4.0.526"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.12",
+    "typescript": "5.9.2"
+  }
+}
