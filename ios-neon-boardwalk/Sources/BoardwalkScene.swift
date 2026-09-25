@@ -414,7 +414,7 @@ final class BoardwalkScene {
 
   private func createBoard() {
     board.position.y = 0.28
-    let deck = outfit(pink, glow: 0.12, shiny: true)
+    let deck = outfit(pink, glow: 0.05, shiny: true)
     let grip = outfit(UIColor(red: 0.07, green: 0.06, blue: 0.14, alpha: 1))
     let metal = outfit(UIColor(white: 0.7, alpha: 1), shiny: true)
     part(board, rounded(0.74, 0.08, 1.26, 0.04), deck)
@@ -426,9 +426,9 @@ final class BoardwalkScene {
       part(kick, rounded(0.68, 0.014, 0.32, 0.006), grip, SCNVector3(0, 0.044, 0))
     }
     part(
-      board, rounded(0.34, 0.012, 1.34, 0.006), outfit(teal, glow: 0.8), SCNVector3(0, -0.047, 0))
-    let hub = outfit(.white, glow: 0.4)
-    let tyre = outfit(teal, glow: 0.6)
+      board, rounded(0.34, 0.012, 1.34, 0.006), outfit(teal, glow: 0.45), SCNVector3(0, -0.047, 0))
+    let hub = outfit(UIColor(white: 0.75, alpha: 1))
+    let tyre = outfit(teal, glow: 0.35)
     for z: Float in [-0.46, 0.46] {
       part(board, rounded(0.22, 0.05, 0.22, 0.02), metal, SCNVector3(0, -0.06, z))
       part(board, rounded(0.6, 0.06, 0.1, 0.03), metal, SCNVector3(0, -0.1, z))
@@ -446,7 +446,7 @@ final class BoardwalkScene {
     glow.light = SCNLight()
     glow.light?.type = .omni
     glow.light?.color = pink
-    glow.light?.intensity = 40
+    glow.light?.intensity = 30
     glow.light?.attenuationStartDistance = 0
     glow.light?.attenuationEndDistance = 2.6
     glow.position = SCNVector3(0, -0.2, 0)
@@ -466,7 +466,8 @@ final class BoardwalkScene {
     let dark = outfit(UIColor(red: 0.06, green: 0.07, blue: 0.16, alpha: 1), shiny: true)
     let skin = outfit(UIColor(red: 0.78, green: 0.47, blue: 0.34, alpha: 1))
     let hair = outfit(UIColor(red: 0.22, green: 0.10, blue: 0.30, alpha: 1))
-    let white = outfit(UIColor(white: 0.95, alpha: 1))
+    let white = outfit(UIColor(white: 0.8, alpha: 1))
+    let sole = outfit(pink, glow: 0.4)
     let neonTeal = outfit(teal, glow: 1)
     let neonPink = outfit(pink, glow: 1)
 
@@ -479,7 +480,7 @@ final class BoardwalkScene {
       shoe.eulerAngles.y = -side * 0.1
       rider.addChildNode(shoe)
       part(shoe, rounded(0.3, 0.08, 0.56, 0.035), white, SCNVector3(0, -0.07, -0.05))
-      part(shoe, rounded(0.31, 0.02, 0.57, 0.01), neonPink, SCNVector3(0, -0.1, -0.05))
+      part(shoe, rounded(0.31, 0.02, 0.57, 0.01), sole, SCNVector3(0, -0.1, -0.05))
       part(shoe, rounded(0.27, 0.2, 0.46, 0.09), white, SCNVector3(0, 0.05, -0.04))
       part(shoe, rounded(0.285, 0.045, 0.3, 0.02), neonTeal, SCNVector3(0, 0.04, 0.02))
       part(shoe, SCNCylinder(radius: 0.14, height: 0.2), dark, SCNVector3(0, 0.15, 0.06))
