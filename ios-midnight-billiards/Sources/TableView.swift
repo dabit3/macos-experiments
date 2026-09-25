@@ -31,7 +31,7 @@ struct TableView: View {
     var kitchen = false
     var calledPocket: Int?
     var requireCall = false
-    var onTouch: ((Vector) -> Void)?
+    var onTouch: ((Vector, Vector) -> Void)?
 
     var body: some View {
         GeometryReader { geometry in
@@ -47,7 +47,7 @@ struct TableView: View {
                 if kitchen && ballInHand {
                     context.fill(
                         Path(CGRect(x: 10, y: 10, width: 140, height: 280)),
-                        with: .color(Club.gold.opacity(0.12)))
+                        with: .color(Theme.accent.opacity(0.08)))
                 }
                 if aiming && !table.cue.pocketed { drawAim(&context) }
                 for ball in table.balls where !ball.pocketed {
@@ -55,24 +55,37 @@ struct TableView: View {
                 }
                 if ballInHand {
                     let center = point(table.cue.position)
+                    context.fill(
+                        Path(ellipseIn: CGRect(x: center.x - 20, y: center.y - 20, width: 40, height: 40)),
+                        with: .color(Theme.accent.opacity(0.14)))
                     context.stroke(
-                        Path(ellipseIn: CGRect(x: center.x - 16, y: center.y - 16, width: 32, height: 32)),
-                        with: .color(Club.gold), style: StrokeStyle(lineWidth: 1.5, dash: [3, 3]))
+                        Path(ellipseIn: CGRect(x: center.x - 20, y: center.y - 20, width: 40, height: 40)),
+                        with: .color(Theme.accent), lineWidth: 1.4)
+                    for (dx, dy) in [(0.0, -1.0), (1.0, 0.0), (0.0, 1.0), (-1.0, 0.0)] {
+                        var chevron = Path()
+                        let tip = CGPoint(x: center.x + dx * 28, y: center.y + dy * 28)
+                        chevron.move(to: CGPoint(x: tip.x - dy * 3 - dx * 3, y: tip.y - dx * 3 - dy * 3))
+                        chevron.addLine(to: tip)
+                        chevron.addLine(to: CGPoint(x: tip.x + dy * 3 - dx * 3, y: tip.y + dx * 3 - dy * 3))
+                        context.stroke(
+                            chevron, with: .color(Theme.accent),
+                            style: StrokeStyle(lineWidth: 1.4, lineCap: .round, lineJoin: .round))
+                    }
                 }
             }
             .contentShape(Rectangle())
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in
-                        let location = Vector(
-                            x: (value.location.x - offset.x) / scale - 30,
-                            y: (value.location.y - offset.y) / scale - 30)
-                        onTouch?(location)
+                        func local(_ point: CGPoint) -> Vector {
+                            Vector(x: (point.x - offset.x) / scale - 30, y: (point.y - offset.y) / scale - 30)
+                        }
+                        onTouch?(local(value.location), local(value.startLocation))
                     }
             )
             .accessibilityLabel("Billiards table")
             .accessibilityValue(
-                "\(table.balls.filter { !$0.pocketed && $0.id != 0 }.count) object balls. \(ballInHand ? "Ball in hand. Tap to place." : "Tap or drag to aim.")"
+                "\(table.balls.filter { !$0.pocketed && $0.id != 0 }.count) object balls. \(ballInHand ? "Ball in hand. Drag the cue ball to place it." : "Drag to aim.")"
             )
             .accessibilityIdentifier("billiardsTable")
         }
@@ -141,13 +154,13 @@ struct TableView: View {
             joint.addLine(to: CGPoint(x: x + dx * 22, y: y + dy * 22))
             context.stroke(joint, with: .color(.black.opacity(0.35)), lineWidth: 0.8)
         }
-        // Brass beading on the outer edge and where wood meets the cushion.
-        context.stroke(outer, with: .color(Brass.light.opacity(0.75)), lineWidth: 1.2)
+        // Edge highlights where wood meets the cushion.
+        context.stroke(outer, with: .color(.white.opacity(0.12)), lineWidth: 1)
         context.stroke(
             Path(roundedRect: CGRect(x: 4, y: 4, width: 652, height: 352), cornerRadius: 27),
-            with: .color(Brass.deep.opacity(0.45)), lineWidth: 0.8)
+            with: .color(Color.black.opacity(0.4)), lineWidth: 0.8)
         let cushionOuter = Path(roundedRect: CGRect(x: 21, y: 21, width: 618, height: 318), cornerRadius: 11)
-        context.stroke(cushionOuter, with: .color(Brass.mid.opacity(0.7)), lineWidth: 1.4)
+        context.stroke(cushionOuter, with: .color(.black.opacity(0.45)), lineWidth: 1.2)
         context.stroke(
             Path(roundedRect: CGRect(x: 19.5, y: 19.5, width: 621, height: 321), cornerRadius: 12),
             with: .color(.black.opacity(0.35)), lineWidth: 1)
@@ -228,12 +241,8 @@ struct TableView: View {
                 Path(ellipseIn: rect.insetBy(dx: -6, dy: -6)), with: .color(.black.opacity(0.5)), lineWidth: 1
             )
             context.stroke(
-                Path(ellipseIn: rect.insetBy(dx: -1, dy: -1)),
-                with: .linearGradient(
-                    Gradient(colors: [Brass.light, Brass.deep, Brass.mid]),
-                    startPoint: CGPoint(x: rect.minX, y: rect.minY),
-                    endPoint: CGPoint(x: rect.maxX, y: rect.maxY)),
-                lineWidth: 2.4)
+                Path(ellipseIn: rect.insetBy(dx: -1, dy: -1)), with: .color(.white.opacity(0.10)),
+                lineWidth: 1)
             context.fill(
                 Path(ellipseIn: rect),
                 with: .radialGradient(
@@ -247,29 +256,17 @@ struct TableView: View {
                 lineWidth: 1)
             if calledPocket == index {
                 context.stroke(
-                    Path(ellipseIn: rect.insetBy(dx: -10, dy: -10)), with: .color(Brass.light), lineWidth: 2.5
+                    Path(ellipseIn: rect.insetBy(dx: -10, dy: -10)), with: .color(Theme.accent),
+                    lineWidth: 2.5
                 )
                 context.fill(
-                    Path(ellipseIn: rect), with: .color(Brass.mid.opacity(0.22)))
+                    Path(ellipseIn: rect), with: .color(Theme.accent.opacity(0.22)))
             } else if requireCall {
                 context.stroke(
-                    Path(ellipseIn: rect.insetBy(dx: -10, dy: -10)), with: .color(Brass.light.opacity(0.75)),
+                    Path(ellipseIn: rect.insetBy(dx: -10, dy: -10)), with: .color(Theme.accent.opacity(0.75)),
                     style: StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
             }
         }
-        // Engraved nameplate on the foot rail.
-        let plate = CGRect(x: 292, y: 341, width: 76, height: 12)
-        context.fill(
-            Path(roundedRect: plate, cornerRadius: 2),
-            with: .linearGradient(
-                Gradient(colors: [Brass.deep.opacity(0.9), Brass.mid.opacity(0.85), Brass.deep.opacity(0.9)]),
-                startPoint: CGPoint(x: plate.minX, y: 0), endPoint: CGPoint(x: plate.maxX, y: 0)))
-        context.stroke(
-            Path(roundedRect: plate, cornerRadius: 2), with: .color(.black.opacity(0.5)), lineWidth: 0.6)
-        context.draw(
-            Text("MIDNIGHT · No. 8").font(.system(size: 6.2, weight: .semibold, design: .serif))
-                .foregroundColor(Brass.walnutDeep),
-            at: CGPoint(x: plate.midX, y: plate.midY))
     }
 
     private func diamond(_ context: inout GraphicsContext, at center: CGPoint) {
@@ -428,6 +425,7 @@ struct TableView: View {
 struct BallBadge: View {
     let number: Int
     var size = 21.0
+    var plain = false
     var body: some View {
         ZStack {
             Circle().fill(number > 8 ? Club.ivory : Club.ballColor(number))
@@ -445,7 +443,7 @@ struct BallBadge: View {
                         .init(color: .black.opacity(0.2), location: 0.78),
                         .init(color: .black.opacity(0.6), location: 1),
                     ], center: UnitPoint(x: 0.36, y: 0.3), startRadius: 0, endRadius: size * 0.78))
-            if number != 0 {
+            if number != 0 && !plain {
                 Circle().fill(Club.ivory).frame(width: size * 0.5, height: size * 0.5)
                 Text("\(number)").font(.system(size: size * 0.31, weight: .bold)).foregroundStyle(Club.ink)
             }
