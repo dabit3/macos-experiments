@@ -30,6 +30,9 @@ final class OrbitScene: SKScene {
     private var noteVisuals: [Int: NoteVisual] = [:]
     private var eachLinks: [Double: SKShapeNode] = [:]
     private var targetNodes: [SKShapeNode] = []
+    private var panelNodes: [SKShapeNode] = []
+    private var lastMilestone = 0
+    private var milestoneMatch = -1
     private var artSprite: SKSpriteNode?
     private var lastJudgment = ""
     private var touches: [UITouch: Int] = [:]
@@ -63,6 +66,7 @@ final class OrbitScene: SKScene {
     private func buildStage() {
         removeAllChildren()
         targetNodes.removeAll()
+        panelNodes.removeAll()
         art.removeAllChildren()
         dynamicLayer.removeAllChildren()
         noteVisuals.removeAll()
@@ -113,6 +117,7 @@ final class OrbitScene: SKScene {
             panel.fillColor = UIColor(white: 0.94, alpha: 1)
             panel.glowWidth = 3
             addChild(panel)
+            panelNodes.append(panel)
             let target = circle(unit * 0.054, color: .white, width: 2, fill: .orbitInk)
             target.position = position(Point.target(lane))
             target.glowWidth = 2
@@ -202,6 +207,37 @@ final class OrbitScene: SKScene {
                 showJudgment(judgment)
             }
         }
+        showMilestone(combo: client.me?.combo ?? 0, match: client.snapshot?.matchID ?? 0)
+    }
+
+    private func showMilestone(combo: Int, match: Int) {
+        if milestoneMatch != match {
+            milestoneMatch = match
+            lastMilestone = 0
+        }
+        if combo < lastMilestone { lastMilestone = 0 }
+        let milestone = combo / 25 * 25
+        guard milestone > lastMilestone else { return }
+        lastMilestone = milestone
+        let label = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+        label.text = "\(milestone) COMBO"
+        label.fontSize = unit * 0.11
+        label.fontColor = .orbitGold
+        label.verticalAlignmentMode = .center
+        label.position = center
+        label.zPosition = 12
+        label.setScale(0.4)
+        label.alpha = 0
+        effectLayer.addChild(label)
+        label.run(.sequence([
+            .group([.scale(to: 1.15, duration: 0.18), .fadeIn(withDuration: 0.12)]),
+            .scale(to: 1, duration: 0.1), .wait(forDuration: 0.4),
+            .group([.scale(to: 1.4, duration: 0.3), .fadeOut(withDuration: 0.3)]), .removeFromParent()]))
+        let ring = circle(unit * 0.3, color: .orbitGold, width: 3)
+        ring.position = center
+        ring.zPosition = 11
+        effectLayer.addChild(ring)
+        ring.run(.sequence([.group([.scale(to: 3.1, duration: 0.6), .fadeOut(withDuration: 0.6)]), .removeFromParent()]))
     }
 
     private func drawNote(_ note: Note, state: NoteState?, time: Double) {
@@ -328,24 +364,64 @@ final class OrbitScene: SKScene {
                      y: points[index].y + (points[index + 1].y - points[index].y) * fraction)
     }
 
+    private static func gradeColor(_ text: String) -> UIColor {
+        switch text {
+        case "PERFECT": return .orbitGold
+        case "GREAT": return .orbitCyan
+        case "GOOD": return UIColor(red: 0.45, green: 1, blue: 0.75, alpha: 1)
+        default: return .orbitPink
+        }
+    }
+
     private func showJudgment(_ judgment: Judgment) {
+        let color = Self.gradeColor(judgment.text)
         let node = SKLabelNode(fontNamed: "AvenirNext-Heavy")
         node.text = judgment.text
-        node.fontSize = 23
-        node.fontColor = judgment.text == "MISS" ? .orbitPink : .orbitGold
-        node.position = CGPoint(x: center.x, y: center.y - unit * 0.38)
+        node.fontSize = unit * 0.075
+        node.fontColor = color
+        node.verticalAlignmentMode = .center
+        node.position = position(Point.target(judgment.lane, radius: 0.56))
         node.zPosition = 10
-        let shadow = SKShapeNode(rectOf: CGSize(width: 170, height: 32), cornerRadius: 12)
-        shadow.fillColor = UIColor.orbitInk.withAlphaComponent(0.8)
-        shadow.strokeColor = .clear
-        shadow.position = CGPoint(x: 0, y: 8)
-        shadow.zPosition = -1
-        node.addChild(shadow)
+        node.setScale(0.5)
+        let width = CGFloat(judgment.text.count) * node.fontSize * 0.72 + 22
+        let plate = SKShapeNode(rectOf: CGSize(width: width, height: node.fontSize + 12), cornerRadius: (node.fontSize + 12) / 2)
+        plate.fillColor = UIColor.orbitInk.withAlphaComponent(0.85)
+        plate.strokeColor = color.withAlphaComponent(0.6)
+        plate.lineWidth = 1
+        plate.zPosition = -1
+        node.addChild(plate)
         effectLayer.addChild(node)
-        node.run(.sequence([.group([.moveBy(x: 0, y: 8, duration: 0.6), .fadeOut(withDuration: 0.65)]), .removeFromParent()]))
-        if judgment.text != "MISS" {
-            burst(at: position(Point.target(judgment.lane)), color: .orbitGold)
+        node.run(.sequence([.scale(to: 1.1, duration: 0.09), .scale(to: 1, duration: 0.07), .wait(forDuration: 0.25),
+                            .group([.moveBy(x: 0, y: 10, duration: 0.3), .fadeOut(withDuration: 0.3)]), .removeFromParent()]))
+        let target = position(Point.target(judgment.lane))
+        if judgment.text == "MISS" {
+            if judgment.lane < targetNodes.count {
+                let node = targetNodes[judgment.lane]
+                node.run(.sequence([.run { node.fillColor = .orbitPink }, .wait(forDuration: 0.18),
+                                    .run { node.fillColor = .orbitInk }]))
+            }
+        } else {
+            burst(at: target, color: color)
+            let ring = circle(unit * 0.054, color: color, width: 3)
+            ring.position = target
+            ring.zPosition = 9
+            effectLayer.addChild(ring)
+            ring.run(.sequence([.group([.scale(to: 2.6, duration: 0.32), .fadeOut(withDuration: 0.32)]), .removeFromParent()]))
         }
+    }
+
+    private func flashLane(at point: Point) {
+        let radius = hypot(point.x, point.y)
+        guard radius > 0.6 else { return }
+        var angle = Double.pi / 2 - atan2(point.y, point.x)
+        if angle < 0 { angle += .pi * 2 }
+        let lane = Int(angle / (.pi / 4)) % 8
+        guard lane < panelNodes.count else { return }
+        let panel = panelNodes[lane]
+        let base = panel.strokeColor
+        panel.removeAllActions()
+        panel.fillColor = base
+        panel.run(.sequence([.wait(forDuration: 0.08), .run { panel.fillColor = UIColor(white: 0.94, alpha: 1) }]))
     }
 
     private func burst(at point: CGPoint, color: UIColor) {
@@ -364,7 +440,10 @@ final class OrbitScene: SKScene {
 
     func handleInput(phase: String, pointer: Int, point: Point, source: String) {
         client?.input(phase: phase, pointer: pointer, point: point, source: source)
-        if phase == "down" { burst(at: position(point), color: .orbitCyan) }
+        if phase == "down" {
+            flashLane(at: point)
+            burst(at: position(point), color: .orbitCyan)
+        }
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
