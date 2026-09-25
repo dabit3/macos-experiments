@@ -26,6 +26,10 @@ final class AppState {
     /// Only kept conversations are ever written to disk.
     private(set) var kept: [Conversation] = []
 
+    /// Set when an ephemeral chat was burned while the app was away; cleared on the next send.
+    var burnedWhileAway = false
+    private var backgroundedAt: Date?
+
     private let store = ConversationStore()
     private static let settingsKey = "wisp.settings"
 
@@ -96,14 +100,41 @@ final class AppState {
     // MARK: - Conversation lifecycle
 
     /// Discards the current chat (unless kept) and starts fresh.
+    func sceneDidEnterBackground() {
+        backgroundedAt = Date()
+        if settings.burnAfterLeaving == .immediately { burnIfEphemeral() }
+    }
+
+    func sceneDidBecomeActive() {
+        defer { backgroundedAt = nil }
+        guard let since = backgroundedAt, let limit = settings.burnAfterLeaving.seconds else { return }
+        if Date().timeIntervalSince(since) >= limit { burnIfEphemeral() }
+    }
+
+    private func burnIfEphemeral() {
+        guard !isKept, !current.isEmpty else { return }
+        newChat()
+        burnedWhileAway = true
+    }
+
     func newChat() {
+        settleStreaming()
         current = Conversation(modelID: settings.defaultModelID, systemPrompt: settings.systemPrompt)
         isKept = settings.keepChatsByDefault
     }
 
     func open(_ conversation: Conversation) {
+        settleStreaming()
         current = conversation
         isKept = true
+    }
+
+    /// Freezes an in-flight reply before `current` is replaced, so a kept copy never shows a live cursor.
+    private func settleStreaming() {
+        guard current.messages.contains(where: \.isStreaming) else { return }
+        current.messages.removeAll { $0.isStreaming && $0.content.isEmpty && $0.reasoning.isEmpty }
+        for i in current.messages.indices { current.messages[i].isStreaming = false }
+        persistCurrentIfKept()
     }
 
     func setKept(_ keep: Bool) {

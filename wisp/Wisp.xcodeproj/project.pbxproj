@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03CA587343C8C7C98C944FA9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0F752C7B0F1D5DC1891BDA8D /* PrivacyInfo.xcprivacy */; };
 		1A84091EA8AAF669A66A5669 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E8ECA315DB8DEAB040BB4E /* SettingsView.swift */; };
 		4B05314A315948428E991183 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75498DE87AA737855BBD8AB0 /* Theme.swift */; };
 		53162C96153D0932B35A1C41 /* Composer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0E8CB8AE3FC30CAA08524BB /* Composer.swift */; };
@@ -16,6 +17,7 @@
 		6BBE067EE54544A3736D9673 /* ChatController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D341F8D848193372AD92DD4 /* ChatController.swift */; };
 		79F56648AA41D61CB449A298 /* ConversationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D8BDEAEBCF19795CA0C1E4 /* ConversationStore.swift */; };
 		90DF4EBB5D7412BC03096482 /* MessageList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C945DE3AA2E2838DF56676E /* MessageList.swift */; };
+		973F759EFF4AAAAD09194575 /* Clipboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BB2AAEA106F3AAC5BAF01A /* Clipboard.swift */; };
 		9E78DDF8B87FBAE57FBD189A /* WispApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C016387D643C647AABE68DC /* WispApp.swift */; };
 		CB4DF5B785407314FC63A8D3 /* AbliterationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2223C0A62FBEF5B86888F3D4 /* AbliterationClient.swift */; };
 		E4D45868E53EBAA464741C33 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF6926A27D1A6674186EDD1B /* Assets.xcassets */; };
@@ -25,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0F752C7B0F1D5DC1891BDA8D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		110FB70D864748DFA546F5C7 /* Wisp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Wisp.entitlements; sourceTree = "<group>"; };
 		19D8BDEAEBCF19795CA0C1E4 /* ConversationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationStore.swift; sourceTree = "<group>"; };
 		1C016387D643C647AABE68DC /* WispApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WispApp.swift; sourceTree = "<group>"; };
@@ -34,6 +37,7 @@
 		3C945DE3AA2E2838DF56676E /* MessageList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageList.swift; sourceTree = "<group>"; };
 		42D498CB54087E30411FAC69 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		51F7BDF8A57770EC12365751 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		52BB2AAEA106F3AAC5BAF01A /* Clipboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clipboard.swift; sourceTree = "<group>"; };
 		5D341F8D848193372AD92DD4 /* ChatController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatController.swift; sourceTree = "<group>"; };
 		75498DE87AA737855BBD8AB0 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		9419236D77396D53BBCDB867 /* Wisp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Wisp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,6 +54,7 @@
 			isa = PBXGroup;
 			children = (
 				2223C0A62FBEF5B86888F3D4 /* AbliterationClient.swift */,
+				52BB2AAEA106F3AAC5BAF01A /* Clipboard.swift */,
 				19D8BDEAEBCF19795CA0C1E4 /* ConversationStore.swift */,
 				23602D1AE7F41CC6D9A18202 /* KeychainStore.swift */,
 			);
@@ -61,6 +66,7 @@
 			children = (
 				DF6926A27D1A6674186EDD1B /* Assets.xcassets */,
 				A55059B530A6F21D3781020A /* Info.plist */,
+				0F752C7B0F1D5DC1891BDA8D /* PrivacyInfo.xcprivacy */,
 				110FB70D864748DFA546F5C7 /* Wisp.entitlements */,
 			);
 			path = Resources;
@@ -186,6 +192,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4D45868E53EBAA464741C33 /* Assets.xcassets in Resources */,
+				03CA587343C8C7C98C944FA9 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,6 +207,7 @@
 				5FF9D20F1E8C130050727B88 /* AppState.swift in Sources */,
 				6BBE067EE54544A3736D9673 /* ChatController.swift in Sources */,
 				6921FC37CD25DA65DEEDD8E2 /* ChatScreen.swift in Sources */,
+				973F759EFF4AAAAD09194575 /* Clipboard.swift in Sources */,
 				53162C96153D0932B35A1C41 /* Composer.swift in Sources */,
 				79F56648AA41D61CB449A298 /* ConversationStore.swift in Sources */,
 				ED67BFD6944BCB867CA174AA /* HistoryView.swift in Sources */,

@@ -12,10 +12,16 @@ struct SettingsView: View {
                 Section {
                     Toggle("Keep new chats by default", isOn: $app.settings.keepChatsByDefault)
                         .accessibilityIdentifier("keepByDefaultToggle")
+                    Picker("Burn after leaving", selection: $app.settings.burnAfterLeaving) {
+                        ForEach(BurnDelay.allCases) { d in
+                            Text(d.label).tag(d)
+                        }
+                    }
+                    .accessibilityIdentifier("burnDelayPicker")
                 } header: {
                     header("MEMORY")
                 } footer: {
-                    Text("Off means every new chat is ephemeral until you bookmark it. Kept chats are stored only on this device.")
+                    Text("Off means every new chat is ephemeral until you bookmark it. Unkept chats burn this long after Wisp leaves the screen. Kept chats are stored only on this device.")
                         .font(.monoCaption)
                 }
                 .listRowBackground(rowBackground)
@@ -25,6 +31,9 @@ struct SettingsView: View {
                         ForEach(app.models) { m in
                             Text(m.displayName).tag(m.id)
                         }
+                    }
+                    .onChange(of: app.settings.defaultModelID) { _, new in
+                        if app.current.isEmpty { app.current.modelID = new }
                     }
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {

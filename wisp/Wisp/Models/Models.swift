@@ -96,6 +96,36 @@ enum Appearance: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
+/// How long an ephemeral chat survives after the app leaves the foreground.
+enum BurnDelay: Int, Codable, CaseIterable, Identifiable {
+    case immediately = 0
+    case oneMinute = 60
+    case fiveMinutes = 300
+    case never = -1
+
+    var id: Int { rawValue }
+
+    var seconds: TimeInterval? { self == .never ? nil : TimeInterval(rawValue) }
+
+    var label: String {
+        switch self {
+        case .immediately: return "Now"
+        case .oneMinute: return "1 min"
+        case .fiveMinutes: return "5 min"
+        case .never: return "Never"
+        }
+    }
+
+    var statusText: String {
+        switch self {
+        case .immediately: return "gone when you leave"
+        case .oneMinute: return "gone 1m after you leave"
+        case .fiveMinutes: return "gone 5m after you leave"
+        case .never: return "gone when you start another"
+        }
+    }
+}
+
 struct Settings: Codable, Equatable {
     /// Wisp is ephemeral by default: nothing is written to disk unless the user opts in.
     var keepChatsByDefault = false
@@ -105,6 +135,23 @@ struct Settings: Codable, Equatable {
     var showReasoning = true
     var showCost = true
     var appearance: Appearance = .system
+    var burnAfterLeaving: BurnDelay = .fiveMinutes
+
+    init() {}
+
+    /// Tolerates settings saved by older builds that lack newer keys.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let d = Settings()
+        keepChatsByDefault = try c.decodeIfPresent(Bool.self, forKey: .keepChatsByDefault) ?? d.keepChatsByDefault
+        defaultModelID = try c.decodeIfPresent(String.self, forKey: .defaultModelID) ?? d.defaultModelID
+        systemPrompt = try c.decodeIfPresent(String.self, forKey: .systemPrompt) ?? d.systemPrompt
+        temperature = try c.decodeIfPresent(Double.self, forKey: .temperature) ?? d.temperature
+        showReasoning = try c.decodeIfPresent(Bool.self, forKey: .showReasoning) ?? d.showReasoning
+        showCost = try c.decodeIfPresent(Bool.self, forKey: .showCost) ?? d.showCost
+        appearance = try c.decodeIfPresent(Appearance.self, forKey: .appearance) ?? d.appearance
+        burnAfterLeaving = try c.decodeIfPresent(BurnDelay.self, forKey: .burnAfterLeaving) ?? d.burnAfterLeaving
+    }
 }
 
 extension Appearance {

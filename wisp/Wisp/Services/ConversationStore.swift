@@ -30,7 +30,10 @@ struct ConversationStore {
             .filter { $0.pathExtension == "json" }
             .compactMap { url -> Conversation? in
                 guard let data = try? Data(contentsOf: url) else { return nil }
-                return try? decoder.decode(Conversation.self, from: data)
+                guard var c = try? decoder.decode(Conversation.self, from: data) else { return nil }
+                // A reply that was mid-stream when the app died can never finish.
+                for i in c.messages.indices { c.messages[i].isStreaming = false }
+                return c
             }
             .sorted { $0.updatedAt > $1.updatedAt }
     }
