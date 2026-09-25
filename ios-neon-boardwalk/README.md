@@ -39,8 +39,12 @@ Subsequent obstacle rows always leave at least one unobstructed lane. Speed
 increases from 12 to a maximum 23 metres/second, with at least 32 metres between
 rows. Distance and collected coins appear on the results screen; local best
 distance, lifetime coins, run count and sound preference persist in UserDefaults.
-Retry begins immediately. Backgrounding pauses the game and requires an explicit
-resume. Nonessential skater bobbing respects Reduce Motion.
+Retry begins immediately. Backgrounding pauses the game; resuming counts in from
+three so the rider is never hit the instant play restarts. The pause sheet offers
+restart, sound and an on-screen-controls toggle (swipe-only play), both persisted.
+The HUD tracks progress toward your best and announces new districts and a new
+personal best mid-run. Results can be shared through the native share sheet.
+The guide opens automatically on first launch. Nonessential skater bobbing respects Reduce Motion.
 
 ## Checks
 

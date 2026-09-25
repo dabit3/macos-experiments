@@ -203,7 +203,7 @@ final class BoardwalkScene {
   }
 
   private func createWheel() {
-    wheel.position = SCNVector3(-21, 12.5, -92)
+    wheel.position = SCNVector3(-21, 11.2, -92)
     world.addChildNode(wheel)
     let rim = SCNTorus(ringRadius: 9.5, pipeRadius: 0.16)
     rim.materials = [material(teal, glow: 1.2)]
