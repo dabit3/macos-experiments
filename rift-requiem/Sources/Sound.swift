@@ -1,9 +1,10 @@
 import AVFoundation
+import Combine
 
 @MainActor
-final class Sound {
+final class Sound: ObservableObject {
     static let shared = Sound()
-    var muted = false {
+    @Published var muted = false {
         didSet { music?.volume = muted ? 0 : 0.22 }
     }
     private var music: AVAudioPlayer?

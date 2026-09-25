@@ -9,6 +9,8 @@ final class DuelClient: ObservableObject {
     @Published var status = "LOCAL NETWORK / PROTOCOL 01"
     @Published var error = ""
     @Published var connected = false
+    @Published var connecting = false
+    @Published var retryAttempt = 0
     @Published var automated = Launch.automated
     @Published var driverStep = "WAITING FOR TWO DUELISTS"
     @Published var name = Launch.value("name") ?? "Guest"
@@ -47,6 +49,7 @@ final class DuelClient: ObservableObject {
         socket?.cancel(with: .goingAway, reason: nil)
         outgoing = []; sending = false
         error = ""
+        connecting = true
         status = rejoining ? "RECONNECTING…" : "CONNECTING…"
         let task = URLSession.shared.webSocketTask(with: url)
         socket = task
@@ -69,9 +72,11 @@ final class DuelClient: ObservableObject {
             } catch {
                 guard current == generation else { return }
                 connected = false
+                connecting = false
                 status = "CONNECTION LOST"
                 if !token.isEmpty && retryCount < 8 {
                     retryCount += 1
+                    retryAttempt = retryCount
                     try? await Task.sleep(for: .seconds(1))
                     guard current == generation else { return }
                     connect(rejoining: true)
@@ -90,9 +95,12 @@ final class DuelClient: ObservableObject {
             code = envelope.code ?? ""
             sequence = max(sequence, (envelope.seq ?? -1) + 1)
             connected = true
+            connecting = false
             retryCount = 0
+            retryAttempt = 0
             status = "CONNECTED / \(String(playerID.prefix(8)))"
         } else if envelope.type == "error" {
+            connecting = false
             error = envelope.message ?? "Protocol error"
         } else if envelope.type == "state",
                   let next = try? JSONDecoder().decode(MatchState.self, from: data) {
@@ -143,8 +151,9 @@ final class DuelClient: ObservableObject {
     func leave() {
         generation += 1
         socket?.cancel(with: .normalClosure, reason: nil)
-        socket = nil; state = nil; token = ""; connected = false
+        socket = nil; state = nil; token = ""; connected = false; connecting = false
         outgoing = []; sending = false; retryCount = 0
+        status = "LOCAL NETWORK / PROTOCOL 01"
     }
 
     func reconnect() { connect(rejoining: true) }

@@ -18,6 +18,7 @@
 		85C86D301A1D2728990A7FF9 /* cathedral-riff.wav in Resources */ = {isa = PBXBuildFile; fileRef = FB94D2A4BAD19BF244019EAA /* cathedral-riff.wav */; };
 		93A60337F8AF9C2538AD1B0F /* block.wav in Resources */ = {isa = PBXBuildFile; fileRef = FB33F4E5006C4B35D8C4548B /* block.wav */; };
 		DCF8CD9BF7E42543CB9B67FA /* RiftApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E54F549F9B2A9F0303AFDA /* RiftApp.swift */; };
+		DD09A7692642CA567B75513D /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4045F01A0245B3BC6073746 /* Theme.swift */; };
 		E25317627D6DB8FAAF8E6FBA /* hit.wav in Resources */ = {isa = PBXBuildFile; fileRef = E96D23EA664B0D61E5B2C045 /* hit.wav */; };
 		EF0A8788BCD1D8DB570F6511 /* BattleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADFC259D262E2286AC1C371 /* BattleView.swift */; };
 		F3B4A8C82B0233A5A29F9776 /* FighterArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F45935E2C08162B179BBE84 /* FighterArt.swift */; };
@@ -46,6 +47,7 @@
 		738828F78F08B0435D6BDEE6 /* DuelClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuelClient.swift; sourceTree = "<group>"; };
 		8740D39211CE8F26497F0678 /* Art.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Art.xcassets; sourceTree = "<group>"; };
 		9768D2085733A38683AF53B1 /* RiftRequiemUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RiftRequiemUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4045F01A0245B3BC6073746 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		B2E54F549F9B2A9F0303AFDA /* RiftApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiftApp.swift; sourceTree = "<group>"; };
 		B677BB17900E2E22C172EBCB /* ControlsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsUITests.swift; sourceTree = "<group>"; };
 		E96D23EA664B0D61E5B2C045 /* hit.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hit.wav; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 				2C473FB8198FBA693A6296FF /* Models.swift */,
 				B2E54F549F9B2A9F0303AFDA /* RiftApp.swift */,
 				66C941B430A3D3595441FB8B /* Sound.swift */,
+				A4045F01A0245B3BC6073746 /* Theme.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -212,6 +215,7 @@
 				1A72C0FEC2DC77FB310043DD /* Models.swift in Sources */,
 				DCF8CD9BF7E42543CB9B67FA /* RiftApp.swift in Sources */,
 				559BD339ADC76B2A97F9836D /* Sound.swift in Sources */,
+				DD09A7692642CA567B75513D /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
