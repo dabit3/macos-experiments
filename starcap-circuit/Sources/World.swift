@@ -49,11 +49,6 @@ final class RaceWorld {
       camera.vignettingPower = 1.2
       camera.saturation = 1.12
       camera.contrast = 0.08
-      camera.screenSpaceAmbientOcclusionIntensity = 0.9
-      camera.screenSpaceAmbientOcclusionRadius = 1.6
-      camera.screenSpaceAmbientOcclusionBias = 0.05
-      camera.screenSpaceAmbientOcclusionNormalThreshold = 0.3
-      camera.screenSpaceAmbientOcclusionDepthThreshold = 0.2
     }
     scene.rootNode.addChildNode(cameraNode)
     let sun = SCNNode()
@@ -63,10 +58,10 @@ final class RaceWorld {
     sun.light?.shadowMode = .deferred
     sun.light?.shadowColor = UIColor(red: 0.1, green: 0.1, blue: 0.3, alpha: 0.45)
     sun.light?.shadowRadius = 2.5
-    sun.light?.shadowSampleCount = 8
+    sun.light?.shadowSampleCount = 4
     sun.light?.shadowMapSize = CGSize(width: 2048, height: 2048)
-    sun.light?.shadowCascadeCount = 3
-    sun.light?.maximumShadowDistance = 140
+    sun.light?.shadowCascadeCount = 1
+    sun.light?.maximumShadowDistance = 70
     sun.light?.automaticallyAdjustsShadowProjection = true
     sun.eulerAngles = SCNVector3(-Float.pi / 3.2, -Float.pi / 4, 0)
     scene.rootNode.addChildNode(sun)
@@ -227,7 +222,7 @@ final class RaceWorld {
     scene.fogEndDistance = 520
     scene.fogDensityExponent = 1.3
     let floor = SCNFloor()
-    floor.reflectivity = night ? 0.4 : 0.25
+    floor.reflectivity = 0
     floor.reflectionFalloffEnd = 40
     floor.reflectionResolutionScaleFactor = 0.5
     waterMaterial = material(
@@ -347,7 +342,9 @@ final class RaceWorld {
       }
     }
     grandstand(night: night, parent: scenery)
-    courseRoot.addChildNode(scenery.flattenedClone())
+    let dressing = scenery.flattenedClone()
+    dressing.castsShadow = false
+    courseRoot.addChildNode(dressing)
     if !night {
       for i in 0..<5 {
         let root = SCNNode()
@@ -1226,7 +1223,7 @@ final class RaceWorld {
       node.eulerAngles.z =
         p.drifting ? Float(sin(time * 6) * 0.04) - Float(turn) * 0.9 : -Float(turn) * 0.6
       for flame in node.childNodes where flame.name == "flame" {
-        flame.particleSystems?.first?.birthRate = p.boost > 0 ? 260 : p.speed > 4 ? 12 : 0
+        flame.particleSystems?.first?.birthRate = p.boost > 0 ? 140 : p.speed > 4 ? 10 : 0
       }
       for wheel in node.childNodes where wheel.name == "wheel" {
         wheel.eulerAngles.x += Float(p.speed / 30 / 0.58)
