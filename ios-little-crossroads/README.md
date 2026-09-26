@@ -41,17 +41,18 @@ swift Scripts/GenerateIcon.swift Resources/Assets.xcassets/AppIcon.appiconset/Ap
 `Scripts/Autopilot.swift` plays the visible app in the iOS Simulator with real mouse clicks on the on-screen D-pad and A button, so long runs can be demonstrated and recorded. It never touches the app, its save data or its rules: the app only broadcasts its live run state over UDP when launched with `-telemetryPort <port>` (`Sources/Telemetry.swift`; disabled otherwise), and the driver re-runs the same lane maths to pick a survivable hop.
 
 ```sh
-xcrun simctl launch booted com.littlecrossroads.game -telemetryPort 47400
+xcrun simctl launch booted com.littlecrossroads.game -telemetryPort 47400 -controlPad 1
 swiftc -O Scripts/Autopilot.swift -o /tmp/autopilot
 /tmp/autopilot --port 47400 --target 100 --stop-at 120 --minutes 10
 ```
 
-The Simulator window must be visible with device bezels hidden (Window > Show Device Bezels off). `--stop-at` pauses and quits the run once that many hops are banked so the result screen and saved best reflect the run; omit it to play until the time budget ends.
+`-controlPad 1` shows the optional D-pad/A button the driver clicks (players toggle it under Pause > PAD). The Simulator window must be visible with device bezels hidden (Window > Show Device Bezels off). `--stop-at` pauses and quits the run once that many hops are banked so the result screen and saved best reflect the run; omit it to play until the time budget ends.
 
 ## Play
 
-- Tap **Let's hop**, then tap the countryside or **HOP** to move one row forward.
-- Swipe in any direction or use the on-screen directional controls. **Step back** moves one row back.
+- Tap **START**, then tap anywhere to hop forward and swipe left/right to steer; swipe down (or the corner step-back button) moves one row back.
+- An optional D-pad + A button can be turned on from the pause card (**PAD**); the choice is remembered.
+- The HUD shows the live hop count with your best beneath it; milestones (every 50 hops) and a new best pop a toast.
 - Wait on grass for a gap. Cars and floating logs move continuously, but there is no idle countdown.
 - Land on the solid portion of a log to cross water. Logs carry the duck sideways; jump off before drifting beyond the bank.
 - Score is the furthest safely landed row. Repeating rows cannot earn more points or duplicate coins.
