@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Locale
 import kotlin.math.abs
-import kotlin.math.max
 
 @Composable
 fun ResultsScreen(result: MatchResult, onHome: () -> Unit, onCards: () -> Unit, onRematch: () -> Unit) {
@@ -73,7 +72,7 @@ fun ResultsScreen(result: MatchResult, onHome: () -> Unit, onCards: () -> Unit, 
             else "The rival edged it in $duration"
         MatchOutcome.DRAW -> "Dead even after $duration"
     }
-    val previousLeague = League.forTrophies(max(0, profile.trophies - result.trophyDelta))
+    val previousLeague = League.forTrophies(profile.trophies - profile.lastTrophyChange)
     val league = profile.league
 
     Box(Modifier.fillMaxSize()) {
@@ -118,7 +117,7 @@ fun ResultsScreen(result: MatchResult, onHome: () -> Unit, onCards: () -> Unit, 
                 }
 
                 Column(Modifier.fillMaxWidth().panel().padding(14.dp).testTag("rewardsPanel"), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    RewardRow(IconKind.TROPHY, "Trophies", result.trophyDelta, profile.trophies)
+                    RewardRow(IconKind.TROPHY, "Trophies", profile.lastTrophyChange, profile.trophies)
                     RewardRow(IconKind.COIN, "Gold", result.goldDelta, profile.gold)
                     if (profile.streak >= 2) {
                         Row(

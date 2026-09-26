@@ -26,6 +26,9 @@ class PlayerProfile(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("tower_tussle", Context.MODE_PRIVATE)
 
     var trophies by mutableIntStateOf(prefs.getInt(Keys.TROPHIES, 0)); private set
+
+    /** Trophies actually gained or lost by the last applied match, after the zero floor. */
+    var lastTrophyChange = 0; private set
     var gold by mutableIntStateOf(prefs.getInt(Keys.GOLD, 100)); private set
     var wins by mutableIntStateOf(prefs.getInt(Keys.WINS, 0)); private set
     var losses by mutableIntStateOf(prefs.getInt(Keys.LOSSES, 0)); private set
@@ -51,7 +54,9 @@ class PlayerProfile(context: Context) {
     val league: League get() = League.forTrophies(trophies)
 
     fun apply(result: MatchResult) {
+        val before = trophies
         trophies = max(0, trophies + result.trophyDelta)
+        lastTrophyChange = trophies - before
         gold += result.goldDelta
         when (result.outcome) {
             MatchOutcome.VICTORY -> {
