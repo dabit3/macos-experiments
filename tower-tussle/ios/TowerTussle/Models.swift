@@ -274,3 +274,54 @@ struct MatchResult {
     let goldDelta: Int
     let durationSeconds: Int
 }
+
+/// Trophy tiers that give the player a sense of progression between battles.
+struct League: Equatable {
+    let name: String
+    let minTrophies: Int
+    let color: Color
+
+    static let all: [League] = [
+        League(name: "Sky Rookie", minTrophies: 0, color: Color(red: 0.55, green: 0.75, blue: 0.9)),
+        League(name: "Cloud Squire", minTrophies: 60, color: Color(red: 0.45, green: 0.85, blue: 0.75)),
+        League(name: "Storm Knight", minTrophies: 160, color: Color(red: 0.4, green: 0.65, blue: 1.0)),
+        League(name: "Sun Champion", minTrophies: 320, color: Color(red: 1.0, green: 0.75, blue: 0.3)),
+        League(name: "Star Legend", minTrophies: 560, color: Color(red: 0.95, green: 0.6, blue: 1.0)),
+    ]
+
+    static func forTrophies(_ trophies: Int) -> League {
+        all.last { trophies >= $0.minTrophies } ?? all[0]
+    }
+
+    var next: League? {
+        guard let i = League.all.firstIndex(of: self), i + 1 < League.all.count else { return nil }
+        return League.all[i + 1]
+    }
+
+    /// 0...1 progress from this league's floor to the next league.
+    func progress(trophies: Int) -> Double {
+        guard let next else { return 1 }
+        return min(1, max(0, Double(trophies - minTrophies) / Double(next.minTrophies - minTrophies)))
+    }
+}
+
+enum BattleTips {
+    static let afterDefeat = [
+        "Wait for 10 elixir before starting a big push.",
+        "Volley clears Bone Brigade and Gremlins in one cast.",
+        "Drop the Colossus at the back so support catches up.",
+        "Archers and Sharpshooter can shoot the flying Whelp.",
+        "Defend on your side first: your towers help you fight.",
+    ]
+    static let afterVictory = [
+        "Keep your average elixir under 4 for faster cycles.",
+        "Meteor on a crowded bridge swings the whole match.",
+        "A tower with low health is worth a Meteor at 35%.",
+        "Double elixir starts in the last minute: go all in.",
+    ]
+
+    static func tip(for outcome: MatchOutcome, seed: Int) -> String {
+        let pool = outcome == .defeat ? afterDefeat : afterVictory
+        return pool[abs(seed) % pool.count]
+    }
+}

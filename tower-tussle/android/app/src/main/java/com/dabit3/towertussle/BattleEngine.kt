@@ -172,6 +172,11 @@ class BattleEngine(val deck: List<String>) {
 
     // Simulation
 
+    /** Drops the last frame timestamp so time spent paused is not simulated. */
+    fun resetClock() {
+        lastTickNanos = null
+    }
+
     /** Called once per display frame with a monotonic nanosecond timestamp. */
     fun frame(nowNanos: Long) {
         val last = lastTickNanos

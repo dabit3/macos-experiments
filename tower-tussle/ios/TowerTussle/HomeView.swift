@@ -5,28 +5,24 @@ struct HomeView: View {
     let onBattle: () -> Void
     let onCards: () -> Void
     @State private var floating = false
+    @State private var showHelp = false
 
     var body: some View {
         ZStack {
             SceneryBackdrop()
             VStack(spacing: 0) {
-                HStack(spacing: 12) {
-                    StatPill(icon: .trophy, value: "\(profile.trophies)", label: "Trophies")
-                    StatPill(icon: .coin, value: "\(profile.gold)", label: "Gold")
-                }
-                .padding(.horizontal)
-                .padding(.top, 8)
+                topBar
 
                 VStack(spacing: -8) {
                     Text("THE SKY IS YOUR BATTLEFIELD")
                         .font(.system(size: 9, weight: .heavy, design: .rounded))
                         .tracking(3)
                         .foregroundStyle(.cyan.opacity(0.8))
-                        .padding(.bottom, 16)
-                    DisplayText(text: "TOWER", size: 52, fill: .whiteText)
-                    DisplayText(text: "TUSSLE", size: 62, fill: .goldText)
+                        .padding(.bottom, 14)
+                    DisplayText(text: "TOWER", size: 46, fill: .whiteText)
+                    DisplayText(text: "TUSSLE", size: 56, fill: .goldText)
                 }
-                .padding(.top, 24)
+                .padding(.top, 14)
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel("Tower Tussle")
 
@@ -39,54 +35,94 @@ struct HomeView: View {
                 .frame(maxHeight: .infinity)
                 .padding(.horizontal, 4)
 
-                VStack(spacing: 12) {
-                    HStack(spacing: 8) {
-                        Circle().fill(.cyan).frame(width: 5, height: 5)
-                        Text("SKYBOUND ARENA").tracking(2.5)
-                        Circle().fill(.cyan).frame(width: 5, height: 5)
-                    }
-                    .font(.system(size: 10, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.8))
-                    .padding(.bottom, 4)
-                    ChunkyButton(title: "BATTLE", icon: .swords, style: .gold, height: 62, fontSize: 25, action: onBattle)
-                        .accessibilityIdentifier("battleButton")
-                    ChunkyButton(title: "CARDS", icon: .cards, style: .slate, height: 48, fontSize: 18, action: onCards)
-                        .accessibilityIdentifier("cardsButton")
+                VStack(spacing: 10) {
+                    DeckStrip(deck: profile.deck, averageElixir: profile.averageElixir, action: onCards)
 
-                    Text("\(profile.wins)W · \(profile.losses)L · \(profile.draws)D")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.white.opacity(0.75))
-                        .shadow(color: .black.opacity(0.8), radius: 0, x: 1, y: 1)
-                        .padding(.top, 4)
+                    ChunkyButton(title: "BATTLE", icon: .swords, style: .gold, height: 64, fontSize: 26, action: onBattle)
+                        .accessibilityIdentifier("battleButton")
+                        .accessibilityHint("Start a three minute match against the sky rival")
+
+                    HStack(spacing: 10) {
+                        ChunkyButton(title: "CARDS", icon: .cards, style: .slate, height: 46, fontSize: 17, action: onCards)
+                            .accessibilityIdentifier("cardsButton")
+                        recordChip
+                    }
                 }
-                .padding(.horizontal, 30)
-                .padding(.bottom, 16)
+                .padding(.horizontal, 18)
+                .padding(.bottom, 14)
             }
         }
         .onAppear {
             withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) { floating = true }
+            if !profile.hasSeenTutorial { showHelp = true }
+        }
+        .sheet(isPresented: $showHelp, onDismiss: { profile.markTutorialSeen() }) {
+            HowToPlaySheet { showHelp = false }
+                .presentationDetents([.large])
+                .presentationDragIndicator(.hidden)
         }
     }
-}
 
-/// Hero illustration: the player's keep flanked by guard towers on a grassy mound.
-struct LogoView: View {
-    var body: some View {
-        Canvas(rendersAsynchronously: false) { ctx, size in
-            let w = size.width, h = size.height
-            let unit = w / 6
-            // mound
-            ctx.fill(Art.ellipse(w / 2, h * 0.86, w * 0.5, h * 0.13), with: .color(.black.opacity(0.35)))
-            ctx.fill(Art.ellipse(w / 2, h * 0.82, w * 0.48, h * 0.12), with: .linearGradient(Gradient(colors: [Color(red: 0.4, green: 0.7, blue: 0.3), Color(red: 0.2, green: 0.45, blue: 0.2)]), startPoint: CGPoint(x: 0, y: h * 0.7), endPoint: CGPoint(x: 0, y: h * 0.95)))
-            Art.tower(&ctx, kind: .guardTower, side: .player, center: CGPoint(x: w * 0.2, y: h * 0.62), r: unit * 0.8, alive: true, activated: true, flash: false, time: 0)
-            Art.tower(&ctx, kind: .guardTower, side: .player, center: CGPoint(x: w * 0.8, y: h * 0.62), r: unit * 0.8, alive: true, activated: true, flash: false, time: 0.6)
-            Art.tower(&ctx, kind: .keep, side: .player, center: CGPoint(x: w * 0.5, y: h * 0.6), r: unit * 1.0, alive: true, activated: true, flash: false, time: 0)
-            var knight = Art.Pose(); knight.facing = 1; knight.phase = 0.5; knight.moving = true
-            var archer = Art.Pose(); archer.facing = -1
-            Art.character(&ctx, id: "knight", side: .player, foot: CGPoint(x: w * 0.36, y: h * 0.92), r: unit * 0.5, pose: knight)
-            Art.character(&ctx, id: "archers", side: .player, foot: CGPoint(x: w * 0.64, y: h * 0.92), r: unit * 0.45, pose: archer)
+    private var topBar: some View {
+        HStack(spacing: 8) {
+            LeagueBadge(trophies: profile.trophies, compact: true)
+                .frame(maxWidth: .infinity)
+            StatPill(icon: .coin, value: "\(profile.gold)", label: "Gold")
+                .frame(width: 104)
+            IconButton(icon: .sound(on: profile.soundEnabled), label: profile.soundEnabled ? "Mute sound" : "Unmute sound") {
+                profile.setSoundEnabled(!profile.soundEnabled)
+            }
+            .accessibilityIdentifier("soundButton")
+            IconButton(icon: .help, label: "How to play", style: .blue) { showHelp = true }
+                .accessibilityIdentifier("helpButton")
         }
-        .shadow(color: .black.opacity(0.5), radius: 10, y: 8)
-        .accessibilityHidden(true)
+        .padding(.horizontal, 12)
+        .padding(.top, 6)
+    }
+
+    @ViewBuilder
+    private var recordChip: some View {
+        VStack(spacing: 2) {
+            if profile.matchesPlayed == 0 {
+                Text("FIRST BATTLE")
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(Theme.accent)
+                Text("Win to earn trophies")
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.7))
+            } else {
+                HStack(spacing: 4) {
+                    Text("\(profile.wins)W")
+                        .foregroundStyle(Color(red: 0.55, green: 0.95, blue: 0.55))
+                    Text("·").foregroundStyle(.white.opacity(0.4))
+                    Text("\(profile.losses)L")
+                        .foregroundStyle(Color(red: 1.0, green: 0.55, blue: 0.5))
+                    Text("·").foregroundStyle(.white.opacity(0.4))
+                    Text("\(profile.draws)D")
+                        .foregroundStyle(.white.opacity(0.8))
+                }
+                .font(.system(size: 13, weight: .black, design: .rounded))
+                .monospacedDigit()
+                HStack(spacing: 3) {
+                    if profile.streak >= 2 {
+                        IconView(kind: .flame, size: 12)
+                        Text("\(profile.streak) win streak")
+                    } else {
+                        Text("\(winRate)% win rate")
+                    }
+                }
+                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.7))
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 46)
+        .panel(cornerRadius: 16)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("recordChip")
+    }
+
+    private var winRate: Int {
+        Int((Double(profile.wins) / Double(max(profile.matchesPlayed, 1)) * 100).rounded())
     }
 }

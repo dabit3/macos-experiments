@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val profile = PlayerProfile(applicationContext)
-        audio = ArcadeAudio(applicationContext)
+        audio = ArcadeAudio(applicationContext).also { it.enabled = profile.soundEnabled }
         setContent {
             MaterialTheme(
                 colorScheme = darkColorScheme(
@@ -101,7 +101,7 @@ fun RootView() {
         ) { target ->
             when (target) {
                 Screen.HOME -> HomeScreen(onBattle = { startBattle() }, onCards = { screen = Screen.CARDS })
-                Screen.CARDS -> CardsScreen(onBack = { screen = Screen.HOME })
+                Screen.CARDS -> CardsScreen(onBack = { screen = Screen.HOME }, onBattle = { startBattle() })
                 Screen.BATTLE -> engine?.let { e ->
                     BattleScreen(
                         engine = e,
@@ -114,7 +114,7 @@ fun RootView() {
                     )
                 }
                 Screen.RESULTS -> lastResult?.let { r ->
-                    ResultsScreen(result = r, onHome = { screen = Screen.HOME }, onRematch = { startBattle() })
+                    ResultsScreen(result = r, onHome = { screen = Screen.HOME }, onCards = { screen = Screen.CARDS }, onRematch = { startBattle() })
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.dabit3.towertussle
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,6 +51,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -59,9 +64,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Locale
 import kotlin.math.sin
 
-enum class IconKind { TROPHY, COIN, CROWN, ELIXIR, SWORDS, CARDS, CLOCK, HOME }
+enum class IconKind { TROPHY, COIN, CROWN, ELIXIR, SWORDS, CARDS, CLOCK, HOME, HELP, SOUND_ON, SOUND_OFF, PAUSE, SWAP, FLAME, SHIELD }
 
 /** Vector icon drawn with the shared Art helpers. */
 @Composable
@@ -82,6 +88,98 @@ fun IconView(kind: IconKind, size: Dp, modifier: Modifier = Modifier) {
                 shape(house, Art.vertical(Art.stoneLight, Art.stoneDark, house.getBounds()), s * 0.07f)
                 drawPath(Art.rounded(Art.rect(c.x - s * 0.1f, c.y + s * 0.1f, s * 0.2f, s * 0.3f), s * 0.05f), Art.woodDark)
             }
+            IconKind.HELP -> {
+                ball(c.x, c.y, s * 0.42f, Color(0.42f, 0.72f, 1.0f), Color(0.15f, 0.42f, 0.9f), s * 0.06f)
+                val q = Path().apply {
+                    moveTo(c.x - s * 0.14f, c.y - s * 0.12f)
+                    cubicTo(c.x - s * 0.14f, c.y - s * 0.32f, c.x + s * 0.16f, c.y - s * 0.32f, c.x + s * 0.14f, c.y - s * 0.1f)
+                    cubicTo(c.x + s * 0.12f, c.y + s * 0.04f, c.x, c.y + s * 0.02f, c.x, c.y + s * 0.14f)
+                }
+                drawPath(q, Color.White, style = Stroke(s * 0.09f, cap = StrokeCap.Round))
+                drawCircle(Color.White, s * 0.06f, Offset(c.x, c.y + s * 0.3f))
+            }
+            IconKind.SOUND_ON, IconKind.SOUND_OFF -> {
+                val horn = Art.polygon(c.x - s * 0.42f to c.y - s * 0.14f, c.x - s * 0.2f to c.y - s * 0.14f, c.x + s * 0.05f to c.y - s * 0.36f, c.x + s * 0.05f to c.y + s * 0.36f, c.x - s * 0.2f to c.y + s * 0.14f, c.x - s * 0.42f to c.y + s * 0.14f)
+                shape(horn, Color.White, s * 0.06f)
+                if (kind == IconKind.SOUND_ON) {
+                    for (i in 1..2) {
+                        val r = s * (0.18f + i * 0.12f)
+                        val arc = Path().apply { addArc(Rect(c.x + s * 0.02f - r, c.y - r, c.x + s * 0.02f + r, c.y + r), -40f, 80f) }
+                        drawPath(arc, Color.White, style = Stroke(s * 0.07f, cap = StrokeCap.Round))
+                    }
+                } else {
+                    val x = Path().apply {
+                        moveTo(c.x + s * 0.16f, c.y - s * 0.16f); lineTo(c.x + s * 0.42f, c.y + s * 0.16f)
+                        moveTo(c.x + s * 0.42f, c.y - s * 0.16f); lineTo(c.x + s * 0.16f, c.y + s * 0.16f)
+                    }
+                    drawPath(x, Theme.enemy, style = Stroke(s * 0.09f, cap = StrokeCap.Round))
+                }
+            }
+            IconKind.PAUSE -> {
+                for (dx in listOf(-0.2f, 0.2f)) {
+                    shape(Art.rounded(Art.rect(c.x + s * dx - s * 0.1f, c.y - s * 0.34f, s * 0.2f, s * 0.68f), s * 0.06f), Color.White, s * 0.06f)
+                }
+            }
+            IconKind.SWAP -> {
+                val top = Path().apply { moveTo(c.x - s * 0.36f, c.y - s * 0.16f); lineTo(c.x + s * 0.2f, c.y - s * 0.16f) }
+                val bottom = Path().apply { moveTo(c.x + s * 0.36f, c.y + s * 0.16f); lineTo(c.x - s * 0.2f, c.y + s * 0.16f) }
+                drawPath(top, Color.White, style = Stroke(s * 0.09f, cap = StrokeCap.Round))
+                drawPath(bottom, Color.White, style = Stroke(s * 0.09f, cap = StrokeCap.Round))
+                drawPath(Art.polygon(c.x + s * 0.18f to c.y - s * 0.34f, c.x + s * 0.4f to c.y - s * 0.16f, c.x + s * 0.18f to c.y + s * 0.02f), Color.White)
+                drawPath(Art.polygon(c.x - s * 0.18f to c.y + s * 0.34f, c.x - s * 0.4f to c.y + s * 0.16f, c.x - s * 0.18f to c.y - s * 0.02f), Color.White)
+            }
+            IconKind.FLAME -> {
+                val flame = Path().apply {
+                    moveTo(c.x, c.y - s * 0.44f)
+                    cubicTo(c.x + s * 0.34f, c.y - s * 0.1f, c.x + s * 0.34f, c.y + s * 0.2f, c.x, c.y + s * 0.44f)
+                    cubicTo(c.x - s * 0.34f, c.y + s * 0.2f, c.x - s * 0.3f, c.y - s * 0.02f, c.x - s * 0.08f, c.y - s * 0.16f)
+                    cubicTo(c.x - s * 0.06f, c.y - s * 0.28f, c.x - s * 0.06f, c.y - s * 0.36f, c.x, c.y - s * 0.44f)
+                }
+                shape(flame, Art.vertical(Art.fireCore, Art.fire, flame.getBounds()), s * 0.06f)
+                drawPath(Art.ellipse(c.x, c.y + s * 0.2f, s * 0.12f, s * 0.18f), Art.fireCore)
+            }
+            IconKind.SHIELD -> {
+                val shield = Path().apply {
+                    moveTo(c.x - s * 0.38f, c.y - s * 0.34f); lineTo(c.x + s * 0.38f, c.y - s * 0.34f)
+                    lineTo(c.x + s * 0.38f, c.y + s * 0.02f)
+                    cubicTo(c.x + s * 0.38f, c.y + s * 0.28f, c.x + s * 0.1f, c.y + s * 0.4f, c.x, c.y + s * 0.46f)
+                    cubicTo(c.x - s * 0.1f, c.y + s * 0.4f, c.x - s * 0.38f, c.y + s * 0.28f, c.x - s * 0.38f, c.y + s * 0.02f)
+                    close()
+                }
+                shape(shield, Art.vertical(Color(0.55f, 0.78f, 1.0f), Theme.player, shield.getBounds()), s * 0.06f)
+                drawPath(Art.rounded(Art.rect(c.x - s * 0.05f, c.y - s * 0.22f, s * 0.1f, s * 0.4f), s * 0.04f), Art.gold)
+                drawPath(Art.rounded(Art.rect(c.x - s * 0.2f, c.y - s * 0.1f, s * 0.4f, s * 0.1f), s * 0.04f), Art.gold)
+            }
+        }
+    }
+}
+
+/** Round icon-only button in the same beveled style as ChunkyButton. */
+@Composable
+fun IconButton(
+    icon: IconKind,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    style: ChunkyStyle = ChunkyStyle.SLATE,
+    size: Dp = 40.dp,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    val audio = LocalArcadeAudio.current
+    val pressed by interaction.collectIsPressedAsState()
+    Box(
+        modifier.size(size, size + 4.dp)
+            .semantics { role = Role.Button; contentDescription = label }
+            .clickable(interactionSource = interaction, indication = null, onClick = { audio?.play("tap"); onClick() }),
+    ) {
+        Box(Modifier.size(size).offset(y = if (pressed) 2.dp else 4.dp).clip(CircleShape).background(style.edge))
+        Box(
+            Modifier.size(size).offset(y = if (pressed) 2.dp else 0.dp).clip(CircleShape)
+                .background(Brush.verticalGradient(listOf(style.top, style.bottom)))
+                .border(2.dp, Art.outline.copy(alpha = 0.9f), CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            IconView(icon, size * 0.55f)
         }
     }
 }
@@ -383,4 +481,172 @@ fun ElixirBar(value: Double, max: Double, modifier: Modifier = Modifier) {
             DisplayText("${value.toInt()}", 13.sp, modifier = Modifier.align(Alignment.Center))
         }
     }
+}
+
+// Progression
+
+/** Small uppercase caption used to title sections and groups of controls. */
+@Composable
+fun SectionLabel(text: String, color: Color = Color.White.copy(alpha = 0.7f), modifier: Modifier = Modifier) {
+    Text(
+        text.uppercase(), fontSize = 10.sp, letterSpacing = 2.sp, fontWeight = FontWeight.Black, color = color, modifier = modifier,
+        style = TextStyle(shadow = Shadow(Color.Black.copy(alpha = 0.7f), Offset(0f, 1.5f), 0f)),
+    )
+}
+
+@Composable
+fun ProgressTrack(progress: Double, color: Color = Theme.accent, height: Dp = 10.dp, modifier: Modifier = Modifier) {
+    val animated by animateFloatAsState(progress.toFloat().coerceIn(0f, 1f), label = "progress")
+    Canvas(modifier.fillMaxWidth().height(height)) {
+        val h = size.height; val w = size.width
+        val r = CornerRadius(h / 2)
+        drawRoundRect(Color.Black.copy(alpha = 0.45f), Offset.Zero, Size(w, h), r)
+        val fillW = (w * animated).coerceAtLeast(h)
+        drawRoundRect(Brush.verticalGradient(listOf(color.copy(alpha = 0.95f), color.copy(alpha = 0.65f))), Offset.Zero, Size(fillW, h), r)
+        drawRoundRect(Color.White.copy(alpha = 0.35f), Offset(4f, 2f), Size((fillW - 8).coerceAtLeast(1f), h * 0.3f), r)
+        drawRoundRect(Art.outline, Offset.Zero, Size(w, h), r, style = Stroke(1.5.dp.toPx()))
+    }
+}
+
+/** League name, trophy count and progress to the next tier. */
+@Composable
+fun LeagueBadge(trophies: Int, modifier: Modifier = Modifier, compact: Boolean = false) {
+    val league = League.forTrophies(trophies)
+    val next = league.next
+    Row(
+        modifier.panel(cornerRadius = 22.dp, tint = Color(0.16f, 0.2f, 0.36f))
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .semantics(mergeDescendants = true) { contentDescription = "$trophies trophies, ${league.name}" }
+            .testTag("leagueBadge"),
+        horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconView(IconKind.TROPHY, if (compact) 28.dp else 34.dp)
+        Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text("$trophies", fontSize = if (compact) 17.sp else 20.sp, fontWeight = FontWeight.Black, color = Color.White)
+                Text(league.name.uppercase(), fontSize = 10.sp, letterSpacing = 1.sp, fontWeight = FontWeight.Black, color = league.color, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+            ProgressTrack(league.progress(trophies), league.color, 7.dp)
+            if (next != null && !compact) {
+                Text("${next.minTrophies - trophies} to ${next.name}", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = Color.White.copy(alpha = 0.65f))
+            }
+        }
+    }
+}
+
+/** Miniature battle deck: eight portraits plus the average elixir, tappable to edit. */
+@Composable
+fun DeckStrip(deck: List<String>, averageElixir: Double, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val audio = LocalArcadeAudio.current
+    Column(
+        modifier.fillMaxWidth().panel(cornerRadius = 18.dp)
+            .clickable { audio?.play("tap"); onClick() }
+            .padding(horizontal = 12.dp, vertical = 9.dp)
+            .semantics(mergeDescendants = true) {
+                role = Role.Button
+                contentDescription = "Battle deck, average elixir ${String.format(Locale.US, "%.1f", averageElixir)}. Edit deck"
+            }
+            .testTag("deckStrip"),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SectionLabel("Battle deck")
+            Spacer(Modifier.weight(1f))
+            IconView(IconKind.ELIXIR, 14.dp)
+            Text(String.format(Locale.US, " %.1f avg", averageElixir), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White.copy(alpha = 0.85f))
+            Text("EDIT ›", fontSize = 11.sp, fontWeight = FontWeight.Black, color = Theme.accent, modifier = Modifier.padding(start = 8.dp))
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            for (id in deck) CardFrame(Cards.byId(id), Modifier.weight(1f).padding(top = 4.dp, start = 3.dp), showName = false, compact = true)
+        }
+    }
+}
+
+enum class HintTone { NEUTRAL, ACTIVE, WARNING }
+
+/** Persistent instruction strip that tells the player what to do next. */
+@Composable
+fun HintBanner(step: String?, text: String, modifier: Modifier = Modifier, tone: HintTone = HintTone.NEUTRAL, onCancel: (() -> Unit)? = null) {
+    val audio = LocalArcadeAudio.current
+    val color = when (tone) {
+        HintTone.NEUTRAL -> Color.White.copy(alpha = 0.6f)
+        HintTone.ACTIVE -> Theme.accent
+        HintTone.WARNING -> Theme.enemy
+    }
+    Row(
+        modifier.fillMaxWidth()
+            .panel(cornerRadius = 16.dp, tint = if (tone == HintTone.NEUTRAL) Theme.panel else color.copy(alpha = 0.35f))
+            .then(if (tone == HintTone.NEUTRAL) Modifier else Modifier.border(2.dp, color.copy(alpha = 0.8f), RoundedCornerShape(16.dp)))
+            .padding(horizontal = 12.dp, vertical = 9.dp)
+            .testTag("hintBanner"),
+        horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (step != null) {
+            Box(Modifier.size(24.dp).clip(CircleShape).background(color), contentAlignment = Alignment.Center) {
+                Text(step, fontSize = 12.sp, fontWeight = FontWeight.Black, color = Art.outline)
+            }
+        }
+        Text(text, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        if (onCancel != null) {
+            Text(
+                "CANCEL", fontSize = 11.sp, fontWeight = FontWeight.Black, color = Color.White,
+                modifier = Modifier.clip(CircleShape).background(Color.White.copy(alpha = 0.15f))
+                    .border(1.dp, Color.White.copy(alpha = 0.4f), CircleShape)
+                    .clickable { audio?.play("tap"); onCancel() }
+                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                    .semantics { role = Role.Button }
+                    .testTag("cancelSwapButton"),
+            )
+        }
+    }
+}
+
+/** Three-step explainer shown on first launch and from the help button. */
+@Composable
+fun HowToPlaySheet(onDone: () -> Unit) {
+    data class Step(val icon: IconKind, val title: String, val body: String)
+    val steps = listOf(
+        Step(IconKind.CARDS, "Pick a card", "Tap a card in your hand. Each card costs elixir, which refills over time."),
+        Step(IconKind.SHIELD, "Drop it on your side", "Tap or drag on your half of the arena to deploy. Spells can land anywhere, even on enemy towers."),
+        Step(IconKind.CROWN, "Take the towers", "Destroy guard towers for crowns. Break the keep for an instant 3-crown win. Three minutes, then sudden-death overtime."),
+    )
+    Column(
+        Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 24.dp).testTag("howToPlay"),
+        verticalArrangement = Arrangement.spacedBy(14.dp), horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        DisplayText("HOW TO PLAY", 30.sp, color = Theme.accent)
+        for ((index, step) in steps.withIndex()) {
+            Row(
+                Modifier.fillMaxWidth().panel(cornerRadius = 16.dp).padding(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.Top,
+            ) {
+                Box(Modifier.size(52.dp)) {
+                    Box(Modifier.size(52.dp).clip(CircleShape).background(Theme.panel).border(2.dp, Art.outline, CircleShape), contentAlignment = Alignment.Center) {
+                        IconView(step.icon, 30.dp)
+                    }
+                    Box(Modifier.align(Alignment.TopEnd).size(18.dp).clip(CircleShape).background(Theme.accent), contentAlignment = Alignment.Center) {
+                        Text("${index + 1}", fontSize = 11.sp, fontWeight = FontWeight.Black, color = Art.outline)
+                    }
+                }
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                    Text(step.title.uppercase(), fontSize = 15.sp, fontWeight = FontWeight.Black, color = Color.White)
+                    Text(step.body, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color.White.copy(alpha = 0.78f))
+                }
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            IconView(IconKind.ELIXIR, 18.dp)
+            Text("Elixir doubles in the last minute. Surrender any time from the pause menu.", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color.White.copy(alpha = 0.7f))
+        }
+        ChunkyButton("LET'S TUSSLE", onClick = onDone, icon = IconKind.SWORDS, height = 56.dp, fontSize = 22.sp, modifier = Modifier.testTag("tutorialDoneButton"))
+    }
+}
+
+/** Battle phase chip: shows OVERTIME / 2x ELIXIR under the timer. */
+@Composable
+fun PhaseChip(text: String, color: Color, modifier: Modifier = Modifier) {
+    Text(
+        text, fontSize = 10.sp, letterSpacing = 1.sp, fontWeight = FontWeight.Black, color = Art.outline,
+        modifier = modifier.clip(CircleShape).background(color).border(1.5.dp, Art.outline, CircleShape).padding(horizontal = 8.dp, vertical = 3.dp),
+    )
 }
