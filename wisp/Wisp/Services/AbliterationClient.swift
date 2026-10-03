@@ -5,7 +5,15 @@ struct AbliterationClient {
     static let baseURL = URL(string: "https://api.abliteration.ai/v1")!
 
     var apiKey: String
-    var session: URLSession = .shared
+    var session: URLSession = Self.ephemeralSession
+
+    /// No disk cache, cookie store or credential store: nothing about the traffic outlives the process.
+    static let ephemeralSession: URLSession = {
+        let config = URLSessionConfiguration.ephemeral
+        config.urlCache = nil
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        return URLSession(configuration: config)
+    }()
 
     enum ClientError: LocalizedError {
         case unauthorized

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct OnboardingView: View {
     @Environment(AppState.self) private var app
+    @State private var pastedKey = false
     @State private var key = ""
     @State private var reveal = false
     @State private var busy = false
@@ -21,6 +22,7 @@ struct OnboardingView: View {
             Text("A chat client for Abliteration AI.\nNothing is remembered unless you ask.")
                 .font(.system(.body, design: .monospaced))
                 .foregroundStyle(Color.ink.opacity(0.6))
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 8)
 
             Spacer(minLength: 32)
@@ -54,7 +56,10 @@ struct OnboardingView: View {
                     .accessibilityLabel(reveal ? "Hide key" : "Show key")
 
                     Button {
-                        if let s = UIPasteboard.general.string { key = s.trimmingCharacters(in: .whitespacesAndNewlines) }
+                        if let s = UIPasteboard.general.string {
+                            key = s.trimmingCharacters(in: .whitespacesAndNewlines)
+                            pastedKey = true
+                        }
                     } label: {
                         Image(systemName: "doc.on.clipboard")
                     }
@@ -76,6 +81,7 @@ struct OnboardingView: View {
                 Text("Stored in the iOS Keychain on this device only. Get one at console.abliteration.ai.")
                     .font(.monoCaption)
                     .foregroundStyle(Color.ink.opacity(0.45))
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             Button(action: connect) {
@@ -104,6 +110,8 @@ struct OnboardingView: View {
         Task {
             do {
                 try await app.connect(apiKey: key)
+                // Don't leave a live API key sitting on the system clipboard.
+                if pastedKey { UIPasteboard.general.items = [] }
             } catch {
                 withAnimation { self.error = error.localizedDescription }
             }
