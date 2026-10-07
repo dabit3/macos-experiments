@@ -8,7 +8,14 @@ final class BoardwalkScene {
   private let skater = SCNNode()
   private let rider = SCNNode()
   private let upperBody = SCNNode()
-  private var legs: [(SCNNode, SCNNode, Float)] = []
+  private let board = SCNNode()
+  private let head = SCNNode()
+  private var legs: [Limb] = []
+  private var arms: [Limb] = []
+  private var wheelSpinners: [SCNNode] = []
+  private var lean: Float = 0
+  private var trick = 0
+  private var airborne = false
   private var crouch: Float = 0
   private var landing: Float = 0
   private var previousHeight = 0.0
@@ -19,8 +26,6 @@ final class BoardwalkScene {
   private var scenery: [(SCNNode, Float)] = []
   private var obstacles: [Int: SCNNode] = [:]
   private var pickups: [Int: SCNNode] = [:]
-  private var leftArm = SCNNode()
-  private var rightArm = SCNNode()
   private let teal = UIColor(red: 0.22, green: 1, blue: 0.88, alpha: 1)
   private let pink = UIColor(red: 1, green: 0.20, blue: 0.60, alpha: 1)
   private let ink = UIColor(red: 0.035, green: 0.05, blue: 0.13, alpha: 1)
@@ -368,56 +373,183 @@ final class BoardwalkScene {
     return node
   }
 
-  private func createSkater() {
-    scene.rootNode.addChildNode(skater)
-    skater.addChildNode(rider)
-    let deck = box(
-      skater, SCNVector3(0.75, 0.12, 1.65), SCNVector3(0, 0.28, 0), pink, glow: 0.35, radius: 0.06)
-    deck.eulerAngles.y = -0.15
-    for x: Float in [-0.36, 0.36] {
-      for z: Float in [-0.48, 0.48] {
-        let wheel = SCNNode(geometry: SCNCylinder(radius: 0.13, height: 0.14))
-        wheel.geometry?.materials = [material(teal, glow: 0.25)]
-        wheel.eulerAngles.z = .pi / 2
-        wheel.position = SCNVector3(x, 0.14, z)
-        skater.addChildNode(wheel)
+  private struct Limb {
+    let upper: SCNNode
+    let lower: SCNNode
+    let joint: SCNNode
+    let end: SCNNode
+    let side: Float
+  }
+
+  private static let rimLight = """
+    float rim = 1.0 - abs(dot(normalize(_surface.normal), normalize(_surface.view)));
+    float side = saturate(_surface.normal.x * 0.5 + 0.5);
+    float3 tint = mix(float3(0.25, 1.0, 0.88), float3(1.0, 0.28, 0.66), side);
+    _output.color.rgb += tint * pow(rim, 3.5) * 0.28;
+    """
+
+  private func outfit(_ color: UIColor, glow: CGFloat = 0, shiny: Bool = false) -> SCNMaterial {
+    let result = material(color, glow: glow, shiny: shiny)
+    result.roughness.contents = shiny ? 0.35 : 0.6
+    result.metalness.contents = shiny ? 0.3 : 0
+    result.shaderModifiers = [.fragment: Self.rimLight]
+    return result
+  }
+
+  @discardableResult
+  private func part(
+    _ parent: SCNNode, _ geometry: SCNGeometry, _ look: SCNMaterial,
+    _ position: SCNVector3 = SCNVector3Zero
+  ) -> SCNNode {
+    geometry.materials = [look]
+    let node = SCNNode(geometry: geometry)
+    node.position = position
+    parent.addChildNode(node)
+    return node
+  }
+
+  private func rounded(_ w: CGFloat, _ h: CGFloat, _ l: CGFloat, _ r: CGFloat) -> SCNBox {
+    SCNBox(width: w, height: h, length: l, chamferRadius: r)
+  }
+
+  private func createBoard() {
+    board.position.y = 0.28
+    let deck = outfit(pink, glow: 0.05, shiny: true)
+    let grip = outfit(UIColor(red: 0.07, green: 0.06, blue: 0.14, alpha: 1))
+    let metal = outfit(UIColor(white: 0.7, alpha: 1), shiny: true)
+    part(board, rounded(0.74, 0.08, 1.26, 0.04), deck)
+    part(board, rounded(0.68, 0.014, 1.2, 0.006), grip, SCNVector3(0, 0.044, 0))
+    for end: Float in [-1, 1] {
+      let kick = part(
+        board, rounded(0.74, 0.08, 0.36, 0.04), deck, SCNVector3(0, 0.055, end * 0.78))
+      kick.eulerAngles.x = -end * 0.38
+      part(kick, rounded(0.68, 0.014, 0.32, 0.006), grip, SCNVector3(0, 0.044, 0))
+    }
+    part(
+      board, rounded(0.34, 0.012, 1.34, 0.006), outfit(teal, glow: 0.45), SCNVector3(0, -0.047, 0))
+    let hub = outfit(UIColor(white: 0.75, alpha: 1))
+    let tyre = outfit(teal, glow: 0.35)
+    for z: Float in [-0.46, 0.46] {
+      part(board, rounded(0.22, 0.05, 0.22, 0.02), metal, SCNVector3(0, -0.06, z))
+      part(board, rounded(0.6, 0.06, 0.1, 0.03), metal, SCNVector3(0, -0.1, z))
+      for x: Float in [-0.35, 0.35] {
+        let spinner = SCNNode()
+        spinner.position = SCNVector3(x, -0.14, z)
+        board.addChildNode(spinner)
+        part(spinner, SCNCylinder(radius: 0.12, height: 0.13), tyre).eulerAngles.z = .pi / 2
+        part(spinner, SCNCylinder(radius: 0.05, height: 0.14), hub).eulerAngles.z = .pi / 2
+        part(spinner, rounded(0.14, 0.2, 0.03, 0.01), hub)
+        wheelSpinners.append(spinner)
       }
     }
-    let pants = UIColor(red: 0.16, green: 0.12, blue: 0.30, alpha: 1)
-    for x: Float in [-0.23, 0.23] {
-      let thigh = capsule(rider, radius: 0.16, height: 1, color: pants, position: SCNVector3Zero)
-      let shin = capsule(rider, radius: 0.135, height: 1, color: pants, position: SCNVector3Zero)
-      legs.append((thigh, shin, x))
-      box(rider, SCNVector3(0.33, 0.18, 0.53), SCNVector3(x, 0.43, x - 0.08), .white, radius: 0.07)
+    let glow = SCNNode()
+    glow.light = SCNLight()
+    glow.light?.type = .omni
+    glow.light?.color = pink
+    glow.light?.intensity = 30
+    glow.light?.attenuationStartDistance = 0
+    glow.light?.attenuationEndDistance = 2.6
+    glow.position = SCNVector3(0, -0.2, 0)
+    board.addChildNode(glow)
+  }
+
+  private func createSkater() {
+    scene.rootNode.addChildNode(skater)
+    skater.scale = SCNVector3(1.08, 1.08, 1.08)
+    skater.addChildNode(board)
+    skater.addChildNode(rider)
+    createBoard()
+    let jacket = outfit(UIColor(red: 0.09, green: 0.70, blue: 0.60, alpha: 1))
+    let trim = outfit(pink, glow: 0.22)
+    let cap = outfit(UIColor(red: 0.92, green: 0.2, blue: 0.55, alpha: 1))
+    let denim = outfit(UIColor(red: 0.17, green: 0.13, blue: 0.34, alpha: 1))
+    let dark = outfit(UIColor(red: 0.06, green: 0.07, blue: 0.16, alpha: 1), shiny: true)
+    let skin = outfit(UIColor(red: 0.78, green: 0.47, blue: 0.34, alpha: 1))
+    let hair = outfit(UIColor(red: 0.22, green: 0.10, blue: 0.30, alpha: 1))
+    let white = outfit(UIColor(white: 0.8, alpha: 1))
+    let sole = outfit(pink, glow: 0.4)
+    let neonTeal = outfit(teal, glow: 1)
+    let neonPink = outfit(pink, glow: 1)
+
+    for side: Float in [-1, 1] {
+      let thigh = part(rider, SCNCapsule(capRadius: 0.17, height: 1), denim)
+      let shin = part(rider, SCNCapsule(capRadius: 0.14, height: 1), denim)
+      let pad = part(rider, SCNSphere(radius: 0.16), dark)
+      pad.scale = SCNVector3(1, 1.1, 0.9)
+      let shoe = SCNNode()
+      shoe.eulerAngles.y = -side * 0.1
+      rider.addChildNode(shoe)
+      part(shoe, rounded(0.3, 0.08, 0.56, 0.035), white, SCNVector3(0, -0.07, -0.05))
+      part(shoe, rounded(0.31, 0.02, 0.57, 0.01), sole, SCNVector3(0, -0.1, -0.05))
+      part(shoe, rounded(0.27, 0.2, 0.46, 0.09), white, SCNVector3(0, 0.05, -0.04))
+      part(shoe, rounded(0.285, 0.045, 0.3, 0.02), neonTeal, SCNVector3(0, 0.04, 0.02))
+      part(shoe, SCNCylinder(radius: 0.14, height: 0.2), dark, SCNVector3(0, 0.15, 0.06))
+      legs.append(Limb(upper: thigh, lower: shin, joint: pad, end: shoe, side: side))
     }
+
     rider.addChildNode(upperBody)
     upperBody.pivot = SCNMatrix4MakeTranslation(0, 1.25, 0)
-    let fabric = UIColor(red: 0.07, green: 0.63, blue: 0.53, alpha: 1)
-    let jacket = capsule(
-      rider, radius: 0.39, height: 1.12, color: fabric, position: SCNVector3(0, 1.65, 0))
-    jacket.scale.z = 0.76
-    box(rider, SCNVector3(0.13, 0.50, 0.05), SCNVector3(0, 1.7, 0.31), pink, glow: 0.15)
-    let skin = UIColor(red: 0.72, green: 0.40, blue: 0.29, alpha: 1)
-    _ = capsule(
-      rider, radius: 0.26, height: 0.57, color: skin, position: SCNVector3(0, 2.42, -0.04))
-    let helmet = capsule(
-      rider, radius: 0.31, height: 0.42, color: pink, position: SCNVector3(0, 2.62, -0.04))
-    helmet.scale.z = 1.08
-    box(rider, SCNVector3(0.12, 0.035, 0.61), SCNVector3(0, 2.82, -0.04), teal, glow: 0.5)
-    leftArm = capsule(
-      rider, radius: 0.13, height: 0.8, color: fabric, position: SCNVector3(-0.56, 1.68, 0))
-    rightArm = capsule(
-      rider, radius: 0.13, height: 0.8, color: fabric, position: SCNVector3(0.56, 1.68, 0))
-    leftArm.eulerAngles.z = -0.60
-    rightArm.eulerAngles.z = 0.60
-    for x: Float in [-0.76, 0.76] {
-      _ = capsule(rider, radius: 0.13, height: 0.23, color: skin, position: SCNVector3(x, 1.38, 0))
+    part(upperBody, SCNCapsule(capRadius: 0.3, height: 0.8), denim, SCNVector3(0, 1.32, 0))
+      .eulerAngles.z = .pi / 2
+    let torso = part(
+      upperBody, SCNCapsule(capRadius: 0.42, height: 1.1), jacket, SCNVector3(0, 1.72, 0))
+    torso.scale.z = 0.74
+    part(upperBody, SCNTorus(ringRadius: 0.38, pipeRadius: 0.045), trim, SCNVector3(0, 1.3, 0))
+      .scale.z = 0.76
+    part(upperBody, SCNTorus(ringRadius: 0.2, pipeRadius: 0.08), trim, SCNVector3(0, 2.17, 0))
+    for side: Float in [-1, 1] {
+      part(upperBody, SCNSphere(radius: 0.2), jacket, SCNVector3(side * 0.44, 2.0, 0))
+      part(upperBody, rounded(0.1, 0.1, 0.52, 0.04), dark, SCNVector3(side * 0.21, 2.12, 0.08))
     }
-    let lowerBody = Set(legs.flatMap { [$0.0, $0.1] })
-    for node in rider.childNodes
-    where node !== upperBody && !lowerBody.contains(node) && node.position.y > 1 {
-      upperBody.addChildNode(node)
+    part(upperBody, rounded(0.6, 0.7, 0.28, 0.12), dark, SCNVector3(0, 1.74, 0.36))
+    part(upperBody, rounded(0.44, 0.26, 0.08, 0.05), jacket, SCNVector3(0, 1.56, 0.51))
+    part(upperBody, rounded(0.46, 0.05, 0.02, 0.01), neonTeal, SCNVector3(0, 1.94, 0.505))
+    for side: Float in [-1, 1] {
+      part(upperBody, rounded(0.04, 0.5, 0.02, 0.01), neonPink, SCNVector3(side * 0.27, 1.75, 0.5))
     }
+
+    let hood = part(
+      upperBody, SCNSphere(radius: 0.28),
+      outfit(UIColor(red: 0.06, green: 0.52, blue: 0.46, alpha: 1)), SCNVector3(0, 2.1, 0.22))
+    hood.scale = SCNVector3(1.05, 0.55, 0.7)
+    for side: Float in [-1, 1] {
+      part(head, SCNSphere(radius: 0.1), hair, SCNVector3(side * 0.2, -0.06, 0.2))
+    }
+    part(upperBody, SCNCapsule(capRadius: 0.12, height: 0.34), skin, SCNVector3(0, 2.26, 0))
+    head.position = SCNVector3(0, 2.56, -0.02)
+    upperBody.addChildNode(head)
+    part(head, SCNSphere(radius: 0.3), skin)
+    part(head, SCNSphere(radius: 0.305), hair, SCNVector3(0, 0.03, 0.05)).scale = SCNVector3(
+      1, 0.95, 1)
+    part(head, SCNSphere(radius: 0.325), cap, SCNVector3(0, 0.16, 0.01)).scale = SCNVector3(
+      1, 0.62, 1.02)
+    let brim = part(head, rounded(0.36, 0.03, 0.3, 0.015), cap, SCNVector3(0, 0.1, 0.36))
+    brim.eulerAngles.x = -0.22
+    part(brim, rounded(0.33, 0.01, 0.27, 0.005), neonTeal, SCNVector3(0, -0.02, 0))
+    part(head, SCNSphere(radius: 0.045), white, SCNVector3(0, 0.36, 0.01))
+    for side: Float in [-1, 1] {
+      part(head, SCNCylinder(radius: 0.13, height: 0.1), dark, SCNVector3(side * 0.31, -0.02, 0.02))
+        .eulerAngles.z = .pi / 2
+      part(
+        head, SCNTorus(ringRadius: 0.1, pipeRadius: 0.026), neonTeal,
+        SCNVector3(side * 0.36, -0.02, 0.02)
+      )
+      .eulerAngles.z = .pi / 2
+      part(head, rounded(0.04, 0.3, 0.06, 0.02), dark, SCNVector3(side * 0.3, 0.17, 0.02))
+        .eulerAngles.z = side * 0.5
+    }
+
+    for side: Float in [-1, 1] {
+      let upper = part(upperBody, SCNCapsule(capRadius: 0.135, height: 1), jacket)
+      let fore = part(upperBody, SCNCapsule(capRadius: 0.12, height: 1), jacket)
+      let elbow = part(upperBody, SCNSphere(radius: 0.13), jacket)
+      let glove = part(upperBody, SCNSphere(radius: 0.13), dark)
+      glove.scale = SCNVector3(0.95, 1.1, 0.9)
+      part(glove, SCNSphere(radius: 0.05), neonTeal, SCNVector3(side * 0.02, 0, -0.11))
+      part(fore, SCNCylinder(radius: 0.13, height: 0.05), trim, SCNVector3(0, -0.4, 0))
+      arms.append(Limb(upper: upper, lower: fore, joint: elbow, end: glove, side: side))
+    }
+
     let ellipse = SCNCylinder(radius: 0.68, height: 0.008)
     ellipse.materials = [material(UIColor.black.withAlphaComponent(0.45))]
     shadow.geometry = ellipse
@@ -434,6 +566,74 @@ final class BoardwalkScene {
     shield.position.y = 1.4
     shield.isHidden = true
     skater.addChildNode(shield)
+  }
+
+  private func solveJoint(
+    from start: SIMD3<Float>, to end: SIMD3<Float>, lengths: (Float, Float), bend: SIMD3<Float>
+  ) -> SIMD3<Float> {
+    let span = end - start
+    let distance = min(max(simd_length(span), 0.001), lengths.0 + lengths.1 - 0.001)
+    let direction = simd_normalize(span)
+    let along =
+      (lengths.0 * lengths.0 - lengths.1 * lengths.1 + distance * distance) / (2 * distance)
+    let height = sqrt(max(0, lengths.0 * lengths.0 - along * along))
+    let perpendicular = simd_normalize(bend - direction * simd_dot(bend, direction))
+    return start + direction * along + perpendicular * height
+  }
+
+  private func poseRider(_ engine: RunnerEngine, time: Double, reducedMotion: Bool) {
+    let active = engine.phase != .paused && engine.phase != .finished
+    let motion: Float = reducedMotion || !active ? 0 : 1
+    let t = Float(time)
+    lean += (Float(engine.lanePosition - Double(engine.lane)) - lean) * 0.3
+    skater.eulerAngles.z = lean * 0.35
+    if engine.jumpTime > 0, !airborne { trick += 1 }
+    airborne = engine.jumpTime > 0
+    let progress = airborne ? Float(1 - engine.jumpTime / RunnerEngine.jumpDuration) : 0
+    let eased = progress * progress * (3 - 2 * progress)
+    let spin = reducedMotion ? 0 : eased * 2 * .pi
+    board.eulerAngles =
+      trick % 2 == 1 ? SCNVector3(0, 0, spin - lean * 0.2) : SCNVector3(0, spin, -lean * 0.2)
+    let lift: Float = reducedMotion ? 0 : sin(.pi * progress) * 0.5
+    let air = Float(engine.jumpHeight / 2.3)
+    let slide = min(1, max(0, (crouch - 0.3) / 0.42)) * (engine.isSliding ? 1 : 0)
+
+    upperBody.position = SCNVector3(0, 1.25 - crouch, crouch * 0.18)
+    upperBody.eulerAngles = SCNVector3(-crouch * 0.65, lean * 0.15, -lean * 0.2)
+    head.eulerAngles = SCNVector3(crouch * 0.55, -lean * 0.2, 0)
+
+    for leg in legs {
+      let x = leg.side * 0.24
+      let hip = SIMD3<Float>(x, 1.3 - crouch, crouch * 0.18)
+      let ankle = SIMD3<Float>(x, 0.58 + lift, 0.02)
+      let knee = solveJoint(
+        from: hip, to: ankle, lengths: (0.5, 0.48), bend: SIMD3<Float>(leg.side * 0.25, 0, -1))
+      poseBone(leg.upper, from: hip, to: knee)
+      poseBone(leg.lower, from: knee, to: ankle)
+      leg.joint.simdPosition = knee + SIMD3<Float>(0, 0, -0.06)
+      leg.end.position = SCNVector3(x, 0.44 + lift, -0.02)
+    }
+
+    for arm in arms {
+      let side = arm.side
+      let shoulder = SIMD3<Float>(side * 0.5, 1.98, 0)
+      let sway = sin(t * 3 + side) * 0.07 * motion
+      var hand = SIMD3<Float>(side * 0.86, 1.3 + sway, -0.24 + sin(t * 3) * 0.08 * side * motion)
+      hand.y += max(0, lean * side) * 0.55
+      hand = simd_mix(hand, SIMD3<Float>(side * 1.08, 2.4, -0.15), SIMD3<Float>(repeating: air))
+      hand = simd_mix(hand, SIMD3<Float>(side * 0.62, 1.25, 0.62), SIMD3<Float>(repeating: slide))
+      let elbow = solveJoint(
+        from: shoulder, to: hand, lengths: (0.44, 0.42), bend: SIMD3<Float>(side * 0.5, -0.3, 0.8))
+      poseBone(arm.upper, from: shoulder, to: elbow)
+      poseBone(arm.lower, from: elbow, to: hand)
+      arm.joint.simdPosition = elbow
+      arm.end.simdPosition = hand
+    }
+
+    let rolled = engine.phase == .ready ? time * 2 : engine.distance
+    let angle = Float((rolled / 0.12).truncatingRemainder(dividingBy: 2 * .pi))
+    for spinner in wheelSpinners { spinner.eulerAngles.x = -angle }
+    rider.position.y = Float(sin(time * 6) * 0.025) * motion
   }
 
   private func obstacleNode(_ obstacle: Obstacle) -> SCNNode {
@@ -511,7 +711,6 @@ final class BoardwalkScene {
     skater.position.x = Float((engine.lanePosition - 1) * 3)
     skater.position.y = Float(engine.jumpHeight)
     skater.position.z = engine.phase == .ready ? -6.5 : 0
-    skater.eulerAngles.z = Float((engine.lanePosition - Double(engine.lane)) * 0.35)
     if engine.phase != .paused && engine.phase != .finished {
       if previousHeight > 0 && engine.jumpHeight == 0 { landing = 0.22 }
       landing *= 0.84
@@ -520,20 +719,7 @@ final class BoardwalkScene {
       let target: Float = engine.isSliding ? 0.72 : tuck + landing
       crouch += (target - crouch) * 0.28
     }
-    upperBody.position = SCNVector3(0, 1.25 - crouch, crouch * 0.18)
-    upperBody.eulerAngles.x = -crouch * 0.65
-    for (thigh, shin, x) in legs {
-      let hip = SIMD3<Float>(x, 1.3 - crouch, crouch * 0.18)
-      let knee = SIMD3<Float>(x, 0.86 - crouch * 0.22, x - 0.08 - crouch * 0.8)
-      let ankle = SIMD3<Float>(x, 0.46, x - 0.08)
-      poseBone(thigh, from: hip, to: knee)
-      poseBone(shin, from: knee, to: ankle)
-    }
-    if !reducedMotion && engine.phase != .paused && engine.phase != .finished {
-      rider.position.y = Float(sin(time * 6) * 0.025)
-      leftArm.eulerAngles.x = Float(sin(time * 3) * 0.15)
-      rightArm.eulerAngles.x = -Float(sin(time * 3) * 0.15)
-    }
+    poseRider(engine, time: time, reducedMotion: reducedMotion)
     shadow.position.x = skater.position.x
     shadow.position.z = skater.position.z
     shadow.opacity = CGFloat(0.65 - engine.jumpHeight * 0.15)
