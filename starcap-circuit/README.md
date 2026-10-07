@@ -42,20 +42,24 @@ No repository hooks are required.
 ## Play with two devices
 
 1. Run the server. Open the app on two iPhones/simulators.
-2. Select distinct racers and guest names, and enter the same 4–8 character room
-   code. The first guest's course selection determines the room's initial track.
-3. Both tap **JOIN THE GRID**, then **READY TO RACE**.
-4. Hold **GAS** to accelerate. Left/right steer continuously. Hold **BRAKE** to
-   slow down. Hold **DRIFT** while steering at speed, then release after the cyan
-   meter charges for a mini-turbo; orange charge gives a longer boost.
-5. Drive through floating item boxes. Tap the top-center item after the roulette:
+2. The garage has three steps: **RACER** (Pip all-rounder, Mochi quick and
+   nimble, Volt top speed; the stat bars match server handling), **COURSE** and
+   **ROOM** (guest name, 4–8 character room code, editable server address). The
+   first guest's course selection determines the room's initial track.
+3. Both tap **RACE ONLINE**, then **READY TO RACE!** in the room lobby.
+4. Hold **GAS** to accelerate. Holding gas from the “2” of the countdown gives a
+   rocket start; holding from “3” stalls. Left/right steer continuously. Hold
+   **BRAKE** to slow down. Hold **DRIFT** while steering at speed; the drift meter
+   fills through SPARK (blue), BLAZE (orange) and STARBURST (rainbow) turbo tiers,
+   released on letting go. Orange chevron dash panels boost once per lap.
+5. Drive through floating item boxes. Tap the top-left item slot after the roulette:
    **ZAP** slows the other racer within 110 world units; **COMET** boosts;
    **GUM** drops a physical hazard behind; **BUBBLE** absorbs one hit.
 6. Follow the road around all eight ordered gates per lap. Both must complete two
    laps. The server determines finish order; after the winner, the other racer
    gets 20 seconds. A full race has a 180-second limit; unfinished racers show DNF.
 7. **REMATCH** switches to the other course and returns both guests to the lobby.
-   Ready up again. **BACK TO GARAGE** leaves the room.
+   Ready up again. **GARAGE** leaves the room.
 
 The **AUTO DRIVER** control is clearly labeled and optional. It steers through
 the same input/network path as touch controls. Touching any pedal or steering
@@ -109,9 +113,20 @@ setup instructions. Read-only room telemetry guides steering and assertions.
 
 ## Architecture
 
-- `Sources/App.swift`: native lobby, touch controls, HUD, mini-map and results.
+- `Sources/App.swift`: app flow, connection-lost overlay, portraits and mini-map.
+- `Sources/Theme.swift`: shared palette, outlined display type, chunky buttons,
+  cards, ribbons and stat bars.
+- `Sources/Garage.swift`: stepped racer/course/room garage and two-slot room lobby.
+- `Sources/HUD.swift`: race HUD, item slot, drift tier meter, countdown and touch
+  controls.
+- `Sources/Results.swift`: podium results, finish order, rematch and confetti.
 - `Sources/World.swift`: authored 3D models, two courses, chase camera, lighting,
-  floating pickups, drift sparks, boost flames, shields and confetti.
+  floating pickups, dash panels, tiered drift sparks, boost flames, shields,
+  racer name tags, an animated garage turntable and rendered 3D racer portraits.
+  Rendering uses physically based materials, HDR bloom, ambient occlusion,
+  soft shadows, reflective water and particle sparks, flames, dust and confetti.
+- `Sources/Art.swift`: procedural textures (asphalt, grass, sand, waves, sky,
+  kerbs, windows, crowds) and particle systems, generated on device and cached.
 - `Sources/Models.swift`: typed protocol, guest connection, ordered input,
   state synchronization and optional independently computed input driver.
 - `Sources/Audio.swift`: original synthesized 16-note melody, bass/drums and event
@@ -132,7 +147,12 @@ See [protocol](docs/PROTOCOL.md) for payloads, clocks and reconnect behavior.
 `npm test` runs meaningful input-driven complete races on both tracks, lap/gate
 validation, wrong-order/expired input checks, teleport rejection, item effects and
 shield consumption, braking, finish ordering, rematch resets, and real WebSocket
-room/full/rejoin tests. Native build and Swift lint are separate checks.
+room/full/rejoin tests, rocket starts, drift turbo tiers, dash panels and racer
+handling differences. Native build and Swift lint are separate checks.
+
+The redesigned garage moved the join, ready and rematch buttons, so
+`scripts/computer-use/geometry.json` must be recalibrated before rerunning the
+programmatic computer-input test.
 
 Recorded two-device evidence is delivered on the PR/session after GUI testing;
 this README does not equate automated physics tests with native visual evidence.

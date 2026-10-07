@@ -5,17 +5,45 @@ struct Racer: Identifiable {
   let id: Int
   let name: String
   let subtitle: String
+  let kart: String
   let color: Color
+  let speed: Double
+  let accel: Double
+  let handling: Double
   static let all = [
     Racer(
-      id: 0, name: "PIP", subtitle: "Cosmic squirrel", color: Color(red: 1, green: 0.29, blue: 0.38)
-    ),
+      id: 0, name: "PIP", subtitle: "Cosmic squirrel", kart: "All-rounder",
+      color: Color(red: 1, green: 0.29, blue: 0.38), speed: 4, accel: 4, handling: 4),
     Racer(
-      id: 1, name: "MOCHI", subtitle: "Moonbeam bunny",
-      color: Color(red: 0.25, green: 0.91, blue: 0.77)),
+      id: 1, name: "MOCHI", subtitle: "Moonbeam bunny", kart: "Quick & nimble",
+      color: Color(red: 0.25, green: 0.91, blue: 0.77), speed: 3, accel: 6, handling: 5),
     Racer(
-      id: 2, name: "VOLT", subtitle: "Pocket robot", color: Color(red: 1, green: 0.76, blue: 0.19)),
+      id: 2, name: "VOLT", subtitle: "Pocket robot", kart: "Top-speed brawler",
+      color: Color(red: 1, green: 0.76, blue: 0.19), speed: 6, accel: 3, handling: 3),
   ]
+}
+
+enum Item {
+  static let order = ["zap", "comet", "gum", "bubble"]
+  static let names = ["zap": "ZAP BOLT", "comet": "COMET", "gum": "GUM DROP", "bubble": "BUBBLE"]
+  static let symbols = [
+    "zap": "bolt.fill", "comet": "flame.fill", "gum": "drop.fill", "bubble": "shield.fill",
+  ]
+  static let colors: [String: Color] = [
+    "zap": Color(red: 1, green: 0.87, blue: 0.2), "comet": .orange,
+    "gum": Color(red: 1, green: 0.4, blue: 0.75), "bubble": .cyan,
+  ]
+}
+
+enum Turbo {
+  static let thresholds = [0.65, 1.3, 2.0]
+  static let names = ["SPARK", "BLAZE", "STARBURST"]
+  static let colors: [Color] = [
+    Color(red: 0.25, green: 0.7, blue: 1), .orange, Color(red: 1, green: 0.35, blue: 0.85),
+  ]
+  static func tier(_ charge: Double) -> Int {
+    thresholds.lastIndex { charge >= $0 }.map { $0 + 1 } ?? 0
+  }
 }
 
 struct KartState: Decodable, Identifiable {
@@ -55,6 +83,7 @@ struct RaceEvent: Decodable {
   var player: String
   var target: String?
   var item: String?
+  var tier: Int?
 }
 
 struct Hazard: Decodable {
@@ -105,6 +134,8 @@ enum Course {
     "Island breezes. Big smiles. Full throttle.",
     "Sugar-lit streets. Tight turns. Electric nights.",
   ]
+  static let moods = ["SUNNY COAST • FLOWING BENDS", "NIGHT CITY • TIGHT HAIRPINS"]
+  static let difficulty = [2, 3]
   static func point(_ track: Int, _ index: Double) -> (x: Double, z: Double) {
     let t = index / 240 * .pi * 2
     let r = track == 1 ? 61 + 12 * sin(3 * t) : 68 + 8 * sin(3 * t)
@@ -130,13 +161,22 @@ final class RaceClient: ObservableObject {
   @Published var code = "STAR"
   @Published var racer = 0
   @Published var track = 0
-  @Published var autoDrive = false
+  @Published var autoDrive = false {
+    didSet {
+      guard oldValue, !autoDrive else { return }
+      steer = 0
+      throttle = false
+      brake = false
+      drift = false
+    }
+  }
   @Published var steer = 0.0
   @Published var throttle = false
   @Published var brake = false
   @Published var drift = false
   @Published var muted = false
   @Published var toast = ""
+  @Published var toastTint = Color.orange
   @Published var clock = Date.timeIntervalSinceReferenceDate
   let world = RaceWorld()
   let audio = RaceAudio()
@@ -173,6 +213,8 @@ final class RaceClient: ObservableObject {
     racer = min(2, max(0, Int(value("-racer") ?? "0") ?? 0))
     track = min(1, max(0, Int(value("-track") ?? "0") ?? 0))
     world.build(track: track)
+    world.renderPortraits()
+    world.preview(racer: racer)
     timer = Timer.scheduledTimer(withTimeInterval: 1 / 30, repeats: true) { [weak self] _ in
       Task { @MainActor in self?.frame() }
     }
@@ -295,7 +337,7 @@ final class RaceClient: ObservableObject {
       if next.phase == "countdown" { audio.effect("ready") }
       if next.phase == "racing" {
         audio.effect("boost")
-        showToast("GO! MAKE SOME STARDUST")
+        audio.effect("go")
       }
       if next.phase == "results" { audio.effect("win") }
     }
@@ -305,14 +347,28 @@ final class RaceClient: ObservableObject {
         switch event.kind {
         case "pickup":
           audio.effect("pickup")
-          showToast("ITEM ROULETTE!")
+          showToast("ITEM GET!", tint: .purple)
         case "zap":
           audio.effect("zap")
           world.flash(target: event.target ?? "")
-          showToast(event.player == playerID ? "ZAP! DIRECT HIT" : "YOU GOT ZAPPED!")
+          showToast(
+            event.player == playerID ? "DIRECT HIT!" : "ZAPPED!",
+            tint: event.player == playerID ? .orange : .red)
         case "drift":
           audio.effect("boost")
-          showToast("MINI TURBO!")
+          let tier = max(1, min(3, event.tier ?? 1))
+          showToast("\(Turbo.names[tier - 1]) TURBO!", tint: Turbo.colors[tier - 1])
+        case "rocket":
+          audio.effect("boost")
+          showToast("ROCKET START!", tint: .orange)
+        case "stall":
+          audio.effect("zap")
+          showToast("ENGINE STALL!", tint: .gray)
+        case "dash":
+          audio.effect("dash")
+        case "gumHit":
+          audio.effect("zap")
+          showToast("STUCK IN GUM!", tint: .pink)
         case "finish":
           audio.effect("win")
           showToast("FINISH!")
@@ -323,8 +379,9 @@ final class RaceClient: ObservableObject {
     if autoReady && next.phase == "lobby", let mine = me, !mine.ready { ready() }
   }
 
-  private func showToast(_ text: String) {
+  private func showToast(_ text: String, tint: Color = .orange) {
     toast = text
+    toastTint = tint
     toastUntil = Date.timeIntervalSinceReferenceDate + 1.8
   }
 
