@@ -1,0 +1,25 @@
+{
+  "name": "launch-video-choose-macos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Devin on macOS launch video — \"Choose macOS\" direction (Remotion)",
+  "scripts": {
+    "footage": "bash scripts/extract-footage.sh",
+    "studio": "remotion studio",
+    "render": "remotion render ChooseMacOS out/choose-macos.mp4 --codec h264 --crf 14 --pixel-format yuv420p --image-format png",
+    "poster": "remotion still ChooseMacOS out/poster.png --frame 330",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.525",
+    "@remotion/google-fonts": "4.0.525",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "remotion": "4.0.525"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.12",
+    "typescript": "5.9.2"
+  }
+}
