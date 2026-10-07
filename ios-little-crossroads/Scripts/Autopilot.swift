@@ -51,13 +51,13 @@ struct Controls {
     private static let aspect: CGFloat = 2622.0 / 1206.0
     private static let points: [String: CGPoint] = [
         "start": CGPoint(x: 0.496, y: 0.789),
-        "retry": CGPoint(x: 0.496, y: 0.612),
-        "forward": CGPoint(x: 0.820, y: 0.836),
-        "left": CGPoint(x: 0.126, y: 0.850),
-        "right": CGPoint(x: 0.390, y: 0.850),
-        "backward": CGPoint(x: 0.256, y: 0.917),
-        "pause": CGPoint(x: 0.870, y: 0.118),
-        "quit": CGPoint(x: 0.771, y: 0.615),
+        "retry": CGPoint(x: 0.496, y: 0.569),
+        "forward": CGPoint(x: 0.818, y: 0.850),
+        "left": CGPoint(x: 0.127, y: 0.850),
+        "right": CGPoint(x: 0.397, y: 0.850),
+        "backward": CGPoint(x: 0.257, y: 0.917),
+        "pause": CGPoint(x: 0.900, y: 0.106),
+        "quit": CGPoint(x: 0.702, y: 0.648),
     ]
 
     static func locate() -> Controls? {

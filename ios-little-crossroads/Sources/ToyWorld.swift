@@ -131,7 +131,7 @@ final class ToyWorld {
         if lastPlumage != plumage {
             duck.removeFromParentNode()
             duck = makeDuck(plumage)
-            duck.scale = SCNVector3(1.13, 1.13, 1.13)
+            duck.scale = SCNVector3(1.2, 1.2, 1.2)
             scene.rootNode.addChildNode(duck)
             lastPlumage = plumage
         }
@@ -189,9 +189,9 @@ final class ToyWorld {
         )
         let stretch = reducedMotion ? 0 : hopHeight / 0.48 * 0.10 - (landingSquash > 0 ? 0.14 : 0)
         duck.scale = SCNVector3(
-            1.13 * Float(1 - stretch * 0.5),
-            1.13 * Float(1 + stretch),
-            1.13 * Float(1 - stretch * 0.5)
+            1.2 * Float(1 - stretch * 0.5),
+            1.2 * Float(1 + stretch),
+            1.2 * Float(1 - stretch * 0.5)
         )
         let angle: Float = switch lastDirection {
         case .forward: 0
@@ -405,7 +405,7 @@ final class ToyWorld {
             ToyColor.coral,
             ToyColor.cream,
             ToyColor.royal,
-            ToyColor.yellow,
+            UIColor(red: 0.15, green: 0.72, blue: 0.62, alpha: 1),
             UIColor(red: 0.62, green: 0.13, blue: 0.75, alpha: 1),
         ]
         let color = colors[abs(index) % colors.count]
