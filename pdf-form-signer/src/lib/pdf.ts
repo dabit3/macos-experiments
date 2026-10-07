@@ -264,7 +264,7 @@ export function generateAgreementPdf(values: FormValues, signatures: Signatures,
     doc.setFont('helvetica', 'normal').setFontSize(9).setTextColor(INK)
     const lines = doc.splitTextToSize(latin1(ev.message), CONTENT_W - timeW) as string[]
     L.ensure(lines.length * 12 + 1)
-    doc.setFont('courier', 'normal').setFontSize(8.5).setTextColor(MUTED)
+    doc.setFont('helvetica', 'normal').setFontSize(8.5).setTextColor(MUTED)
     doc.text(formatTimestamp(ev.time), MARGIN, L.y)
     doc.setFont('helvetica', 'normal').setFontSize(9).setTextColor(INK)
     doc.text(lines, MARGIN + timeW, L.y)

@@ -167,7 +167,7 @@ export function ReviewStep({ form, missing, onJumpTo, onGenerate, generating, re
               </div>
               <div>
                 <dt>Method</dt>
-                <dd>{s.signature ? (s.signature.mode === 'drawn' ? `Drawn, ${s.signature.strokes} strokes` : 'Typed') : '—'}</dd>
+                <dd>{s.signature ? (s.signature.mode === 'drawn' ? `Drawn, ${s.signature.strokes} ${s.signature.strokes === 1 ? 'stroke' : 'strokes'}` : 'Typed') : '—'}</dd>
               </div>
             </dl>
           </div>
