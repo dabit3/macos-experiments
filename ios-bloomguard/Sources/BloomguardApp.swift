@@ -151,7 +151,7 @@ struct BloomguardView: View {
     GeometryReader { geometry in
       ZStack {
         if store.screen == "game" {
-          PaperBackground(dark: true)
+          Backdrop()
           game
         } else {
           TimelineView(.animation(paused: reduceMotion)) { timeline in
@@ -164,6 +164,7 @@ struct BloomguardView: View {
       .frame(width: geometry.size.width, height: geometry.size.height)
       .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: store.screen)
     }
+    .fontDesign(.rounded)
     .foregroundStyle(Color.ink)
     .onReceive(timer) { _ in store.tick() }
     .onChange(of: scenePhase) { _, phase in
@@ -173,121 +174,88 @@ struct BloomguardView: View {
     }
   }
 
+  // MARK: Home
+
   private var home: some View {
-    HStack(spacing: 18) {
-      VStack(alignment: .leading, spacing: 8) {
-        Text("A LITTLE GARDEN · A GRAND DEFENSE")
-          .font(.system(size: 9, weight: .semibold, design: .serif)).tracking(2.4)
-          .foregroundStyle(Color.goldDeep)
-        Text("Bloomguard").font(.system(size: 54, weight: .bold, design: .serif)).tracking(-2.5)
-          .minimumScaleFactor(0.6).lineLimit(1)
-          .shadow(color: .cream.opacity(0.8), radius: 0, x: 0, y: 1)
-        Flourish().frame(width: 170, height: 17)
-        Text("Grow a little courage.")
-          .font(.system(size: 18, weight: .regular, design: .serif)).italic()
-          .foregroundStyle(Color.pine)
-        Text(
-          "Gather sunshine, plant your guardians and keep\nthe clockwork pests out of your cottage."
-        )
-        .font(.system(size: 11.5)).foregroundStyle(Color.ink.opacity(0.72)).lineSpacing(3)
-        HStack(spacing: 10) {
-          action("Enter the garden", icon: "arrow.right", gold: true) { store.screen = "chapters" }
-          circleButton("How to play", icon: "questionmark") { store.guide = true }
-        }.padding(.top, 6)
-        Button {
-          store.start(endless: true)
-        } label: {
+    ZStack(alignment: .topTrailing) {
+      HStack(alignment: .bottom, spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
+          Spacer()
           HStack(spacing: 8) {
-            Image(systemName: "infinity").font(.system(size: 12, weight: .bold))
-            Text("Endless garden").font(.system(size: 12, weight: .semibold))
-            Text("BEST \(store.best.formatted())")
-              .font(.system(size: 9, weight: .bold, design: .serif)).tracking(1)
-              .padding(.horizontal, 7).padding(.vertical, 3)
-              .background(Color.gold.opacity(0.35), in: Capsule())
-          }.padding(.horizontal, 14).frame(height: 34)
-            .background(Color.cream.opacity(0.55), in: Capsule())
-            .overlay(Capsule().stroke(Color.ink.opacity(0.25), lineWidth: 1))
-        }.buttonStyle(.plain).accessibilityIdentifier("endless")
-      }
-      .padding(22)
-      .background(
-        LinearGradient(
-          colors: [.cream.opacity(0.92), .parchment.opacity(0.88)], startPoint: .top,
-          endPoint: .bottom),
-        in: RoundedRectangle(cornerRadius: 26)
-      )
-      .overlay(RoundedRectangle(cornerRadius: 26).stroke(Color.cream, lineWidth: 1.5))
-      .overlay(
-        RoundedRectangle(cornerRadius: 22).stroke(Color.goldDeep.opacity(0.35), lineWidth: 1)
-          .padding(5)
-      )
-      .shadow(color: .ink.opacity(0.22), radius: 18, y: 8)
-      .frame(maxWidth: 360)
-      ZStack(alignment: .topTrailing) {
-        VStack(spacing: 0) {
-          ZStack(alignment: .bottom) {
-            Cottage().frame(height: 200).offset(y: -40)
-            HStack(spacing: -12) {
-              GardenArt(seed: .marigold).frame(width: 104, height: 104).rotationEffect(.degrees(-8))
-              GardenArt(seed: .peashooter).frame(width: 122, height: 122)
-              GardenArt(seed: .frost).frame(width: 96, height: 96).rotationEffect(.degrees(6))
-              GardenArt(seed: .bramble).frame(width: 90, height: 90).rotationEffect(.degrees(10))
-                .offset(y: -6)
-            }.offset(y: 14)
-          }.frame(height: 250)
-          Text("FIVE GUARDIANS · ONE PRECIOUS PATCH")
-            .font(.system(size: 8, weight: .semibold, design: .serif)).tracking(2)
-            .foregroundStyle(Color.ink.opacity(0.7)).padding(.top, 16)
-        }.frame(maxWidth: .infinity)
-        circleButton("Toggle sound", icon: store.sound ? "speaker.wave.2" : "speaker.slash") {
-          store.toggleSound()
+            Image(systemName: "leaf.fill").font(.system(size: 12, weight: .bold))
+            Text("Lane defense").font(.system(size: 13, weight: .semibold))
+          }.foregroundStyle(Color.pine.opacity(0.85))
+          Text("Bloomguard").font(.system(size: 58, weight: .heavy)).tracking(-2)
+            .minimumScaleFactor(0.6).lineLimit(1).padding(.top, 2)
+          Text("Grow a garden that guards itself\nfrom a parade of clockwork pests.")
+            .font(.system(size: 14, weight: .medium)).foregroundStyle(Color.ink.opacity(0.7))
+            .lineSpacing(2).padding(.top, 6)
+          HStack(spacing: 10) {
+            pill("Play", icon: "play.fill", style: .primary) { store.screen = "chapters" }
+            pill("Endless", icon: "infinity", style: .dark) { store.start(endless: true) }
+              .accessibilityIdentifier("endless")
+          }.padding(.top, 20)
+          HStack(spacing: 14) {
+            Button("How to play") { store.guide = true }
+              .font(.system(size: 13, weight: .semibold))
+            if store.best > 0 {
+              Text("Best \(store.best.formatted())")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Color.ink.opacity(0.55))
+            }
+          }.padding(.top, 14)
         }
+        .frame(maxWidth: 330, alignment: .leading)
+        .padding(.bottom, 8)
+        Spacer(minLength: 0)
+        ZStack(alignment: .bottom) {
+          Cottage().frame(width: 330, height: 220).offset(y: -58)
+          HStack(alignment: .bottom, spacing: -14) {
+            GardenArt(seed: .marigold).frame(width: 104, height: 104)
+            GardenArt(seed: .peashooter).frame(width: 126, height: 126)
+            GardenArt(seed: .frost).frame(width: 100, height: 100)
+            GardenArt(seed: .bramble).frame(width: 92, height: 92).offset(y: -4)
+          }.offset(y: 10)
+        }
+        .frame(maxWidth: 440)
+        .padding(.bottom, 14)
       }
-    }.padding(.horizontal, 22).padding(.vertical, 16)
+      .padding(.horizontal, 28).padding(.vertical, 18)
+      iconButton("Toggle sound", icon: store.sound ? "speaker.wave.2.fill" : "speaker.slash.fill") {
+        store.toggleSound()
+      }.padding(20)
+    }
   }
 
+  // MARK: Chapters
+
   private var chapters: some View {
-    VStack(alignment: .leading, spacing: 12) {
+    VStack(alignment: .leading, spacing: 14) {
       HStack(spacing: 12) {
-        circleButton("Back", icon: "arrow.left") { store.screen = "home" }
+        iconButton("Back", icon: "chevron.left") { store.screen = "home" }
         VStack(alignment: .leading, spacing: 1) {
-          Text("The garden journal").font(.system(size: 27, weight: .semibold, design: .serif))
-          Text("FOUR SMALL CHAPTERS · A GROWING ADVENTURE")
-            .font(.system(size: 8, weight: .semibold, design: .serif)).tracking(1.8)
-            .foregroundStyle(Color.goldDeep)
+          Text("Chapters").font(.system(size: 28, weight: .heavy)).tracking(-0.5)
+          Text("Keep 4 robins for three stars · 2 for two")
+            .font(.system(size: 12, weight: .medium)).foregroundStyle(Color.ink.opacity(0.6))
         }
         Spacer()
-        Button {
-          store.start(endless: true)
-        } label: {
-          Label("Endless garden", systemImage: "infinity").font(
-            .system(size: 12, weight: .semibold)
-          )
-          .padding(.horizontal, 14).frame(height: 36)
-          .background(Color.cream.opacity(0.7), in: Capsule())
-          .overlay(Capsule().stroke(Color.ink.opacity(0.25), lineWidth: 1))
-        }.buttonStyle(.plain)
+        pill("Endless", icon: "infinity", style: .dark) { store.start(endless: true) }
       }
+      Spacer(minLength: 0)
       HStack(spacing: 12) {
         ForEach(0..<4) { index in chapterCard(index) }
       }
-      HStack(spacing: 6) {
-        Image(systemName: "bird.fill").font(.system(size: 10))
-        Text("Keep 4 robins for three stars · 2 robins for two · every victory earns one")
-          .font(.system(size: 10, weight: .medium))
-      }.foregroundStyle(Color.ink.opacity(0.8))
-        .padding(.horizontal, 12).padding(.vertical, 6)
-        .background(Color.cream.opacity(0.7), in: Capsule())
-    }.padding(.horizontal, 22).padding(.vertical, 16)
+      Spacer(minLength: 0)
+    }.padding(.horizontal, 24).padding(.vertical, 16)
   }
 
   private func chapterCard(_ index: Int) -> some View {
     let open = index <= store.unlocked
     let bands: [[Color]] = [
-      [Color(red: 0.99, green: 0.84, blue: 0.62), Color(red: 0.96, green: 0.70, blue: 0.45)],
-      [Color(red: 0.90, green: 0.62, blue: 0.42), Color(red: 0.70, green: 0.42, blue: 0.26)],
-      [Color(red: 0.72, green: 0.87, blue: 0.90), Color(red: 0.42, green: 0.66, blue: 0.75)],
-      [Color(red: 0.42, green: 0.45, blue: 0.68), Color(red: 0.20, green: 0.24, blue: 0.42)],
+      [Color(red: 0.99, green: 0.86, blue: 0.64), Color(red: 0.97, green: 0.72, blue: 0.46)],
+      [Color(red: 0.92, green: 0.64, blue: 0.44), Color(red: 0.72, green: 0.43, blue: 0.27)],
+      [Color(red: 0.70, green: 0.87, blue: 0.90), Color(red: 0.40, green: 0.66, blue: 0.75)],
+      [Color(red: 0.40, green: 0.44, blue: 0.68), Color(red: 0.18, green: 0.22, blue: 0.40)],
     ]
     return Button {
       if open { store.start(level: index) }
@@ -297,114 +265,56 @@ struct BloomguardView: View {
           LinearGradient(colors: bands[index], startPoint: .top, endPoint: .bottom)
           if index == 3 {
             Circle().fill(Color.cream.opacity(0.85)).frame(width: 22, height: 22)
-              .position(x: 120, y: 18)
+              .position(x: 118, y: 18)
           }
-          GardenArt(seed: Seed.allCases[index]).frame(height: 84).frame(maxWidth: .infinity)
-            .offset(y: 8).saturation(open ? 1 : 0.2)
-          Text("0\(index + 1)").font(.system(size: 10, weight: .bold, design: .serif))
-            .frame(width: 24, height: 24)
-            .background(Color.cream, in: Circle())
-            .overlay(Circle().stroke(Color.goldDeep, lineWidth: 1.2))
-            .padding(8)
-          if !open {
-            Image(systemName: "lock.fill").font(.system(size: 11)).foregroundStyle(Color.cream)
-              .padding(8).frame(maxWidth: .infinity, alignment: .trailing)
-          }
-        }.frame(height: 92).clipped()
-        VStack(alignment: .leading, spacing: 4) {
-          Text(Chapter.all[index].subtitle)
-            .font(.system(size: 7.5, weight: .bold, design: .serif)).tracking(1.6)
-            .foregroundStyle(Color.goldDeep)
-          Text(Chapter.all[index].title).font(.system(size: 16, weight: .semibold, design: .serif))
+          GardenArt(seed: Seed.allCases[index]).frame(height: 86).frame(maxWidth: .infinity)
+            .offset(y: 10).saturation(open ? 1 : 0.15)
+          HStack {
+            Text("\(index + 1)").font(.system(size: 12, weight: .heavy))
+              .frame(width: 26, height: 26)
+              .background(Color.ink, in: RoundedRectangle(cornerRadius: 8))
+              .foregroundStyle(Color.cream)
+            Spacer()
+            if !open {
+              Image(systemName: "lock.fill").font(.system(size: 12, weight: .bold))
+                .foregroundStyle(Color.cream).frame(width: 26, height: 26)
+                .background(Color.ink.opacity(0.35), in: RoundedRectangle(cornerRadius: 8))
+            }
+          }.padding(10)
+        }.frame(height: 96).clipped()
+        VStack(alignment: .leading, spacing: 5) {
+          Text(Chapter.all[index].title).font(.system(size: 16, weight: .bold))
             .lineLimit(1).minimumScaleFactor(0.7)
           Text(open ? Chapter.all[index].lesson : "Clear chapter \(index) to unlock")
-            .font(.system(size: 9.5)).lineSpacing(2).fixedSize(horizontal: false, vertical: true)
-            .frame(minHeight: 28, alignment: .topLeading).foregroundStyle(Color.ink.opacity(0.75))
-          HStack(spacing: 3) {
+            .font(.system(size: 11, weight: .medium)).lineSpacing(1)
+            .foregroundStyle(Color.ink.opacity(0.62))
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(minHeight: 28, alignment: .topLeading)
+          HStack(spacing: 2) {
             ForEach(0..<3) { star in
-              Image(systemName: star < store.medals[index] ? "star.fill" : "star")
-                .foregroundStyle(
-                  star < store.medals[index] ? Color.goldDeep : Color.ink.opacity(0.3))
+              Image(systemName: "star.fill").font(.system(size: 11))
+                .foregroundStyle(star < store.medals[index] ? Color.gold : Color.ink.opacity(0.14))
             }
             Spacer()
-            Text(open ? "PLAY" : "LOCKED").font(.system(size: 8, weight: .bold, design: .serif))
-              .tracking(1.2)
-              .padding(.horizontal, 8).padding(.vertical, 3)
-              .background(open ? Color.gold : Color.ink.opacity(0.1), in: Capsule())
-          }.font(.system(size: 10)).padding(.top, 2)
+            Image(systemName: open ? "play.fill" : "lock.fill")
+              .font(.system(size: 10, weight: .bold))
+              .frame(width: 28, height: 28)
+              .background(open ? Color.gold : Color.ink.opacity(0.08), in: Circle())
+              .foregroundStyle(open ? Color.ink : Color.ink.opacity(0.4))
+          }.padding(.top, 4)
         }.padding(12)
       }
-      .background(Color.cream.opacity(open ? 0.96 : 0.7), in: RoundedRectangle(cornerRadius: 18))
-      .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color.cream, lineWidth: 1.5))
-      .shadow(color: .ink.opacity(open ? 0.22 : 0.08), radius: 10, y: 5)
+      .background(Color.cream.opacity(open ? 1 : 0.92), in: RoundedRectangle(cornerRadius: 20))
+      .shadow(color: .ink.opacity(open ? 0.18 : 0.06), radius: 12, y: 6)
     }.buttonStyle(.plain).disabled(!open)
   }
 
+  // MARK: Game
+
   private var game: some View {
     ZStack {
-      VStack(spacing: 5) {
-        HStack(spacing: 10) {
-          Button {
-            store.collect()
-          } label: {
-            HStack(spacing: 8) {
-              SunCoin().frame(width: 28, height: 28)
-                .shadow(color: .gold.opacity(store.garden.drops.isEmpty ? 0 : 0.8), radius: 6)
-              Text("\(store.garden.sunshine)").font(
-                .system(size: 22, weight: .bold, design: .serif)
-              ).monospacedDigit().foregroundStyle(Color.cream)
-              VStack(alignment: .leading, spacing: 1) {
-                Text(store.garden.endless ? "SUNSHINE / 500" : "SUNSHINE")
-                  .font(.system(size: 7, weight: .bold, design: .serif)).tracking(1.2)
-                  .foregroundStyle(Color.cream.opacity(0.75))
-                Text(store.garden.drops.isEmpty ? "tap gold drops" : "TAP TO GATHER").font(
-                  .system(size: 7, weight: .bold, design: .serif)
-                ).tracking(0.6).foregroundStyle(Color.gold)
-              }
-            }.padding(.horizontal, 10).frame(height: 40)
-              .background(Color.black.opacity(0.22), in: Capsule())
-              .overlay(Capsule().stroke(Color.cream.opacity(0.18), lineWidth: 1))
-          }.buttonStyle(.plain)
-            .accessibilityLabel("Gather sunshine, \(store.garden.sunshine) available")
-            .accessibilityIdentifier("collect")
-          VStack(alignment: .leading, spacing: 2) {
-            Text(store.garden.title).font(.system(size: 16, weight: .semibold, design: .serif))
-              .foregroundStyle(Color.cream)
-            HStack(spacing: 6) {
-              if store.garden.endless {
-                Text("WAVE \(store.garden.wave)")
-              } else {
-                ForEach(0..<3) { wave in
-                  Image(systemName: "leaf.fill").font(.system(size: 8))
-                    .foregroundStyle(
-                      wave < store.garden.wave ? Color.gold : Color.cream.opacity(0.3))
-                }
-                Text("WAVE \(store.garden.wave) OF 3")
-              }
-              Text("·").foregroundStyle(Color.cream.opacity(0.5))
-              Text("\(store.garden.score.formatted()) PTS")
-            }
-            .font(.system(size: 9, weight: .bold, design: .serif)).tracking(1)
-            .foregroundStyle(Color.cream.opacity(0.8))
-          }
-          Spacer(minLength: 0)
-          Text(
-            store.garden.nextWave > 0
-              ? "A breath between waves"
-              : store.garden.wave == 1 && store.garden.pests.isEmpty && store.garden.waveTime < 17
-                ? "Plant your first guardians"
-                : store.garden.endless && store.garden.wave >= 4 && !store.garden.schedule.isEmpty
-                  ? "NEXT: LANE \((store.garden.schedule.first?.lane ?? 0) + 1)"
-                  : "\(store.garden.pests.count) CLOCKWORKS"
-          )
-          .font(.system(size: 9, weight: .bold, design: .serif)).tracking(1)
-          .foregroundStyle(Color.cream.opacity(0.85))
-          .lineLimit(1).minimumScaleFactor(0.7)
-          .padding(.horizontal, 12).frame(height: 28)
-          .background(Color.black.opacity(0.22), in: Capsule())
-          circleButton("Pause", icon: "pause.fill", light: true) { store.garden.togglePause() }
-            .accessibilityIdentifier("pause")
-        }
+      VStack(spacing: 6) {
+        hud
         GardenBoard(store: store)
         HStack(spacing: 6) {
           ForEach(Seed.allCases, id: \.self) { seed in seedPacket(seed) }
@@ -412,26 +322,22 @@ struct BloomguardView: View {
             store.shovel.toggle()
             store.emberTarget = nil
           } label: {
-            VStack(spacing: 2) {
-              ShovelArt().frame(width: 26, height: 26)
-              Text("SHOVEL").font(.system(size: 7.5, weight: .bold, design: .serif)).tracking(1)
-              Text("½ refund").font(.system(size: 8.5))
-            }.frame(width: 58, height: 62)
+            VStack(spacing: 3) {
+              ShovelArt().frame(width: 24, height: 24)
+              Text("Shovel").font(.system(size: 10, weight: .semibold))
+            }.frame(width: 58, height: 60)
               .background(
-                LinearGradient(
-                  colors: store.shovel
-                    ? [.gold, .goldDeep] : [.cream.opacity(0.16), .cream.opacity(0.08)],
-                  startPoint: .top, endPoint: .bottom),
-                in: RoundedRectangle(cornerRadius: 12)
+                store.shovel ? Color.gold : Color.cream.opacity(0.1),
+                in: RoundedRectangle(cornerRadius: 14)
               )
               .overlay(
-                RoundedRectangle(cornerRadius: 12).stroke(
-                  store.shovel ? Color.cream : Color.cream.opacity(0.25), lineWidth: 1.5)
+                RoundedRectangle(cornerRadius: 14).stroke(
+                  store.shovel ? Color.gold : Color.cream.opacity(0.14), lineWidth: 1.5)
               )
               .foregroundStyle(store.shovel ? Color.ink : Color.cream)
           }.buttonStyle(.plain).accessibilityIdentifier("shovel")
         }
-        HStack {
+        HStack(spacing: 6) {
           if store.garden.noticeTime > 0 && store.garden.noticeIsError {
             Image(systemName: "exclamationmark.circle.fill").foregroundStyle(Color.gold)
           }
@@ -439,19 +345,82 @@ struct BloomguardView: View {
             store.garden.noticeTime > 0
               ? store.garden.notice
               : store.shovel
-                ? "Tap a guardian to compost it for half its cost."
+                ? "Tap a plant to dig it up for half its cost."
                 : store.selected == .ember
-                  ? "Emberbud · tap to preview its reach, then tap again to plant."
+                  ? "Emberbud: tap a plot to preview the blast, tap again to plant."
                   : "\(store.selected.name) · \(store.selected.detail). Tap an empty plot."
           )
           .lineLimit(1).minimumScaleFactor(0.7)
           Spacer(minLength: 0)
-          Text("DEFEND YOUR COTTAGE").font(.system(size: 8, weight: .semibold, design: .serif))
-            .tracking(1.5).foregroundStyle(Color.cream.opacity(0.5))
-        }.font(.system(size: 11)).foregroundStyle(Color.cream).frame(height: 16)
-      }.padding(.horizontal, 6).padding(.vertical, 5)
+        }.font(.system(size: 12, weight: .medium)).foregroundStyle(Color.cream.opacity(0.85))
+          .frame(height: 16).padding(.horizontal, 4)
+      }.padding(.horizontal, 8).padding(.vertical, 6)
       if store.garden.phase == .paused { pause }
       if store.garden.finished { results }
+    }
+  }
+
+  private var hud: some View {
+    HStack(spacing: 10) {
+      Button {
+        store.collect()
+      } label: {
+        HStack(spacing: 8) {
+          SunCoin().frame(width: 26, height: 26)
+            .shadow(color: .gold.opacity(store.garden.drops.isEmpty ? 0 : 0.8), radius: 6)
+          Text("\(store.garden.sunshine)").font(.system(size: 22, weight: .heavy))
+            .monospacedDigit().foregroundStyle(Color.cream)
+          if store.garden.endless {
+            Text("/ 500").font(.system(size: 11, weight: .semibold))
+              .foregroundStyle(Color.cream.opacity(0.5))
+          }
+          if !store.garden.drops.isEmpty {
+            Text("Gather").font(.system(size: 11, weight: .bold)).foregroundStyle(Color.ink)
+              .padding(.horizontal, 8).padding(.vertical, 3)
+              .background(Color.gold, in: Capsule())
+          }
+        }.padding(.leading, 8).padding(.trailing, 12).frame(height: 40)
+          .background(Color.black.opacity(0.25), in: Capsule())
+      }.buttonStyle(.plain)
+        .accessibilityLabel("Gather sunshine, \(store.garden.sunshine) available")
+        .accessibilityIdentifier("collect")
+      VStack(alignment: .leading, spacing: 4) {
+        Text(store.garden.title).font(.system(size: 15, weight: .bold))
+          .foregroundStyle(Color.cream)
+        HStack(spacing: 8) {
+          if store.garden.endless {
+            Text("Wave \(store.garden.wave)")
+          } else {
+            HStack(spacing: 3) {
+              ForEach(0..<3) { wave in
+                Capsule().fill(wave < store.garden.wave ? Color.gold : Color.cream.opacity(0.25))
+                  .frame(width: 16, height: 4)
+              }
+            }
+            Text("Wave \(store.garden.wave) of 3")
+          }
+          Text("\(store.garden.score.formatted()) pts").foregroundStyle(Color.cream.opacity(0.55))
+        }
+        .font(.system(size: 11, weight: .semibold)).foregroundStyle(Color.cream.opacity(0.85))
+      }
+      Spacer(minLength: 0)
+      Text(
+        store.garden.nextWave > 0
+          ? "Next wave soon"
+          : store.garden.wave == 1 && store.garden.pests.isEmpty && store.garden.waveTime < 17
+            ? "Plant your first guardians"
+            : store.garden.endless && store.garden.wave >= 4 && !store.garden.schedule.isEmpty
+              ? "Next: lane \((store.garden.schedule.first?.lane ?? 0) + 1)"
+              : store.garden.pests.count == 1
+                ? "1 pest on the path" : "\(store.garden.pests.count) pests on the path"
+      )
+      .font(.system(size: 11, weight: .semibold))
+      .foregroundStyle(Color.cream.opacity(0.85))
+      .lineLimit(1).minimumScaleFactor(0.7)
+      .padding(.horizontal, 12).frame(height: 30)
+      .background(Color.black.opacity(0.25), in: Capsule())
+      iconButton("Pause", icon: "pause.fill", light: true) { store.garden.togglePause() }
+        .accessibilityIdentifier("pause")
     }
   }
 
@@ -459,6 +428,7 @@ struct BloomguardView: View {
     let selected = store.selected == seed && !store.shovel
     let cooldown = store.garden.cooldowns[seed] ?? 0
     let poor = store.garden.sunshine < seed.cost
+    let ready = cooldown <= 0 && !poor
     return Button {
       store.selected = seed
       store.shovel = false
@@ -471,290 +441,263 @@ struct BloomguardView: View {
       } else {
         store.garden.notify(
           seed == .ember
-            ? "Emberbud · tap to preview its reach, then tap again to plant."
-            : "\(seed.name) · \(seed.detail). Choose an empty plot.")
+            ? "Emberbud: tap a plot to preview the blast, tap again to plant."
+            : "\(seed.name) · \(seed.detail). Tap an empty plot.")
       }
     } label: {
-      HStack(spacing: 2) {
-        ZStack {
-          RoundedRectangle(cornerRadius: 8).fill(
-            LinearGradient(
-              colors: [seed.tint.opacity(0.75), seed.tint.opacity(0.35)], startPoint: .top,
-              endPoint: .bottom)
-          ).frame(width: 46, height: 52)
-          GardenArt(seed: seed).frame(width: 46, height: 48).offset(y: 2)
-        }
-        VStack(alignment: .leading, spacing: 2) {
-          Text(seed.name).font(.system(size: 11, weight: .bold, design: .serif)).lineLimit(1)
+      HStack(spacing: 8) {
+        GardenArt(seed: seed).frame(width: 46, height: 46)
+          .background(seed.tint.opacity(0.22), in: RoundedRectangle(cornerRadius: 10))
+        VStack(alignment: .leading, spacing: 3) {
+          Text(seed.name).font(.system(size: 12, weight: .bold)).lineLimit(1)
             .minimumScaleFactor(0.75)
-          HStack(spacing: 3) {
-            SunCoin().frame(width: 10, height: 10)
-            Text("\(seed.cost)").font(.system(size: 10, weight: .bold, design: .serif))
+          HStack(spacing: 4) {
+            SunCoin().frame(width: 11, height: 11)
+            Text("\(seed.cost)").font(.system(size: 12, weight: .bold)).monospacedDigit()
+              .foregroundStyle(poor ? Color.terracotta : Color.ink)
           }
-          Text(
-            cooldown > 0
-              ? "\(Int(ceil(cooldown)))s rest"
-              : poor ? "Need sun" : "READY"
-          )
-          .font(.system(size: 7, weight: .bold, design: .serif)).tracking(0.8)
-          .foregroundStyle(
-            cooldown > 0 || poor ? Color(red: 0.63, green: 0.24, blue: 0.16) : Color.moss)
+          Text(cooldown > 0 ? "\(Int(ceil(cooldown)))s" : poor ? "Need sun" : "Ready")
+            .font(.system(size: 10, weight: .semibold))
+            .foregroundStyle(ready ? Color.moss : Color.ink.opacity(0.45))
         }
         Spacer(minLength: 0)
-      }.padding(.horizontal, 4).frame(maxWidth: .infinity).frame(height: 62)
-        .background(
-          LinearGradient(colors: [.cream, .parchment], startPoint: .top, endPoint: .bottom),
-          in: RoundedRectangle(cornerRadius: 12)
-        )
+      }.padding(.horizontal, 7).frame(maxWidth: .infinity).frame(height: 60)
+        .background(Color.cream, in: RoundedRectangle(cornerRadius: 14))
         .overlay(alignment: .bottom) {
           if cooldown > 0 {
-            RoundedRectangle(cornerRadius: 12).fill(Color.ink.opacity(0.18))
-              .frame(height: 62 * min(1, cooldown / seed.cooldown))
+            RoundedRectangle(cornerRadius: 14).fill(Color.ink.opacity(0.16))
+              .frame(height: 60 * min(1, cooldown / seed.cooldown))
           }
         }
         .overlay(
-          RoundedRectangle(cornerRadius: 12).stroke(
-            selected ? Color.gold : Color.cream.opacity(0.3), lineWidth: selected ? 3 : 1)
+          RoundedRectangle(cornerRadius: 14).stroke(
+            selected ? Color.gold : Color.clear, lineWidth: 2.5)
         )
-        .opacity(poor && !selected ? 0.72 : 1)
-        .scaleEffect(selected ? 1.03 : 1)
-        .shadow(
-          color: selected ? .gold.opacity(0.45) : .black.opacity(0.2), radius: selected ? 8 : 3,
-          y: 2
-        )
+        .opacity(poor && !selected ? 0.75 : 1)
+        .offset(y: selected ? -3 : 0)
+        .shadow(color: .black.opacity(selected ? 0.3 : 0.15), radius: selected ? 8 : 3, y: 3)
         .foregroundStyle(Color.ink)
     }.buttonStyle(.plain).accessibilityLabel("\(seed.name), \(seed.cost) sunshine, \(seed.detail)")
       .accessibilityIdentifier("seed-\(seed.rawValue)")
   }
 
+  // MARK: Overlays
+
   private var pause: some View {
     modal {
-      Text("A MOMENT OF STILLNESS").font(.system(size: 9, weight: .bold, design: .serif)).tracking(
-        2.4
-      )
-      .foregroundStyle(Color.goldDeep)
-      Text("Your garden will wait.").font(.system(size: 30, weight: .semibold, design: .serif))
-      Flourish().frame(width: 160, height: 16)
-      HStack {
-        action("Keep growing", icon: "play.fill", gold: true) { store.garden.togglePause() }
-        action("Field guide", icon: "book", secondary: true) { store.guide = true }
-      }.padding(.top, 8)
-      HStack(spacing: 26) {
-        Button {
-          store.toggleSound()
-        } label: {
-          Label(
-            store.sound ? "Sound on" : "Sound off",
-            systemImage: store.sound ? "speaker.wave.2" : "speaker.slash")
-        }
+      VStack(spacing: 6) {
+        Text("Paused").font(.system(size: 30, weight: .heavy)).tracking(-0.5)
+        Text(
+          store.garden.endless
+            ? "Wave \(store.garden.wave) · \(store.garden.score.formatted()) points so far"
+            : "\(store.garden.title) · Wave \(store.garden.wave) of 3"
+        )
+        .font(.system(size: 13, weight: .medium)).foregroundStyle(Color.ink.opacity(0.6))
+      }
+      HStack(spacing: 10) {
+        pill("Resume", icon: "play.fill", style: .primary) { store.garden.togglePause() }
+        pill("How to play", icon: "book.fill", style: .quiet) { store.guide = true }
+      }.padding(.top, 14)
+      HStack(spacing: 8) {
+        textButton(
+          store.sound ? "Sound on" : "Sound off",
+          icon: store.sound ? "speaker.wave.2.fill" : "speaker.slash.fill"
+        ) { store.toggleSound() }
+        Circle().fill(Color.ink.opacity(0.25)).frame(width: 3, height: 3)
         if store.garden.endless {
-          Button("Finish & save record") {
+          textButton("Finish and save record", icon: "flag.fill") {
             store.garden.retire()
             store.tick()
           }
         } else {
-          Button("Leave garden") { store.screen = "home" }
+          textButton("Leave garden", icon: "arrow.uturn.left") { store.screen = "home" }
         }
-      }.font(.system(size: 12, weight: .semibold)).padding(.top, 8)
-      Text(
-        store.garden.endless
-          ? "Finish saves the points and waves you have earned."
-          : "Leaving ends this attempt. Your completed chapters stay saved."
-      )
-      .font(.system(size: 9)).foregroundStyle(Color.moss)
+      }.padding(.top, 10)
     }
   }
 
   private var results: some View {
     let won = store.garden.phase == .won
     let retired = store.garden.phase == .retired
+    let medal = store.medals[store.garden.level]
     return modal {
-      HStack(spacing: 16) {
+      HStack(spacing: 20) {
         ZStack {
           Circle().fill(
             RadialGradient(
-              colors: [.gold.opacity(won || retired ? 0.5 : 0.15), .clear], center: .center,
-              startRadius: 10, endRadius: 50)
-          ).frame(width: 100, height: 100)
-          GardenArt(seed: won || retired ? .marigold : .bramble).frame(width: 82, height: 82)
+              colors: [.gold.opacity(won || retired ? 0.55 : 0.18), .clear], center: .center,
+              startRadius: 8, endRadius: 52)
+          ).frame(width: 104, height: 104)
+          GardenArt(seed: won || retired ? .marigold : .bramble).frame(width: 84, height: 84)
         }
-        VStack(alignment: .leading, spacing: 4) {
-          Text(
-            won ? "THE GARDEN IS YOURS" : retired ? "YOUR RECORD IS SAVED" : "EVERY GARDENER GROWS"
-          )
-          .font(.system(size: 9, weight: .bold, design: .serif)).tracking(2.4).foregroundStyle(
-            Color.goldDeep)
-          Text(
-            won ? "Beautifully defended." : retired ? "A well-earned rest." : "A little overgrown."
-          )
-          .font(.system(size: 30, weight: .semibold, design: .serif))
+        VStack(alignment: .leading, spacing: 6) {
+          Text(won ? "Chapter cleared" : retired ? "Record saved" : "The garden fell")
+            .font(.system(size: 30, weight: .heavy)).tracking(-0.5)
           Text(
             won
-              ? "The cottage is safe. Another morning awaits."
+              ? store.garden.level < 3
+                ? "\(Chapter.all[store.garden.level + 1].title) is now open."
+                : "All four chapters defended."
               : retired
-                ? "Every wave earned. Come back and grow a little further."
-                : "Try Sunbells early, then cover all five lanes."
+                ? "Every wave you secured counts toward your best."
+                : "Plant Sunbells first, then cover all five lanes."
           )
-          .font(.system(size: 12)).foregroundStyle(Color.moss)
-        }
-      }
-      if won {
-        HStack(spacing: 6) {
-          ForEach(0..<3) { index in
-            Image(systemName: index < store.medals[store.garden.level] ? "star.fill" : "star")
-              .foregroundStyle(Color.goldDeep)
-              .shadow(
-                color: .gold.opacity(index < store.medals[store.garden.level] ? 0.8 : 0), radius: 4)
+          .font(.system(size: 13, weight: .medium)).foregroundStyle(Color.ink.opacity(0.62))
+          if won {
+            HStack(spacing: 3) {
+              ForEach(0..<3) { index in
+                Image(systemName: "star.fill").font(.system(size: 18))
+                  .foregroundStyle(index < medal ? Color.gold : Color.ink.opacity(0.14))
+                  .shadow(color: .gold.opacity(index < medal ? 0.6 : 0), radius: 4)
+              }
+            }.padding(.top, 2)
           }
-          Text(
-            store.garden.level < 3
-              ? "\(Chapter.all[store.garden.level + 1].title) unlocked"
-              : "All four chapters defended"
-          )
-          .font(.system(size: 11, weight: .semibold)).padding(.leading, 8)
-        }.font(.system(size: 16))
-      }
-      Flourish().frame(width: 200, height: 16)
-      HStack(spacing: 40) {
-        resultStat(store.garden.score.formatted(), "GARDEN POINTS")
-        resultStat("\(store.garden.wavesCleared)", "WAVES SECURED")
+        }
+        Spacer(minLength: 0)
+      }.frame(maxWidth: 440)
+      HStack(spacing: 0) {
+        resultStat(store.garden.score.formatted(), "Points")
+        divider
+        resultStat("\(store.garden.wavesCleared)", "Waves")
+        divider
         resultStat(
-          store.garden.endless ? store.best.formatted() : "\(store.garden.rescuers.count) / 5",
-          store.garden.endless ? "PERSONAL BEST" : "ROBINS KEPT")
-      }.padding(.vertical, 6)
-      HStack {
-        action(
-          won && store.garden.level < 3 ? "Next chapter" : "Grow again", icon: "arrow.right",
-          gold: true
+          store.garden.endless ? store.best.formatted() : "\(store.garden.rescuers.count) of 5",
+          store.garden.endless ? "Best" : "Robins")
+      }
+      .padding(.vertical, 12).frame(maxWidth: 440)
+      .background(Color.ink.opacity(0.06), in: RoundedRectangle(cornerRadius: 18))
+      HStack(spacing: 10) {
+        pill(
+          won && store.garden.level < 3 ? "Next chapter" : "Play again", icon: "arrow.right",
+          style: .primary
         ) {
           store.start(
             level: won && store.garden.level < 3 ? store.garden.level + 1 : store.garden.level,
             endless: store.garden.endless)
         }
-        action("Garden journal", icon: "book", secondary: true) { store.screen = "chapters" }
+        pill("Chapters", icon: "square.grid.2x2.fill", style: .quiet) {
+          store.screen = "chapters"
+        }
       }
     }
   }
 
+  private var divider: some View {
+    Rectangle().fill(Color.ink.opacity(0.1)).frame(width: 1, height: 34)
+  }
+
   private func resultStat(_ value: String, _ label: String) -> some View {
-    VStack(spacing: 3) {
-      Text(value).font(.system(size: 27, weight: .bold, design: .serif))
-      Text(label).font(.system(size: 8, weight: .bold, design: .serif)).tracking(1.6)
-        .foregroundStyle(Color.goldDeep)
-    }
+    VStack(spacing: 2) {
+      Text(value).font(.system(size: 26, weight: .heavy)).monospacedDigit()
+      Text(label).font(.system(size: 11, weight: .semibold))
+        .foregroundStyle(Color.ink.opacity(0.55))
+    }.frame(maxWidth: .infinity)
   }
 
   private var guide: some View {
     ZStack {
-      Color.ink.opacity(0.82).ignoresSafeArea()
-      VStack(alignment: .leading, spacing: 8) {
+      Color.night.opacity(0.85).ignoresSafeArea()
+      VStack(alignment: .leading, spacing: 14) {
         HStack {
-          VStack(alignment: .leading, spacing: 2) {
-            Text("The little field guide").font(
-              .system(size: 28, weight: .semibold, design: .serif))
-            Text("FIVE LANES · SEVEN PLOTS · A HOME WORTH PROTECTING")
-              .font(.system(size: 8, weight: .semibold, design: .serif)).tracking(1.8)
-              .foregroundStyle(Color.goldDeep)
-          }
+          Text("How to play").font(.system(size: 26, weight: .heavy)).tracking(-0.5)
           Spacer()
-          circleButton("Close guide", icon: "xmark") { store.guide = false }
+          iconButton("Close guide", icon: "xmark") { store.guide = false }
         }
-        HStack(spacing: 10) {
+        HStack(spacing: 12) {
+          step(1, "Gather", "Tap gold drops, or the sun counter to take them all.")
+          step(2, "Plant", "Pick a seed, then tap a plot. Plants fire to the right.")
+          step(3, "Hold", "Cover every lane. A second breach in a lane ends the run.")
+        }
+        HStack(spacing: 8) {
           ForEach(Seed.allCases, id: \.self) { seed in
-            VStack(spacing: 4) {
-              GardenArt(seed: seed).frame(height: 58)
-              Text(seed.name).font(.system(size: 13, weight: .bold, design: .serif))
-              Text(seed.detail).font(.system(size: 9)).multilineTextAlignment(.center)
-                .foregroundStyle(Color.ink.opacity(0.75))
-            }.frame(maxWidth: .infinity).frame(height: 109)
-              .background(
-                LinearGradient(
-                  colors: [seed.tint.opacity(0.28), seed.tint.opacity(0.08)], startPoint: .top,
-                  endPoint: .bottom),
-                in: RoundedRectangle(cornerRadius: 14)
-              )
-              .overlay(
-                RoundedRectangle(cornerRadius: 14).stroke(seed.tint.opacity(0.35), lineWidth: 1))
+            VStack(alignment: .leading, spacing: 4) {
+              GardenArt(seed: seed).frame(width: 44, height: 44)
+              Text(seed.name).font(.system(size: 12, weight: .bold)).lineLimit(1)
+                .minimumScaleFactor(0.8)
+              Text(seed.detail).font(.system(size: 10, weight: .medium))
+                .foregroundStyle(Color.ink.opacity(0.6)).lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+            }.padding(10).frame(maxWidth: .infinity, alignment: .leading)
+              .background(Color.ink.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
           }
         }
         Text(
-          "1  Gather gold drops — or tap the sunshine counter to gather all.\n2  Pick a seed packet, then tap a plot. Defenders fire to the right.\n3  Keep every lane covered. Shovel returns half a plant’s cost."
+          store.garden.endless
+            ? "Endless holds 500 sunshine. From wave 4, pests arrive in packs; watch the next lane."
+            : "Shovel refunds half a plant's cost. Emberbud previews its blast before it plants."
         )
-        .font(.system(size: 11, weight: .medium)).lineSpacing(5)
-        Text(
-          "Each lane has one last-chance robin. A second breach ends the run.\nEmberbuds: tap to preview, tap again to plant. Burst in 1.5s. Frost slows armor."
-        )
-        .font(.system(size: 10)).foregroundStyle(Color.moss).lineSpacing(3)
-        if store.garden.endless {
-          Text(
-            "Endless: store 500 sunshine. Wave 4 brings packs and smaller sky drops. Watch the next lane."
-          )
-          .font(.system(size: 10, weight: .medium)).foregroundStyle(Color.moss)
-        }
-      }.padding(20).frame(maxWidth: 650)
-        .background { PaperBackground() }
-        .clipShape(RoundedRectangle(cornerRadius: 24))
-        .overlay(
-          RoundedRectangle(cornerRadius: 20).stroke(Color.goldDeep.opacity(0.4), lineWidth: 1)
-            .padding(5)
-        )
-        .shadow(color: .black.opacity(0.4), radius: 20, y: 8)
-        .padding(15)
+        .font(.system(size: 12, weight: .medium)).foregroundStyle(Color.ink.opacity(0.62))
+      }.padding(22).frame(maxWidth: 680)
+        .background(Color.cream, in: RoundedRectangle(cornerRadius: 28))
+        .shadow(color: .black.opacity(0.4), radius: 24, y: 10)
+        .padding(16)
     }
+  }
+
+  private func step(_ number: Int, _ title: String, _ body: String) -> some View {
+    HStack(alignment: .top, spacing: 10) {
+      Text("\(number)").font(.system(size: 13, weight: .heavy)).foregroundStyle(Color.cream)
+        .frame(width: 28, height: 28).background(Color.ink, in: Circle())
+      VStack(alignment: .leading, spacing: 2) {
+        Text(title).font(.system(size: 14, weight: .bold))
+        Text(body).font(.system(size: 12, weight: .medium))
+          .foregroundStyle(Color.ink.opacity(0.65)).lineSpacing(1)
+          .fixedSize(horizontal: false, vertical: true)
+      }
+    }.frame(maxWidth: .infinity, alignment: .leading)
   }
 
   private func modal<Content: View>(@ViewBuilder content: () -> Content) -> some View {
     ZStack {
-      Color.ink.opacity(0.78).ignoresSafeArea()
-      VStack(spacing: 10, content: content).padding(.horizontal, 28).padding(.vertical, 22)
-        .background { PaperBackground() }
-        .clipShape(RoundedRectangle(cornerRadius: 26))
-        .overlay(
-          RoundedRectangle(cornerRadius: 22).stroke(Color.goldDeep.opacity(0.4), lineWidth: 1)
-            .padding(5)
-        )
-        .shadow(color: .black.opacity(0.45), radius: 24, y: 10)
+      Color.night.opacity(0.8).ignoresSafeArea()
+      VStack(spacing: 12, content: content).padding(.horizontal, 30).padding(.vertical, 26)
+        .background(Color.cream, in: RoundedRectangle(cornerRadius: 28))
+        .shadow(color: .black.opacity(0.45), radius: 28, y: 12)
         .padding(20)
     }
   }
 
-  private func action(
-    _ text: String, icon: String, secondary: Bool = false, gold: Bool = false,
-    perform: @escaping () -> Void
+  // MARK: Controls
+
+  private enum PillStyle { case primary, dark, quiet }
+
+  private func pill(
+    _ text: String, icon: String, style: PillStyle, perform: @escaping () -> Void
   ) -> some View {
     Button(action: perform) {
-      HStack(spacing: 12) {
+      HStack(spacing: 8) {
+        Image(systemName: icon).font(.system(size: 12, weight: .bold))
         Text(text)
-        Image(systemName: icon)
-      }.font(.system(size: 13, weight: .semibold))
-        .padding(.horizontal, 20).frame(height: 44)
+      }.font(.system(size: 15, weight: .bold))
+        .padding(.horizontal, 22).frame(height: 48)
         .background(
-          LinearGradient(
-            colors: secondary
-              ? [Color.moss.opacity(0.14), Color.moss.opacity(0.10)]
-              : gold ? [.gold, .goldDeep] : [.pine, .ink],
-            startPoint: .top, endPoint: .bottom),
+          style == .primary ? Color.gold : style == .dark ? Color.ink : Color.ink.opacity(0.08),
           in: Capsule()
         )
-        .overlay(
-          Capsule().stroke(
-            secondary ? Color.ink.opacity(0.2) : Color.cream.opacity(0.35), lineWidth: 1)
-        )
-        .foregroundStyle(secondary || gold ? Color.ink : Color.cream)
-        .shadow(color: .ink.opacity(secondary ? 0 : 0.25), radius: 6, y: 3)
+        .foregroundStyle(style == .dark ? Color.cream : Color.ink)
+        .shadow(color: .ink.opacity(style == .quiet ? 0 : 0.25), radius: 8, y: 4)
     }.buttonStyle(.plain)
   }
 
-  private func circleButton(
+  private func textButton(_ text: String, icon: String, perform: @escaping () -> Void)
+    -> some View
+  {
+    Button(action: perform) {
+      Label(text, systemImage: icon).font(.system(size: 13, weight: .semibold))
+        .padding(.horizontal, 12).frame(height: 36)
+    }.buttonStyle(.plain).foregroundStyle(Color.ink.opacity(0.8))
+  }
+
+  private func iconButton(
     _ label: String, icon: String, light: Bool = false, perform: @escaping () -> Void
   ) -> some View {
     Button(action: perform) {
-      Image(systemName: icon).font(.system(size: 14, weight: .semibold)).frame(
-        width: 42, height: 42
+      Image(systemName: icon).font(.system(size: 15, weight: .bold)).frame(
+        width: 44, height: 44
       )
-      .background(light ? Color.black.opacity(0.22) : Color.cream.opacity(0.75), in: Circle())
-      .overlay(Circle().stroke((light ? Color.cream : Color.ink).opacity(0.25), lineWidth: 1))
+      .background(light ? Color.black.opacity(0.25) : Color.cream, in: Circle())
       .foregroundStyle(light ? Color.cream : Color.ink)
+      .shadow(color: .ink.opacity(light ? 0 : 0.15), radius: 6, y: 3)
     }.buttonStyle(.plain).accessibilityLabel(label)
   }
 }

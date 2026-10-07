@@ -29,12 +29,12 @@ struct GardenBoard: View {
             let rect = CGRect(x: inset - 6, y: y + 1.5, width: field + 6, height: laneHeight - 3)
             let light =
               row % 2 == 0
-              ? Color(red: 0.66, green: 0.78, blue: 0.46)
-              : Color(red: 0.60, green: 0.73, blue: 0.42)
+              ? Color(red: 0.64, green: 0.80, blue: 0.42)
+              : Color(red: 0.57, green: 0.74, blue: 0.38)
             let dark =
               row % 2 == 0
-              ? Color(red: 0.56, green: 0.70, blue: 0.40)
-              : Color(red: 0.51, green: 0.65, blue: 0.37)
+              ? Color(red: 0.53, green: 0.71, blue: 0.36)
+              : Color(red: 0.47, green: 0.65, blue: 0.33)
             context.fill(
               Path(roundedRect: rect, cornerRadius: 9),
               with: .linearGradient(
@@ -53,13 +53,10 @@ struct GardenBoard: View {
                 plot,
                 with: .linearGradient(
                   Gradient(colors: [
-                    Color(red: 0.55, green: 0.40, blue: 0.26).opacity(0.62),
-                    Color(red: 0.42, green: 0.29, blue: 0.18).opacity(0.78),
+                    Color(red: 0.60, green: 0.43, blue: 0.27).opacity(0.7),
+                    Color(red: 0.45, green: 0.30, blue: 0.18).opacity(0.85),
                   ]), startPoint: CGPoint(x: x, y: y), endPoint: CGPoint(x: x, y: y + laneHeight)))
-              context.stroke(plot, with: .color(Color.cream.opacity(0.32)), lineWidth: 1.2)
-              context.stroke(
-                Path(roundedRect: plotRect.insetBy(dx: 2.5, dy: 2.5), cornerRadius: 7),
-                with: .color(Color.ink.opacity(0.10)), lineWidth: 1)
+              context.stroke(plot, with: .color(Color.cream.opacity(0.28)), lineWidth: 1.2)
               for furrow in 1..<4 {
                 let fy = plotRect.minY + plotRect.height * Double(furrow) / 4
                 brush.line(
@@ -143,11 +140,8 @@ struct GardenBoard: View {
             )
             .allowsHitTesting(false)
         }
-        VStack(spacing: 2) {
-          Text("HOME").font(.system(size: 7, weight: .bold, design: .serif)).tracking(1.5)
-            .foregroundStyle(Color.cream.opacity(0.9))
-          Cottage().frame(width: 48, height: 44)
-        }.position(x: 26, y: geometry.size.height / 2).allowsHitTesting(false)
+        Cottage().frame(width: 50, height: 46)
+          .position(x: 26, y: geometry.size.height / 2).allowsHitTesting(false)
           .shadow(color: .ink.opacity(0.3), radius: 3, y: 2)
         ForEach(0..<5) { row in
           ZStack {
@@ -164,8 +158,8 @@ struct GardenBoard: View {
               .font(.system(size: 11)).foregroundStyle(
                 store.garden.rescuers.contains(row) ? Color.cream : Color.ink.opacity(0.35))
           }.position(x: 51, y: (Double(row) + 0.5) * laneHeight - 7)
-          Text("\(row + 1)").font(.system(size: 7, weight: .bold, design: .serif))
-            .foregroundStyle(Color.cream.opacity(0.75))
+          Text("\(row + 1)").font(.system(size: 8, weight: .bold, design: .rounded))
+            .foregroundStyle(Color.cream.opacity(0.7))
             .position(x: 51, y: (Double(row) + 0.5) * laneHeight + 11)
           ForEach(0..<7) { column in
             Button {
@@ -273,7 +267,7 @@ struct GardenBoard: View {
               .frame(width: 48, height: 48).scaleEffect(1 + pulse * 0.12)
               SunCoin().frame(width: 32, height: 32)
                 .shadow(color: Color.goldDeep.opacity(0.5), radius: 2, y: 2)
-              Text("\(drop.amount)").font(.system(size: 9, weight: .black, design: .serif))
+              Text("\(drop.amount)").font(.system(size: 10, weight: .heavy, design: .rounded))
                 .foregroundStyle(Color(red: 0.45, green: 0.26, blue: 0.05))
             }.frame(width: 46, height: 46).contentShape(Circle())
               .offset(y: sin(phase * 2.5 + Double(drop.id)) * 2)

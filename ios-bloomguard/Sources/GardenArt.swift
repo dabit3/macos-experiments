@@ -15,6 +15,7 @@ extension Color {
   static let copper = Color(red: 0.72, green: 0.44, blue: 0.26)
   static let brass = Color(red: 0.85, green: 0.66, blue: 0.32)
   static let steel = Color(red: 0.36, green: 0.42, blue: 0.42)
+  static let night = Color(red: 0.06, green: 0.13, blue: 0.11)
 }
 
 extension Seed {
@@ -440,29 +441,6 @@ struct Cottage: View {
   }
 }
 
-/// A gold vine flourish used as an ornamental divider.
-struct Flourish: View {
-  var color = Color.goldDeep
-  var body: some View {
-    Canvas { context, size in
-      context.scaleBy(x: size.width / 200, y: size.height / 20)
-      let brush = Brush(context: context)
-      brush.curve(CGPoint(x: 0, y: 10), CGPoint(x: 90, y: 10), CGPoint(x: 45, y: 2), color, 1.4)
-      brush.curve(
-        CGPoint(x: 200, y: 10), CGPoint(x: 110, y: 10), CGPoint(x: 155, y: 18), color, 1.4)
-      for x in [22.0, 52.0, 148.0, 178.0] {
-        let up = x < 100
-        brush.leaf(
-          CGPoint(x: x, y: up ? 6 : 14), CGPoint(x: x + 8, y: up ? -2 : 22), 3, color.opacity(0.8),
-          color)
-      }
-      brush.oval(95, 5, 10, 10, color)
-      brush.oval(97.5, 7.5, 5, 5, .cream.opacity(0.7))
-    }
-    .accessibilityHidden(true)
-  }
-}
-
 /// Dawn sky, hills and hedgerows for the title and journal scenes.
 struct DawnScene: View {
   var phase = 0.0
@@ -485,15 +463,6 @@ struct DawnScene: View {
         with: .radialGradient(
           Gradient(colors: [.gold.opacity(0.45), .gold.opacity(0)]), center: sun, startRadius: 0,
           endRadius: w * 0.34))
-      for index in 0..<16 {
-        let angle = Double(index) * .pi / 8 + phase * 0.02
-        var ray = Path()
-        ray.move(to: CGPoint(x: sun.x + cos(angle) * 46, y: sun.y + sin(angle) * 46))
-        ray.addLine(to: CGPoint(x: sun.x + cos(angle) * w * 0.5, y: sun.y + sin(angle) * w * 0.5))
-        context.stroke(
-          ray, with: .color(.cream.opacity(index % 2 == 0 ? 0.18 : 0.08)),
-          lineWidth: index % 2 == 0 ? 14 : 30)
-      }
       context.fill(
         Path(ellipseIn: CGRect(x: sun.x - 38, y: sun.y - 38, width: 76, height: 76)),
         with: .radialGradient(
@@ -530,7 +499,7 @@ struct DawnScene: View {
             startPoint: CGPoint(x: 0, y: h * hill.0),
             endPoint: CGPoint(x: 0, y: h)))
       }
-      for index in 0..<40 {
+      for index in 0..<18 {
         let x = Double((index * 97) % 1000) / 1000 * w
         let y = h * 0.86 + Double((index * 31) % 100) / 100 * h * 0.12
         context.fill(
@@ -539,10 +508,12 @@ struct DawnScene: View {
             index % 3 == 0
               ? .gold : index % 3 == 1 ? .cream : Color(red: 0.93, green: 0.55, blue: 0.55)))
       }
-      for index in 0..<14 {
-        let t = (phase * 0.03 + Double(index) / 14).truncatingRemainder(dividingBy: 1)
+      for index in 0..<8 {
+        let t = (phase * 0.03 + Double(index) / 8).truncatingRemainder(dividingBy: 1)
         let x =
-          (Double((index * 137) % 100) / 100 + t * 0.15).truncatingRemainder(dividingBy: 1) * w
+          w * 0.5
+          + (Double((index * 137) % 100) / 100 + t * 0.15).truncatingRemainder(dividingBy: 1) * w
+          * 0.5
         let y = (1 - t) * h * 0.9
         let petal = Path(ellipseIn: CGRect(x: x, y: y, width: 6, height: 9))
         context.fill(petal, with: .color(Color(red: 0.98, green: 0.72, blue: 0.70).opacity(0.7)))
@@ -552,29 +523,16 @@ struct DawnScene: View {
   }
 }
 
-struct PaperBackground: View {
-  var dark = false
+/// Deep evergreen backdrop behind the playing field.
+struct Backdrop: View {
   var body: some View {
     ZStack {
-      if dark {
-        LinearGradient(
-          colors: [Color(red: 0.16, green: 0.30, blue: 0.24), .ink], startPoint: .top,
-          endPoint: .bottom)
-        RadialGradient(
-          colors: [.clear, .black.opacity(0.35)], center: .center, startRadius: 200,
-          endRadius: 700)
-      } else {
-        LinearGradient(colors: [.cream, .parchment], startPoint: .top, endPoint: .bottom)
-      }
-      Canvas { context, size in
-        for index in 0..<500 {
-          let x = Double((index * 137) % 997) / 997 * size.width
-          let y = Double((index * 73) % 499) / 499 * size.height
-          context.fill(
-            Path(ellipseIn: CGRect(x: x, y: y, width: 1.2, height: 1.2)),
-            with: .color((dark ? Color.cream : .ink).opacity(0.08)))
-        }
-      }
+      LinearGradient(
+        colors: [Color(red: 0.13, green: 0.26, blue: 0.21), .night], startPoint: .top,
+        endPoint: .bottom)
+      RadialGradient(
+        colors: [.clear, .black.opacity(0.3)], center: .center, startRadius: 220,
+        endRadius: 720)
     }.ignoresSafeArea()
   }
 }
