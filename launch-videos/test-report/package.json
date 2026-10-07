@@ -1,0 +1,25 @@
+{
+  "name": "launch-video-test-report",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Devin on macOS launch video: Test Report",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render TestReport out/test-report.mp4 --codec h264 --crf 14 --pixel-format yuv420p",
+    "still": "remotion still TestReport",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.525",
+    "@remotion/google-fonts": "4.0.525",
+    "@remotion/media-utils": "4.0.525",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "remotion": "4.0.525"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.12",
+    "typescript": "5.9.2"
+  }
+}
