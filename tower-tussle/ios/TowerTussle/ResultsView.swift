@@ -33,7 +33,7 @@ struct ResultsView: View {
         }
     }
 
-    private var previousLeague: League { League.forTrophies(max(0, profile.trophies - result.trophyDelta)) }
+    private var previousLeague: League { League.forTrophies(profile.trophies - profile.lastTrophyChange) }
 
     var body: some View {
         ZStack {
@@ -130,7 +130,7 @@ struct ResultsView: View {
 
     private var rewardsPanel: some View {
         VStack(spacing: 10) {
-            rewardRow(.trophy, "Trophies", result.trophyDelta, total: profile.trophies)
+            rewardRow(.trophy, "Trophies", profile.lastTrophyChange, total: profile.trophies)
             rewardRow(.coin, "Gold", result.goldDelta, total: profile.gold)
             if profile.streak >= 2 {
                 HStack(spacing: 10) {

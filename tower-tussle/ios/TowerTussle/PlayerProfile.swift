@@ -18,6 +18,8 @@ final class PlayerProfile: ObservableObject {
     private let defaults: UserDefaults
 
     @Published private(set) var trophies: Int
+    /// Trophies actually gained or lost by the last applied match, after the zero floor.
+    private(set) var lastTrophyChange = 0
     @Published private(set) var gold: Int
     @Published private(set) var wins: Int
     @Published private(set) var losses: Int
@@ -56,7 +58,9 @@ final class PlayerProfile: ObservableObject {
     var league: League { League.forTrophies(trophies) }
 
     func apply(_ result: MatchResult) {
+        let before = trophies
         trophies = max(0, trophies + result.trophyDelta)
+        lastTrophyChange = trophies - before
         gold += result.goldDelta
         switch result.outcome {
         case .victory:
