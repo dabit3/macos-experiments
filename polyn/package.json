@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",
-    "typecheck": "tsc --noEmit",
-    "lint": "oxlint src",
+    "typecheck": "tsc --noEmit && tsc --ignoreConfig --allowJs --checkJs --noEmit --skipLibCheck --lib ES2023,DOM --types node --target ES2023 tools/evidence-viewer.js",
+    "lint": "oxlint src tools",
     "test": "vitest run",
+    "test:evidence": "node --test tools/build-evidence.node-test.mjs",
     "preview": "vite preview --host 0.0.0.0 --port 4173"
   },
   "dependencies": {

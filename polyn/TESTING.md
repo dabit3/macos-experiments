@@ -57,6 +57,29 @@ The browser run initially used an overly broad test selector that clicked Duplic
 
 The PR and session deliver the full PNG, annotated VP9 WebM and a detailed testing report. Earlier interrupted recordings are not final evidence.
 
+## Side-by-side evidence viewer
+
+The delivered offline bundle opens with `index.html`: full WebM on the left, timestamped recorded steps on the right. Play, pause, seek, restart and playback speed control the actual video. Selecting a step seeks to its original recording timestamp; highlighting and optional auto-scroll follow playback.
+
+The **Full action log** tab preserves every original browser-harness action and UTC batch timestamp, including earlier runs. These batches do not have per-command recording timestamps and are intentionally shown separately from the synchronized recording annotations.
+
+The viewer has no runtime dependencies or network requests. Keep the extracted bundle files together and open it in Chrome or Firefox. To rebuild from the original evidence files:
+
+```sh
+npm run test:evidence
+node tools/build-evidence.mjs \
+  /path/to/full-recording.webm \
+  /path/to/recording-annotations.json \
+  /path/to/ui-steps.jsonl \
+  /path/to/TEST_REPORT.md \
+  /path/to/poster.png \
+  .devin/evidence-viewer
+```
+
+`source_time_ms` is used directly, never the accelerated recording's `edited_time_s`. The generator rejects non-WebM input and invalid recording timestamps, preserves original media and raw logs, and escapes embedded evidence data. Generated bundles and media remain untracked.
+
+Viewer browser checks: verify playback and synchronized highlighting, click a later assertion and seek back to setup, change playback speed, pause/restart, expand the full action log, toggle follow mode, download the report and raw steps, and check the left/right layout at 1920×1080, 1440×900 and 1280×800.
+
 ## Source references and observed geometry
 
 See README for explicit observed dimensions, palette and attribution:
